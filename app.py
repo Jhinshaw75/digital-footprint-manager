@@ -8,11 +8,12 @@ st.write("Comprehensive PII, Credential, and Data Broker Remediation Portal")
 
 database_name = "digital_footprint_manager.db"
 
-# Enhanced database setup to cover all PII and Breach categories
+# Reset and ensure the table has the correct schema
 with sqlite3.connect(database_name) as connection:
     cursor = connection.cursor()
+    cursor.execute("DROP TABLE IF EXISTS optout_tracker;")
     cursor.execute('''
-        CREATE TABLE IF NOT EXISTS optout_tracker (
+        CREATE TABLE optout_tracker (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             broker_name TEXT,
             category TEXT,
@@ -20,18 +21,16 @@ with sqlite3.connect(database_name) as connection:
             last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
     ''')
-    cursor.execute("SELECT COUNT(*) FROM optout_tracker;")
-    if cursor.fetchone()[0] == 0:
-        initial_data = [
-            ('Whitepages', 'People-Search Brokers', 'Discovered'),
-            ('Spokeo', 'People-Search Brokers', 'Discovered'),
-            ('HaveIBeenPwned API', 'Credential/Breach Data', 'Discovered'),
-            ('Dark Web Exposure', 'Credential/Breach Data', 'Discovered'),
-            ('Public Voter Registry', 'Public Records/PII', 'Discovered'),
-            ('Property Records', 'Public Records/PII', 'Discovered')
-        ]
-        cursor.executemany("INSERT INTO optout_tracker (broker_name, category, status) VALUES (?, ?, ?);", initial_data)
-        connection.commit()
+    initial_data = [
+        ('Whitepages', 'People-Search Brokers', 'Discovered'),
+        ('Spokeo', 'People-Search Brokers', 'Discovered'),
+        ('HaveIBeenPwned API', 'Credential/Breach Data', 'Discovered'),
+        ('Dark Web Exposure', 'Credential/Breach Data', 'Discovered'),
+        ('Public Voter Registry', 'Public Records/PII', 'Discovered'),
+        ('Property Records', 'Public Records/PII', 'Discovered')
+    ]
+    cursor.executemany("INSERT INTO optout_tracker (broker_name, category, status) VALUES (?, ?, ?);", initial_data)
+    connection.commit()
 
 # User Input Section
 st.markdown("### 1. Assessment Initialization")
@@ -56,7 +55,6 @@ st.subheader("📊 Live Exposure Report Card")
 with sqlite3.connect(database_name) as connection:
     df = pd.read_sql_query("SELECT broker_name AS 'Source/Broker', category AS 'Data Type', status AS 'Current Status', last_updated AS 'Last Updated' FROM optout_tracker;", connection)
 
-# Summary metrics
 total = len(df)
 pending = len(df[df['Current Status'] == 'Discovered'])
 in_progress = len(df[df['Current Status'] == 'Opt-Out/Remediation Requested'])
