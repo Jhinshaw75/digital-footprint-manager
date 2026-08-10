@@ -61,16 +61,19 @@ total = len(df)
 pending = len(df[df['Current Status'] == 'Discovered'])
 remediated = len(df[df['Current Status'] == 'Remediated / Opted-Out'])
 
-# Calculate exposure level percentage (active exposures out of total)
-exposure_score = int((pending / total) * 100) if total > 0 else 0
+# Calculate Online Digital Health protection percentage (remediated items out of total)
+health_score = int((remediated / total) * 100) if total > 0 else 100
 
 st.subheader("📊 Live Exposure Report Card & Metrics")
 
 m1, m2, m3, m4 = st.columns(4)
-m1.metric("Active Exposure Level", f"{exposure_score}%")
+m1.metric("Online Digital Health", f"{health_score}%")
 m2.metric("Total Tracked Points", total)
 m3.metric("Exposures Active", pending)
 m4.metric("Successfully Cleaned", remediated)
+
+# Visual gas gauge progress bar for digital health
+st.progress(health_score, text=f"Online Digital Health Protection Level: {health_score}%")
 
 st.markdown("### Itemized Status Detail & Direct Links")
 st.dataframe(
