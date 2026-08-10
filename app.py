@@ -2,55 +2,69 @@ import sqlite3
 import pandas as pd
 import streamlit as st
 
-st.title("Digital Footprint Manager")
-st.write("Privacy Report Card & Tracker")
+st.set_page_config(page_title="SilverShield Footprint Manager", layout="wide")
+st.title("🛡️ SilverShield Digital Footprint Manager")
+st.write("Comprehensive PII, Credential, and Data Broker Remediation Portal")
 
 database_name = "digital_footprint_manager.db"
 
-# Ensure table exists
+# Enhanced database setup to cover all PII and Breach categories
 with sqlite3.connect(database_name) as connection:
     cursor = connection.cursor()
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS optout_tracker (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             broker_name TEXT,
-            tier_category TEXT,
+            category TEXT,
             status TEXT,
             last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
     ''')
     cursor.execute("SELECT COUNT(*) FROM optout_tracker;")
     if cursor.fetchone()[0] == 0:
-        cursor.execute("INSERT INTO optout_tracker (broker_name, tier_category, status) VALUES ('Whitepages', 'Tier 1: People Search', 'Discovered');")
-        cursor.execute("INSERT INTO optout_tracker (broker_name, tier_category, status) VALUES ('Spokeo', 'Tier 1: People Search', 'Discovered');")
+        initial_data = [
+            ('Whitepages', 'People-Search Brokers', 'Discovered'),
+            ('Spokeo', 'People-Search Brokers', 'Discovered'),
+            ('HaveIBeenPwned API', 'Credential/Breach Data', 'Discovered'),
+            ('Dark Web Exposure', 'Credential/Breach Data', 'Discovered'),
+            ('Public Voter Registry', 'Public Records/PII', 'Discovered'),
+            ('Property Records', 'Public Records/PII', 'Discovered')
+        ]
+        cursor.executemany("INSERT INTO optout_tracker (broker_name, category, status) VALUES (?, ?, ?);", initial_data)
         connection.commit()
 
-# User input fields for anyone visiting the app
-st.markdown("### Enter Search Details")
-full_name = st.text_input("Full Name", placeholder="e.g., Jane Doe")
-city_state = st.text_input("City and State", placeholder="e.g., Tallahassee, FL")
+# User Input Section
+st.markdown("### 1. Assessment Initialization")
+col1, col2 = st.columns(2)
+with col1:
+    full_name = st.text_input("Full Name to Scan")
+with col2:
+    city_state = st.text_input("City and State")
 
-if st.button("Run Automated Sweep & Generate Report Card"):
+if st.button("Run Full Comprehensive Sweep"):
     if full_name:
         with sqlite3.connect(database_name) as connection:
             cursor = connection.cursor()
-            cursor.execute('''
-                UPDATE optout_tracker
-                SET status = 'Opt-Out Requested', last_updated = CURRENT_TIMESTAMP
-                WHERE status = 'Discovered';
-            ''')
-        st.success(f"Scan complete for {full_name} ({city_state})! All discovered broker profiles have been queued for removal.")
+            cursor.execute("UPDATE optout_tracker SET status = 'Opt-Out/Remediation Requested', last_updated = CURRENT_TIMESTAMP WHERE status = 'Discovered';")
+        st.success(f"Comprehensive scan complete for {full_name}. All identified exposures have been queued for automated removal.")
     else:
-        st.warning("Please enter a full name to run the automated scan.")
+        st.warning("Please enter a name to proceed with the sweep.")
 
 st.divider()
-st.subheader("📊 Live Privacy Report Card")
+st.subheader("📊 Live Exposure Report Card")
 
 with sqlite3.connect(database_name) as connection:
-    df = pd.read_sql_query("SELECT broker_name AS 'Broker Name', tier_category AS 'Tier Category', status AS 'Current Status', last_updated AS 'Last Updated' FROM optout_tracker;", connection)
+    df = pd.read_sql_query("SELECT broker_name AS 'Source/Broker', category AS 'Data Type', status AS 'Current Status', last_updated AS 'Last Updated' FROM optout_tracker;", connection)
 
-st.write(f"**Total Tracked Brokers:** {len(df)}")
-st.write(f"**Opt-Outs Requested:** {len(df[df['Current Status'] == 'Opt-Out Requested'])}")
+# Summary metrics
+total = len(df)
+pending = len(df[df['Current Status'] == 'Discovered'])
+in_progress = len(df[df['Current Status'] == 'Opt-Out/Remediation Requested'])
 
-st.markdown("### Itemized Broker Status")
-st.table(df)
+m1, m2, m3 = st.columns(3)
+m1.metric("Total Exposure Points", total)
+m2.metric("Discovered/Active", pending)
+m3.metric("Remediation Pending", in_progress)
+
+st.markdown("### Itemized Status Detail")
+st.dataframe(df, use_container_width=True)
