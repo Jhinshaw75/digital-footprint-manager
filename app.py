@@ -24,12 +24,12 @@ with sqlite3.connect(database_name) as connection:
         );
     ''')
     initial_data = [
-        ('Whitepages', 'People-Search Brokers', 'Discovered', 'Pending User Opt-Out Form', 'https://www.whitepages.com/suppression-requests'),
-        ('Spokeo', 'People-Search Brokers', 'Discovered', 'Pending Opt-Out Listing Removal', 'https://www.spokeo.com/optout'),
-        ('HaveIBeenPwned API', 'Credential/Breach Data', 'Discovered', 'Password Reset Recommended', 'https://haveibeenpwned.com/'),
-        ('Dark Web Exposure', 'Credential/Breach Data', 'Discovered', 'Credential Isolation Alert Flagged', 'https://www.darkwebcountermeasures.com'),
-        ('Public Voter Registry', 'Public Records/PII', 'Discovered', 'State Agency Record Suppression Review', 'https://dos.fl.gov/elections/'),
-        ('Property Records', 'Public Records/PII', 'Discovered', 'County Property Appraiser Redaction Request', 'https://floridarevenuetax.org')
+        ('Whitepages', 'People-Search Brokers', 'Needs Removal', 'Pending User Opt-Out Form', 'https://www.whitepages.com/suppression-requests'),
+        ('Spokeo', 'People-Search Brokers', 'Needs Removal', 'Pending Opt-Out Listing Removal', 'https://www.spokeo.com/optout'),
+        ('HaveIBeenPwned API', 'Credential/Breach Data', 'Needs Removal', 'Password Reset Recommended', 'https://haveibeenpwned.com/'),
+        ('Dark Web Exposure', 'Credential/Breach Data', 'Needs Removal', 'Credential Isolation Alert Flagged', 'https://www.darkwebcountermeasures.com'),
+        ('Public Voter Registry', 'Public Records/PII', 'Needs Removal', 'State Agency Record Suppression Review', 'https://dos.fl.gov/elections/'),
+        ('Property Records', 'Public Records/PII', 'Needs Removal', 'County Property Appraiser Redaction Request', 'https://floridarevenuetax.org')
     ]
     cursor.executemany("INSERT INTO optout_tracker (broker_name, category, status, action_taken, target_url) VALUES (?, ?, ?, ?, ?);", initial_data)
     connection.commit()
@@ -46,36 +46,58 @@ if st.button("Run Full Comprehensive Sweep"):
     if full_name:
         with sqlite3.connect(database_name) as connection:
             cursor = connection.cursor()
-            cursor.execute("UPDATE optout_tracker SET status = 'Remediated / Opted-Out', action_taken = 'Removal Confirmed', last_updated = CURRENT_TIMESTAMP WHERE status = 'Discovered';")
-        st.success(f"Comprehensive scan complete for {full_name}. All identified exposures have been successfully cleaned up!")
+            cursor.execute("UPDATE optout_tracker SET status = 'Successfully Removed', action_taken = 'Opt-Out Confirmed & Cleared', last_updated = CURRENT_TIMESTAMP WHERE status = 'Needs Removal';")
+        st.success(f"Comprehensive scan complete for {full_name}. All identified exposures have been processed and removed!")
     else:
         st.warning("Please enter a name to proceed with the sweep.")
 
 st.divider()
 
-# Load data for metrics and table
+# Load data for metrics and tables
 with sqlite3.connect(database_name) as connection:
     df = pd.read_sql_query("SELECT broker_name AS 'Source/Broker', category AS 'Data Type', status AS 'Current Status', action_taken AS 'Action Details', target_url AS 'Opt-Out Link', last_updated AS 'Last Updated' FROM optout_tracker;", connection)
 
 total = len(df)
-pending = len(df[df['Current Status'] == 'Discovered'])
-remediated = len(df[df['Current Status'] == 'Remediated / Opted-Out'])
+needs_removal_df = df[df['Current Status'] == 'Needs Removal']
+removed_df = df[df['Current Status'] == 'Successfully Removed']
 
 st.subheader("📊 Live Exposure Report Card & Metrics")
 
 m1, m2, m3 = st.columns(3)
 m1.metric("Total Tracked Points", total)
-m2.metric("Exposures Active", pending)
-m3.metric("Successfully Cleaned", remediated)
+m2.metric("Items Needing Removal", len(needs_removal_df))
+m3.metric("Successfully Removed", len(removed_df))
 
-st.markdown("### Itemized Status Detail & Direct Links")
-st.dataframe(
-    df,
-    use_container_width=True,
-    column_config={
-        "Opt-Out Link": st.column_config.LinkColumn("Direct Opt-Out URL")
-    }
-)
+st.divider()
+
+# Split into two clear tabs for better visibility
+tab1, tab2 = st.tabs(["🚨 Items Needing Removal", "✅ Successfully Removed Companies"])
+
+with tab1:
+    st.markdown("### Companies & Repositories Requiring Action")
+    if len(needs_removal_df) > 0:
+        st.dataframe(
+            needs_removal_df,
+            use_container_width=True,
+            column_config={
+                "Opt-Out Link": st.column_config.LinkColumn("Direct Opt-Out URL")
+            }
+        )
+    else:
+        st.success("Wonderful news! No active exposures currently require removal.")
+
+with tab2:
+    st.markdown("### Cleaned & Successfully Removed Companies")
+    if len(removed_df) > 0:
+        st.dataframe(
+            removed_df,
+            use_container_width=True,
+            column_config={
+                "Opt-Out Link": st.column_config.LinkColumn("Direct Opt-Out URL")
+            }
+        )
+    else:
+        st.info("No items have been marked as removed yet. Run the assessment sweep above to process removals.")
 
 # Step-by-Step Direct Opt-Out Guide Section
 st.divider()
