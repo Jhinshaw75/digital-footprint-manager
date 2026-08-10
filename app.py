@@ -74,3 +74,14 @@ st.dataframe(
         "Opt-Out Link": st.column_config.LinkColumn("Direct Opt-Out URL")
     }
 )
+
+# Step-by-Step Direct Opt-Out Guide Section
+st.divider()
+st.subheader("📝 Step-by-Step Direct Opt-Out Instructions")
+st.markdown("""
+To manually or directly submit removal requests for each exposure point:
+1. **Whitepages:** Navigate to their suppression request page, search for your specific listing URL, and submit an online removal form or phone verification request.
+2. **Spokeo:** Go to their opt-out portal, enter the specific profile URL found during your search, and confirm your request via email validation.
+3. **Credential & Breach Sources (HaveIBeenPwned / Dark Web):** Use the provided portal links to verify exposed password hashes, then immediately rotate and update credentials on impacted primary accounts using a secure password manager.
+4. **Public Voter & Property Records:** Contact your local county property appraiser's office or state records division to file a formal public record suppression or redaction request based on privacy guidelines.
+""")
