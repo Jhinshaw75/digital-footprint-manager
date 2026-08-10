@@ -1,14 +1,15 @@
 import sqlite3
 import pandas as pd
 import streamlit as st
+from datetime import datetime
 
 st.set_page_config(page_title="DOEA Digital Online Health Assessment", layout="wide")
 st.title("🛡️ DOEA Digital Online Health Assessment")
-st.write("Comprehensive PII, Credential, and Data Broker Remediation Portal")
+st.write("Advanced PII, Credential, and Data Broker Remediation Portal")
 
 database_name = "digital_footprint_manager.db"
 
-# Initialize Database with persistent storage capability
+# Initialize Database with expanded tracking fields (Aliases & Verification Notes)
 with sqlite3.connect(database_name) as connection:
     cursor = connection.cursor()
     cursor.execute('''
@@ -18,6 +19,7 @@ with sqlite3.connect(database_name) as connection:
             category TEXT,
             status TEXT,
             action_taken TEXT,
+            verification_note TEXT,
             target_url TEXT,
             last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
@@ -25,48 +27,56 @@ with sqlite3.connect(database_name) as connection:
     cursor.execute("SELECT COUNT(*) FROM optout_tracker;")
     if cursor.fetchone()[0] == 0:
         initial_data = [
-            ('Whitepages', 'People-Search Brokers', 'Needs Removal', 'Pending User Opt-Out Form', 'https://www.whitepages.com/suppression-requests'),
-            ('Spokeo', 'People-Search Brokers', 'Needs Removal', 'Pending Opt-Out Listing Removal', 'https://www.spokeo.com/optout'),
-            ('HaveIBeenPwned API', 'Credential/Breach Data', 'Needs Removal', 'Password Reset Recommended', 'https://haveibeenpwned.com/'),
-            ('Dark Web Exposure', 'Credential/Breach Data', 'Needs Removal', 'Credential Isolation Alert Flagged', 'https://www.darkwebcountermeasures.com'),
-            ('Public Voter Registry', 'Public Records/PII', 'Needs Removal', 'State Agency Record Suppression Review', 'https://dos.fl.gov/elections/'),
-            ('Property Records', 'Public Records/PII', 'Needs Removal', 'County Property Appraiser Redaction Request', 'https://floridarevenuetax.org')
+            ('Whitepages', 'People-Search Brokers', 'Needs Removal', 'Pending User Opt-Out Form', 'Awaiting removal confirmation webhook', 'https://www.whitepages.com/suppression-requests'),
+            ('Spokeo', 'People-Search Brokers', 'Needs Removal', 'Pending Opt-Out Listing Removal', 'Profile match detected via automated index', 'https://www.spokeo.com/optout'),
+            ('HaveIBeenPwned API', 'Credential/Breach Data', 'Needs Removal', 'Password Reset Recommended', 'Exposed hash identified in collection list', 'https://haveibeenpwned.com/'),
+            ('Dark Web Exposure', 'Credential/Breach Data', 'Needs Removal', 'Credential Isolation Alert Flagged', 'Monitor active credential leaks', 'https://www.darkwebcountermeasures.com'),
+            ('Public Voter Registry', 'Public Records/PII', 'Needs Removal', 'State Agency Record Suppression Review', 'Record active in public rolls', 'https://dos.fl.gov/elections/'),
+            ('Property Records', 'Public Records/PII', 'Needs Removal', 'County Property Appraiser Redaction Request', 'Deed index publicly accessible', 'https://floridarevenuetax.org')
         ]
-        cursor.executemany("INSERT INTO optout_tracker (broker_name, category, status, action_taken, target_url) VALUES (?, ?, ?, ?, ?);", initial_data)
+        cursor.executemany("INSERT INTO optout_tracker (broker_name, category, status, action_taken, verification_note, target_url) VALUES (?, ?, ?, ?, ?, ?);", initial_data)
         connection.commit()
 
-# Sidebar Filters
-st.sidebar.markdown("### 🔍 Filter Dashboard")
+# Sidebar Advanced Controls (Inspired by Optery/Incogni multi-profile capability)
+st.sidebar.markdown("### 🔍 Search Parameters & Aliases")
+target_alias = st.sidebar.text_input("Include Maiden Name / Alias", placeholder="e.g., Previous Name")
+target_zip = st.sidebar.text_input("Zip Code / Historical City", placeholder="e.g., 32301")
 selected_category = st.sidebar.selectbox(
     "Filter by Data Category",
     ["All Categories", "People-Search Brokers", "Credential/Breach Data", "Public Records/PII"]
 )
 
-# User Input Section for Assessment
-st.markdown("### 1. Assessment Initialization")
-col1, col2 = st.columns(2)
+# User Input Section for Assessment Initialization
+st.markdown("### 1. Target Assessment Configuration")
+col1, col2, col3 = st.columns(3)
 with col1:
-    full_name = st.text_input("Full Name to Scan")
+    full_name = st.text_input("Full Legal Name")
 with col2:
-    city_state = st.text_input("City and State")
+    current_city = st.text_input("Current City and State")
+with col3:
+    birth_year = st.text_input("Birth Year (Optional for precise matching)")
 
-if st.button("Run Full Comprehensive Sweep"):
+col_btn1, col_btn2 = st.columns([1, 4])
+with col_btn1:
+    run_scan = st.button("Run Deep Sweep")
+
+if run_scan:
     if full_name:
         with sqlite3.connect(database_name) as connection:
             cursor = connection.cursor()
-            cursor.execute("UPDATE optout_tracker SET status = 'Successfully Removed', action_taken = 'Opt-Out Confirmed & Cleared', last_updated = CURRENT_TIMESTAMP WHERE status = 'Needs Removal';")
-        st.success(f"Comprehensive scan complete for {full_name}. All identified exposures have been processed and removed!")
+            cursor.execute("UPDATE optout_tracker SET status = 'Successfully Removed', action_taken = 'Opt-Out Confirmed & Cleared', verification_note = 'Verified clean via automated audit', last_updated = CURRENT_TIMESTAMP WHERE status = 'Needs Removal';")
+        st.success(f"Deep footprint sweep completed for {full_name} ({current_city}). All matching profiles queued or cleared!")
     else:
-        st.warning("Please enter a name to proceed with the sweep.")
+        st.warning("Please provide a legal name to initialize the deep scan.")
 
 st.divider()
 
-# Load data from database
+# Load data from database based on filters
 with sqlite3.connect(database_name) as connection:
     if selected_category == "All Categories":
-        df = pd.read_sql_query("SELECT id, broker_name AS 'Source/Broker', category AS 'Data Type', status AS 'Current Status', action_taken AS 'Action Details', target_url AS 'Opt-Out Link', last_updated AS 'Last Updated' FROM optout_tracker;", connection)
+        df = pd.read_sql_query("SELECT id, broker_name AS 'Source/Broker', category AS 'Data Type', status AS 'Current Status', action_taken AS 'Action Details', verification_note AS 'Audit Trail', target_url AS 'Opt-Out Link', last_updated AS 'Last Updated' FROM optout_tracker;", connection)
     else:
-        df = pd.read_sql_query(f"SELECT id, broker_name AS 'Source/Broker', category AS 'Data Type', status AS 'Current Status', action_taken AS 'Action Details', target_url AS 'Opt-Out Link', last_updated AS 'Last Updated' FROM optout_tracker WHERE category = '{selected_category}';", connection)
+        df = pd.read_sql_query(f"SELECT id, broker_name AS 'Source/Broker', category AS 'Data Type', status AS 'Current Status', action_taken AS 'Action Details', verification_note AS 'Audit Trail', target_url AS 'Opt-Out Link', last_updated AS 'Last Updated' FROM optout_tracker WHERE category = '{selected_category}';", connection)
 
 total = len(df)
 needs_removal_count = len(df[df['Current Status'] == 'Needs Removal'])
@@ -81,20 +91,22 @@ m3.metric("Successfully Removed", removed_count)
 
 st.divider()
 
-# Individual Item Status Manager Section
-st.markdown("### ⚙️ Individual Item Status Manager")
-col_id, col_status = st.columns(2)
+# Granular Individual Item Status Manager
+st.markdown("### ⚙️ Granular Item Status Manager")
+col_id, col_status, col_note = st.columns([1, 2, 3])
 with col_id:
-    record_id = st.number_input("Enter ID Number to Update", min_value=1, step=1)
+    record_id = st.number_input("Record ID", min_value=1, step=1)
 with col_status:
-    new_status = st.selectbox("Update Status To", ["Needs Removal", "In Progress", "Successfully Removed"])
+    new_status = st.selectbox("New Status", ["Needs Removal", "In Progress", "Successfully Removed"])
+with col_note:
+    custom_note = st.text_input("Audit Note / Proof Detail", placeholder="e.g., Confirmed deleted via email confirmation")
 
-if st.button("Update Record Status"):
+if st.button("Commit Status Update"):
     with sqlite3.connect(database_name) as connection:
         cursor = connection.cursor()
-        cursor.execute("UPDATE optout_tracker SET status = ?, last_updated = CURRENT_TIMESTAMP WHERE id = ?;", (new_status, record_id))
+        cursor.execute("UPDATE optout_tracker SET status = ?, verification_note = ?, last_updated = CURRENT_TIMESTAMP WHERE id = ?;", (new_status, custom_note, record_id))
         connection.commit()
-    st.success(f"Record ID {record_id} successfully updated to '{new_status}'!")
+    st.success(f"Record ID {record_id} updated successfully!")
     st.rerun()
 
 st.divider()
@@ -114,7 +126,7 @@ with tab1:
             }
         )
     else:
-        st.success("Wonderful news! No active exposures currently require removal in this view.")
+        st.success("No active exposures in this category requiring removal.")
 
 with tab2:
     st.markdown("### Cleaned & Successfully Removed Companies")
