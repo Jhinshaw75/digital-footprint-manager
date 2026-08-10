@@ -7,7 +7,7 @@ st.write("Privacy Report Card & Tracker")
 
 database_name = "digital_footprint_manager.db"
 
-# Ensure table exists so it never throws an error
+# Ensure table exists
 with sqlite3.connect(database_name) as connection:
     cursor = connection.cursor()
     cursor.execute('''
@@ -19,22 +19,29 @@ with sqlite3.connect(database_name) as connection:
             last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
     ''')
-    # Add a sample record if table is empty
     cursor.execute("SELECT COUNT(*) FROM optout_tracker;")
     if cursor.fetchone()[0] == 0:
         cursor.execute("INSERT INTO optout_tracker (broker_name, tier_category, status) VALUES ('Whitepages', 'Tier 1: People Search', 'Discovered');")
         cursor.execute("INSERT INTO optout_tracker (broker_name, tier_category, status) VALUES ('Spokeo', 'Tier 1: People Search', 'Discovered');")
         connection.commit()
 
+# User input fields for anyone visiting the app
+st.markdown("### Enter Search Details")
+full_name = st.text_input("Full Name", placeholder="e.g., Jane Doe")
+city_state = st.text_input("City and State", placeholder="e.g., Tallahassee, FL")
+
 if st.button("Run Automated Sweep & Generate Report Card"):
-    with sqlite3.connect(database_name) as connection:
-        cursor = connection.cursor()
-        cursor.execute('''
-            UPDATE optout_tracker
-            SET status = 'Opt-Out Requested', last_updated = CURRENT_TIMESTAMP
-            WHERE status = 'Discovered';
-        ''')
-    st.success("Scan complete! All discovered broker profiles have been queued for removal.")
+    if full_name:
+        with sqlite3.connect(database_name) as connection:
+            cursor = connection.cursor()
+            cursor.execute('''
+                UPDATE optout_tracker
+                SET status = 'Opt-Out Requested', last_updated = CURRENT_TIMESTAMP
+                WHERE status = 'Discovered';
+            ''')
+        st.success(f"Scan complete for {full_name} ({city_state})! All discovered broker profiles have been queued for removal.")
+    else:
+        st.warning("Please enter a full name to run the automated scan.")
 
 st.divider()
 st.subheader("📊 Live Privacy Report Card")
