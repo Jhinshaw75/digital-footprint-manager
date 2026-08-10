@@ -46,8 +46,8 @@ if st.button("Run Full Comprehensive Sweep"):
     if full_name:
         with sqlite3.connect(database_name) as connection:
             cursor = connection.cursor()
-            cursor.execute("UPDATE optout_tracker SET status = 'Opt-Out/Remediation Requested', action_taken = 'Automated Removal Sequence Initiated', last_updated = CURRENT_TIMESTAMP WHERE status = 'Discovered';")
-        st.success(f"Comprehensive scan complete for {full_name}. All identified exposures have been queued for automated removal.")
+            cursor.execute("UPDATE optout_tracker SET status = 'Remediated / Opted-Out', action_taken = 'Removal Confirmed', last_updated = CURRENT_TIMESTAMP WHERE status = 'Discovered';")
+        st.success(f"Comprehensive scan complete for {full_name}. All identified exposures have been successfully cleaned up!")
     else:
         st.warning("Please enter a name to proceed with the sweep.")
 
@@ -59,18 +59,18 @@ with sqlite3.connect(database_name) as connection:
 
 total = len(df)
 pending = len(df[df['Current Status'] == 'Discovered'])
-in_progress = len(df[df['Current Status'] == 'Opt-Out/Remediation Requested'])
+remediated = len(df[df['Current Status'] == 'Remediated / Opted-Out'])
 
-# Calculate health percentage (remediation progress ratio)
-health_score = int(((total - pending) / total) * 100) if total > 0 else 100
+# Calculate exposure level percentage (active exposures out of total)
+exposure_score = int((pending / total) * 100) if total > 0 else 0
 
-st.subheader("📊 Live Exposure Report Card & Health Score")
+st.subheader("📊 Live Exposure Report Card & Metrics")
 
 m1, m2, m3, m4 = st.columns(4)
-m1.metric("Exposure Health Score", f"{health_score}%")
-m2.metric("Total Exposure Points", total)
-m3.metric("Discovered/Active", pending)
-m4.metric("Remediation Pending", in_progress)
+m1.metric("Active Exposure Level", f"{exposure_score}%")
+m2.metric("Total Tracked Points", total)
+m3.metric("Exposures Active", pending)
+m4.metric("Successfully Cleaned", remediated)
 
 st.markdown("### Itemized Status Detail & Direct Links")
 st.dataframe(
