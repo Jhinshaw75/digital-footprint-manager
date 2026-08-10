@@ -1,7 +1,6 @@
 import sqlite3
 import pandas as pd
 import streamlit as st
-from datetime import datetime
 
 st.set_page_config(page_title="DOEA Digital Online Health Assessment", layout="wide")
 st.title("🛡️ DOEA Digital Online Health Assessment")
@@ -9,11 +8,12 @@ st.write("Advanced PII, Credential, and Data Broker Remediation Portal")
 
 database_name = "digital_footprint_manager.db"
 
-# Initialize Database with expanded tracking fields (Aliases & Verification Notes)
+# Reset and initialize Database with expanded tracking fields
 with sqlite3.connect(database_name) as connection:
     cursor = connection.cursor()
+    cursor.execute("DROP TABLE IF EXISTS optout_tracker;")
     cursor.execute('''
-        CREATE TABLE IF NOT EXISTS optout_tracker (
+        CREATE TABLE optout_tracker (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             broker_name TEXT,
             category TEXT,
@@ -24,20 +24,18 @@ with sqlite3.connect(database_name) as connection:
             last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
     ''')
-    cursor.execute("SELECT COUNT(*) FROM optout_tracker;")
-    if cursor.fetchone()[0] == 0:
-        initial_data = [
-            ('Whitepages', 'People-Search Brokers', 'Needs Removal', 'Pending User Opt-Out Form', 'Awaiting removal confirmation webhook', 'https://www.whitepages.com/suppression-requests'),
-            ('Spokeo', 'People-Search Brokers', 'Needs Removal', 'Pending Opt-Out Listing Removal', 'Profile match detected via automated index', 'https://www.spokeo.com/optout'),
-            ('HaveIBeenPwned API', 'Credential/Breach Data', 'Needs Removal', 'Password Reset Recommended', 'Exposed hash identified in collection list', 'https://haveibeenpwned.com/'),
-            ('Dark Web Exposure', 'Credential/Breach Data', 'Needs Removal', 'Credential Isolation Alert Flagged', 'Monitor active credential leaks', 'https://www.darkwebcountermeasures.com'),
-            ('Public Voter Registry', 'Public Records/PII', 'Needs Removal', 'State Agency Record Suppression Review', 'Record active in public rolls', 'https://dos.fl.gov/elections/'),
-            ('Property Records', 'Public Records/PII', 'Needs Removal', 'County Property Appraiser Redaction Request', 'Deed index publicly accessible', 'https://floridarevenuetax.org')
-        ]
-        cursor.executemany("INSERT INTO optout_tracker (broker_name, category, status, action_taken, verification_note, target_url) VALUES (?, ?, ?, ?, ?, ?);", initial_data)
-        connection.commit()
+    initial_data = [
+        ('Whitepages', 'People-Search Brokers', 'Needs Removal', 'Pending User Opt-Out Form', 'Awaiting removal confirmation webhook', 'https://www.whitepages.com/suppression-requests'),
+        ('Spokeo', 'People-Search Brokers', 'Needs Removal', 'Pending Opt-Out Listing Removal', 'Profile match detected via automated index', 'https://www.spokeo.com/optout'),
+        ('HaveIBeenPwned API', 'Credential/Breach Data', 'Needs Removal', 'Password Reset Recommended', 'Exposed hash identified in collection list', 'https://haveibeenpwned.com/'),
+        ('Dark Web Exposure', 'Credential/Breach Data', 'Needs Removal', 'Credential Isolation Alert Flagged', 'Monitor active credential leaks', 'https://www.darkwebcountermeasures.com'),
+        ('Public Voter Registry', 'Public Records/PII', 'Needs Removal', 'State Agency Record Suppression Review', 'Record active in public rolls', 'https://dos.fl.gov/elections/'),
+        ('Property Records', 'Public Records/PII', 'Needs Removal', 'County Property Appraiser Redaction Request', 'Deed index publicly accessible', 'https://floridarevenuetax.org')
+    ]
+    cursor.executemany("INSERT INTO optout_tracker (broker_name, category, status, action_taken, verification_note, target_url) VALUES (?, ?, ?, ?, ?, ?);", initial_data)
+    connection.commit()
 
-# Sidebar Advanced Controls (Inspired by Optery/Incogni multi-profile capability)
+# Sidebar Advanced Controls
 st.sidebar.markdown("### 🔍 Search Parameters & Aliases")
 target_alias = st.sidebar.text_input("Include Maiden Name / Alias", placeholder="e.g., Previous Name")
 target_zip = st.sidebar.text_input("Zip Code / Historical City", placeholder="e.g., 32301")
