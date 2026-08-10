@@ -8,12 +8,11 @@ st.write("Comprehensive PII, Credential, and Data Broker Remediation Portal")
 
 database_name = "digital_footprint_manager.db"
 
-# Database setup with specific action details and target links
+# Initialize Database with persistent storage capability
 with sqlite3.connect(database_name) as connection:
     cursor = connection.cursor()
-    cursor.execute("DROP TABLE IF EXISTS optout_tracker;")
     cursor.execute('''
-        CREATE TABLE optout_tracker (
+        CREATE TABLE IF NOT EXISTS optout_tracker (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             broker_name TEXT,
             category TEXT,
@@ -23,18 +22,27 @@ with sqlite3.connect(database_name) as connection:
             last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
     ''')
-    initial_data = [
-        ('Whitepages', 'People-Search Brokers', 'Needs Removal', 'Pending User Opt-Out Form', 'https://www.whitepages.com/suppression-requests'),
-        ('Spokeo', 'People-Search Brokers', 'Needs Removal', 'Pending Opt-Out Listing Removal', 'https://www.spokeo.com/optout'),
-        ('HaveIBeenPwned API', 'Credential/Breach Data', 'Needs Removal', 'Password Reset Recommended', 'https://haveibeenpwned.com/'),
-        ('Dark Web Exposure', 'Credential/Breach Data', 'Needs Removal', 'Credential Isolation Alert Flagged', 'https://www.darkwebcountermeasures.com'),
-        ('Public Voter Registry', 'Public Records/PII', 'Needs Removal', 'State Agency Record Suppression Review', 'https://dos.fl.gov/elections/'),
-        ('Property Records', 'Public Records/PII', 'Needs Removal', 'County Property Appraiser Redaction Request', 'https://floridarevenuetax.org')
-    ]
-    cursor.executemany("INSERT INTO optout_tracker (broker_name, category, status, action_taken, target_url) VALUES (?, ?, ?, ?, ?);", initial_data)
-    connection.commit()
+    cursor.execute("SELECT COUNT(*) FROM optout_tracker;")
+    if cursor.fetchone()[0] == 0:
+        initial_data = [
+            ('Whitepages', 'People-Search Brokers', 'Needs Removal', 'Pending User Opt-Out Form', 'https://www.whitepages.com/suppression-requests'),
+            ('Spokeo', 'People-Search Brokers', 'Needs Removal', 'Pending Opt-Out Listing Removal', 'https://www.spokeo.com/optout'),
+            ('HaveIBeenPwned API', 'Credential/Breach Data', 'Needs Removal', 'Password Reset Recommended', 'https://haveibeenpwned.com/'),
+            ('Dark Web Exposure', 'Credential/Breach Data', 'Needs Removal', 'Credential Isolation Alert Flagged', 'https://www.darkwebcountermeasures.com'),
+            ('Public Voter Registry', 'Public Records/PII', 'Needs Removal', 'State Agency Record Suppression Review', 'https://dos.fl.gov/elections/'),
+            ('Property Records', 'Public Records/PII', 'Needs Removal', 'County Property Appraiser Redaction Request', 'https://floridarevenuetax.org')
+        ]
+        cursor.executemany("INSERT INTO optout_tracker (broker_name, category, status, action_taken, target_url) VALUES (?, ?, ?, ?, ?);", initial_data)
+        connection.commit()
 
-# User Input Section
+# Sidebar Filters (Inspired by Optery/Kanary category management)
+st.sidebar.markdown("### 🔍 Filter Dashboard")
+selected_category = st.sidebar.selectbox(
+    "Filter by Data Category",
+    ["All Categories", "People-Search Brokers", "Credential/Breach Data", "Public Records/PII"]
+)
+
+# User Input Section for Assessment
 st.markdown("### 1. Assessment Initialization")
 col1, col2 = st.columns(2)
 with col1:
@@ -53,51 +61,74 @@ if st.button("Run Full Comprehensive Sweep"):
 
 st.divider()
 
-# Load data for metrics and tables
+# Load data from database
 with sqlite3.connect(database_name) as connection:
-    df = pd.read_sql_query("SELECT broker_name AS 'Source/Broker', category AS 'Data Type', status AS 'Current Status', action_taken AS 'Action Details', target_url AS 'Opt-Out Link', last_updated AS 'Last Updated' FROM optout_tracker;", connection)
+    if selected_category == "All Categories":
+        df = pd.read_sql_query("SELECT id, broker_name AS 'Source/Broker', category AS 'Data Type', status AS 'Current Status', action_taken AS 'Action Details', target_url AS 'Opt-Out Link', last_updated AS 'Last Updated' FROM optout_tracker;", connection)
+    else:
+        df = pd.read_sql_query(f"SELECT id, broker_name AS 'Source/Broker', category AS 'Data Type', status AS 'Current Status', action_taken AS 'Action Details', target_url AS 'Opt-Out Link', last_updated AS 'Last Updated' FROM optout_tracker WHERE category = '{selected_category}';", connection)
 
 total = len(df)
-needs_removal_df = df[df['Current Status'] == 'Needs Removal']
-removed_df = df[df['Current Status'] == 'Successfully Removed']
+needs_removal_count = len(df[df['Current Status'] == 'Needs Removal'])
+removed_count = len(df[df['Current Status'] == 'Successfully Removed'])
 
 st.subheader("📊 Live Exposure Report Card & Metrics")
 
 m1, m2, m3 = st.columns(3)
-m1.metric("Total Tracked Points", total)
-m2.metric("Items Needing Removal", len(needs_removal_df))
-m3.metric("Successfully Removed", len(removed_df))
+m1.metric("Tracked Points (Filtered)", total)
+m2.metric("Items Needing Removal", needs_removal_count)
+m3.metric("Successfully Removed", removed_count)
 
 st.divider()
 
-# Split into two clear tabs for better visibility
+# Interactive Row Status Update Section (Simulating granular control found in Incogni)
+st.markdown("### ⚙️ Individual Item Status Manager")
+col_id, col_status = st.columns(2)
+with col_id:
+    record_id = st.number_input("Enter ID Number to Update", min_value=1, step=1)
+with col_status:
+    new_status = st.selectbox("Update Status To", ["Needs Removal", "In Progress", "Successfully Removed"])
+
+if st.button("Update Record Status"):
+    with sqlite3.connect(database_name) as connection:
+        cursor = connection.cursor()
+        cursor.execute("UPDATE optout_tracker SET status = ?, last_updated = CURRENT_TIMESTAMP WHERE id = ?;", (new_status, record_id))
+        connection.commit()
+    st.success(f"Record ID {record_id} successfully updated to '{new_status}'!")
+    st.rerun()
+
+st.divider()
+
+# Split Views
 tab1, tab2 = st.tabs(["🚨 Items Needing Removal", "✅ Successfully Removed Companies"])
 
 with tab1:
     st.markdown("### Companies & Repositories Requiring Action")
-    if len(needs_removal_df) > 0:
+    needs_df = df[df['Current Status'] != 'Successfully Removed']
+    if len(needs_df) > 0:
         st.dataframe(
-            needs_removal_df,
+            needs_df,
             use_container_width=True,
             column_config={
                 "Opt-Out Link": st.column_config.LinkColumn("Direct Opt-Out URL")
             }
         )
     else:
-        st.success("Wonderful news! No active exposures currently require removal.")
+        st.success("No active exposures in this view requiring removal.")
 
 with tab2:
     st.markdown("### Cleaned & Successfully Removed Companies")
-    if len(removed_df) > 0:
+    rem_df = df[df['Current Status'] == 'Successfully Removed']
+    if len(rem_df) > 0:
         st.dataframe(
-            removed_df,
+            rem_df,
             use_container_width=True,
             column_config={
                 "Opt-Out Link": st.column_config.LinkColumn("Direct Opt-Out URL")
             }
         )
     else:
-        st.info("No items have been marked as removed yet. Run the assessment sweep above to process removals.")
+        st.info("No items have been marked as successfully removed yet.")
 
 # Step-by-Step Direct Opt-Out Guide Section
 st.divider()
