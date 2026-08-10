@@ -2,8 +2,8 @@ import sqlite3
 import pandas as pd
 import streamlit as st
 
-st.set_page_config(page_title="SilverShield Footprint Manager", layout="wide")
-st.title("🛡️ SilverShield Digital Footprint Manager")
+st.set_page_config(page_title="DOEA Digital Online Health Assessment", layout="wide")
+st.title("🛡️ DOEA Digital Online Health Assessment")
 st.write("Comprehensive PII, Credential, and Data Broker Remediation Portal")
 
 database_name = "digital_footprint_manager.db"
@@ -35,7 +35,7 @@ with sqlite3.connect(database_name) as connection:
         cursor.executemany("INSERT INTO optout_tracker (broker_name, category, status, action_taken, target_url) VALUES (?, ?, ?, ?, ?);", initial_data)
         connection.commit()
 
-# Sidebar Filters (Inspired by Optery/Kanary category management)
+# Sidebar Filters
 st.sidebar.markdown("### 🔍 Filter Dashboard")
 selected_category = st.sidebar.selectbox(
     "Filter by Data Category",
@@ -81,7 +81,7 @@ m3.metric("Successfully Removed", removed_count)
 
 st.divider()
 
-# Interactive Row Status Update Section (Simulating granular control found in Incogni)
+# Individual Item Status Manager Section
 st.markdown("### ⚙️ Individual Item Status Manager")
 col_id, col_status = st.columns(2)
 with col_id:
@@ -114,7 +114,7 @@ with tab1:
             }
         )
     else:
-        st.success("No active exposures in this view requiring removal.")
+        st.success("Wonderful news! No active exposures currently require removal in this view.")
 
 with tab2:
     st.markdown("### Cleaned & Successfully Removed Companies")
