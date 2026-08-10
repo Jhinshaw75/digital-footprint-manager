@@ -52,8 +52,8 @@ if st.button("Run Full Comprehensive Sweep"):
         st.warning("Please enter a name to proceed with the sweep.")
 
 st.divider()
-st.subheader("📊 Live Exposure Report Card")
 
+# Load data for metrics and table
 with sqlite3.connect(database_name) as connection:
     df = pd.read_sql_query("SELECT broker_name AS 'Source/Broker', category AS 'Data Type', status AS 'Current Status', action_taken AS 'Action Details', target_url AS 'Opt-Out Link', last_updated AS 'Last Updated' FROM optout_tracker;", connection)
 
@@ -61,10 +61,16 @@ total = len(df)
 pending = len(df[df['Current Status'] == 'Discovered'])
 in_progress = len(df[df['Current Status'] == 'Opt-Out/Remediation Requested'])
 
-m1, m2, m3 = st.columns(3)
-m1.metric("Total Exposure Points", total)
-m2.metric("Discovered/Active", pending)
-m3.metric("Remediation Pending", in_progress)
+# Calculate health percentage (remediation progress ratio)
+health_score = int(((total - pending) / total) * 100) if total > 0 else 100
+
+st.subheader("📊 Live Exposure Report Card & Health Score")
+
+m1, m2, m3, m4 = st.columns(4)
+m1.metric("Exposure Health Score", f"{health_score}%")
+m2.metric("Total Exposure Points", total)
+m3.metric("Discovered/Active", pending)
+m4.metric("Remediation Pending", in_progress)
 
 st.markdown("### Itemized Status Detail & Direct Links")
 st.dataframe(
