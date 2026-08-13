@@ -48,6 +48,7 @@ st.markdown("""
         border-radius: 8px;
         color: #111827;
         margin-bottom: 20px;
+        margin-top: 15px;
     }
     .result-row {
         background-color: white;
@@ -181,19 +182,38 @@ elif st.session_state['stage'] == 'mfa_email':
     
     user_email = st.text_input("Email Address (For Secure OTP Delivery)", value="", placeholder="name@example.com", key="input_email")
     
-    if user_email and 'email_otp' not in st.session_state:
-        st.session_state['email_otp'] = str(random.randint(100000, 999999))
-    
-    simulated_email_code = st.session_state.get('email_otp', '123456')
+    # Button row to clearly separate "Send Code / Continue" from "Back"
+    col_btn1, col_btn2 = st.columns(2)
+    with col_btn1:
+        send_code_clicked = st.button("Send Verification Code")
+    with col_btn2:
+        back_clicked = st.button("Back to Search Intake")
 
-    if user_email:
-        st.success(f"📨 Secure dispatch triggered! An official authentication notice has been sent to **{user_email}**.")
+    if back_clicked:
+        st.session_state.pop('email_otp', None)
+        st.session_state['stage'] = 'search'
+        st.rerun()
+
+    if send_code_clicked:
+        if user_email:
+            st.session_state['temp_email'] = user_email
+            st.session_state['email_otp'] = str(random.randint(100000, 999999))
+            st.rerun()
+        else:
+            st.warning("Please enter a valid email address before requesting a verification code.")
+
+    # If code has been generated, show the simulated inbox preview and code entry box
+    if 'email_otp' in st.session_state:
+        active_email = st.session_state.get('temp_email', user_email)
+        simulated_email_code = st.session_state['email_otp']
+        
+        st.success(f"📨 Secure dispatch triggered! An official authentication notice has been sent to **{active_email}**.")
         
         with st.expander("📥 Demo Inbox Preview (Click to open simulated incoming email)", expanded=True):
             st.markdown(f"""
             <div class="inbox-preview">
                 <strong>From:</strong> doea-security@elderaffairs.org<br>
-                <strong>To:</strong> {user_email}<br>
+                <strong>To:</strong> {active_email}<br>
                 <strong>Subject:</strong> Action Required: DOEA Digital Health Assessment Verification Code<br>
                 <hr style="margin: 10px 0; border: 1px solid #cbd5e1;">
                 <p>Hello,</p>
@@ -206,25 +226,14 @@ elif st.session_state['stage'] == 'mfa_email':
 
         entered_email_code = st.text_input("Enter 6-Digit Email Verification Code from Inbox", value="", max_chars=6, key="input_email_code")
 
-        col_e1, col_e2 = st.columns(2)
-        with col_e1:
-            if st.button("Verify Email & Proceed to Phone Authentication"):
-                if entered_email_code == simulated_email_code:
-                    st.session_state['user_email'] = user_email
-                    st.session_state['sms_otp'] = str(random.randint(100000, 999999))
-                    st.session_state['stage'] = 'mfa_sms'
-                    st.rerun()
-                else:
-                    st.error("Invalid verification code. Please check your simulated inbox preview above.")
-        with col_e2:
-            if st.button("Back to Search Intake"):
-                st.session_state.pop('email_otp', None)
-                st.session_state['stage'] = 'search'
+        if st.button("Verify Email & Proceed to Phone Authentication"):
+            if entered_email_code == simulated_email_code:
+                st.session_state['user_email'] = active_email
+                st.session_state['sms_otp'] = str(random.randint(100000, 999999))
+                st.session_state['stage'] = 'mfa_sms'
                 st.rerun()
-    else:
-        if st.button("Back to Search Intake"):
-            st.session_state['stage'] = 'search'
-            st.rerun()
+            else:
+                st.error("Invalid verification code. Please check your simulated inbox preview above.")
             
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -241,16 +250,36 @@ elif st.session_state['stage'] == 'mfa_sms':
     st.markdown("#### 📱 Step 2: Confirm Mobile Phone Number")
     
     user_phone = st.text_input("Mobile Phone Number (For SMS Code)", value="", placeholder="(555) 000-0000", key="input_phone")
-    simulated_sms_code = st.session_state.get('sms_otp', '654321')
+    
+    col_s_btn1, col_s_btn2 = st.columns(2)
+    with col_s_btn1:
+        send_sms_clicked = st.button("Send SMS Code")
+    with col_s_btn2:
+        back_email_clicked = st.button("Back to Email Verification")
 
-    if user_phone:
-        st.success(f"📱 Secure SMS dispatch triggered! A text message has been sent to **{user_phone}**.")
+    if back_email_clicked:
+        st.session_state.pop('sms_otp', None)
+        st.session_state['stage'] = 'mfa_email'
+        st.rerun()
+
+    if send_sms_clicked:
+        if user_phone:
+            st.session_state['temp_phone'] = user_phone
+            st.rerun()
+        else:
+            st.warning("Please enter a valid mobile phone number before requesting an SMS code.")
+
+    if 'temp_phone' in st.session_state:
+        active_phone = st.session_state['temp_phone']
+        simulated_sms_code = st.session_state.get('sms_otp', '654321')
+        
+        st.success(f"📱 Secure SMS dispatch triggered! A text message has been sent to **{active_phone}**.")
         
         with st.expander("💬 Demo SMS Message Preview (Click to open simulated text message)", expanded=True):
             st.markdown(f"""
             <div class="inbox-preview">
                 <strong>From:</strong> DOEA-ALERT (State Secure Gateway)<br>
-                <strong>To:</strong> {user_phone}<br>
+                <strong>To:</strong> {active_phone}<br>
                 <hr style="margin: 10px 0; border: 1px solid #cbd5e1;">
                 <p>State of Florida - Senior Shield: Your mobile verification code is <strong>{simulated_sms_code}</strong>. Do not share this code.</p>
             </div>
@@ -258,25 +287,13 @@ elif st.session_state['stage'] == 'mfa_sms':
 
         entered_sms_code = st.text_input("Enter 6-Digit SMS Verification Code from Text Message", value="", max_chars=6, key="input_sms_code")
 
-        col_s1, col_s2 = st.columns(2)
-        with col_s1:
-            if st.button("Verify Mobile & Select Profile Match"):
-                if entered_sms_code == simulated_sms_code:
-                    st.session_state['user_phone'] = user_phone
-                    st.session_state['stage'] = 'results'
-                    st.rerun()
-                else:
-                    st.error("Invalid SMS verification code. Please check your simulated text message preview above.")
-        with col_s2:
-            if st.button("Back to Email Verification"):
-                st.session_state.pop('sms_otp', None)
-                st.session_state['stage'] = 'mfa_email'
+        if st.button("Verify Mobile & Select Profile Match"):
+            if entered_sms_code == simulated_sms_code:
+                st.session_state['user_phone'] = active_phone
+                st.session_state['stage'] = 'results'
                 st.rerun()
-    else:
-        if st.button("Back to Email Verification"):
-            st.session_state.pop('sms_otp', None)
-            st.session_state['stage'] = 'mfa_email'
-            st.rerun()
+            else:
+                st.error("Invalid SMS verification code. Please check your simulated text message preview above.")
 
     st.markdown('</div>', unsafe_allow_html=True)
 
