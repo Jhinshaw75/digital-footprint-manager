@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 st.set_page_config(page_title="DOEA Digital Online Health Assessment", layout="wide")
 st.title("🛡️ DOEA Digital Online Health Assessment")
-st.write("State-Sponsored API & Data Broker Remediation Portal (Client Intake & Statutory Compliance Engine)")
+st.write("State-Sponsored API & Data Broker Remediation Portal (Universal Intake & Compliance Engine)")
 
 database_name = "digital_footprint_manager.db"
 
@@ -43,7 +43,7 @@ with sqlite3.connect(database_name) as connection:
 st.sidebar.markdown("### 🏛️ Official State API Gateway")
 gateway_selection = st.sidebar.selectbox(
     "Select Governing Framework",
-    ["California DROP (API Active)", "State Agency Direct Portal", "Generic Statutory Framework"]
+    ["State Clearinghouse API Active", "State Agency Direct Portal", "Generic Statutory Framework"]
 )
 gateway_id_token = st.sidebar.text_input("Enter Gateway Verification ID", placeholder="e.g., DROP-ID-98231")
 
@@ -52,22 +52,50 @@ selected_category = st.sidebar.selectbox(
     ["All Categories", "State-Sponsored API", "Public Records/PII", "Credential/Breach Data", "Commercial Brokers"]
 )
 
-# New Client Intake & Demographic Profiling Section (Matching DOEA Mobile Intake Goals)
-st.markdown("### 📋 1. Client Intake & Baseline Profile Screening")
-with st.expander("Expand to Complete Client Intake Form", expanded=True):
-    intake_col1, intake_col2, intake_col3 = st.columns(3)
+# Streamlined Client Intake Form (All Age Groups, All 67 FL Counties, All 50 States, RGY Safety Status)
+st.markdown("### 📋 1. Client Intake & Profile Screening")
+with st.expander("Expand to Complete Intake Form", expanded=True):
+    intake_col1, intake_col2 = st.columns(2)
     with intake_col1:
-        client_name = st.text_input("Client Full Legal Name")
-        client_county = st.selectbox("Florida County Region", ["Leon County (PSA 4)", "Duval County", "Miami-Dade", "Hillsborough", "Orange County", "Other / External"])
+        client_name = st.text_input("Full Legal Name")
+        
+        # All 50 U.S. States
+        states_list = [
+            "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", 
+            "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", 
+            "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", 
+            "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", 
+            "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", 
+            "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", 
+            "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
+        ]
+        residency_state = st.selectbox("State of Residence (Supports Part-Time Residents)", states_list, index=8) # Default to Florida
+
     with intake_col2:
-        age_group = st.selectbox("Age Bracket", ["60-64", "65-74", "75-84", "85+"])
-        safety_status = st.selectbox("Digital Literacy / Safety Status", ["Needs Guidance", "High Risk / Vulnerable", "Managed / Secured"])
-    with intake_col3:
-        emergency_contact = st.text_input("Emergency Contact Name / Notes")
-        intake_notes = st.text_input("Intake Specific Remarks", placeholder="e.g., Pre-disaster outreach profile")
+        # Open to all age groups
+        age_group = st.selectbox("Age Group", ["Under 18", "18-29", "30-49", "50-64", "65-74", "75+"])
+        
+        # All 67 Florida Counties list
+        florida_counties = [
+            "Alachua", "Baker", "Bay", "Bradford", "Brevard", "Broward", "Calhoun", "Charlotte", "Citrus", "Clay", 
+            "Collier", "Columbia", "DeSoto", "Dixie", "Duval", "Escambia", "Flagler", "Franklin", "Gadsden", "Gilchrist", 
+            "Glades", "Gulf", "Hamilton", "Hardee", "Hendry", "Hernando", "Highlands", "Hillsborough", "Holmes", "Indian River", 
+            "Jackson", "Jefferson", "Lafayette", "Lake", "Lee", "Leon", "Levy", "Liberty", "Madison", "Manatee", 
+            "Marion", "Martin", "Miami-Dade", "Monroe", "Nassau", "Okaloosa", "Okeechobee", "Orange", "Osceola", "Palm Beach", 
+            "Pasco", "Pinellas", "Polk", "Putnam", "St. Johns", "St. Lucie", "Santa Rosa", "Sarasota", "Seminole", "Sumter", 
+            "Suwannee", "Taylor", "Union", "Volusia", "Wakulla", "Walton", "Washington"
+        ]
+        client_county = st.selectbox("Florida County (If Applicable)", florida_counties)
+
+    # Green, Yellow, Red digital safety status method
+    safety_status = st.radio(
+        "Digital Literacy & Safety Status Indicator",
+        ["🟢 Green (Low Risk / Secured)", "🟡 Yellow (Moderate Risk / Needs Attention)", "🔴 Red (High Vulnerability / Action Required)"],
+        horizontal=True
+    )
 
     if st.button("Save Intake Profile"):
-        st.success(f"Intake profile successfully recorded for {client_name} ({client_county}, Age {age_group}). Ready for digital footprint assessment.")
+        st.success(f"Intake profile saved for {client_name} ({residency_state} / {client_county} County). Safety Status: {safety_status}")
 
 st.divider()
 
@@ -77,7 +105,7 @@ col1, col2, col3 = st.columns(3)
 with col1:
     full_name = st.text_input("Full Legal Name for Scan", value=client_name if 'client_name' in locals() else "")
 with col2:
-    residency_state = st.text_input("Verified State of Residence", value="Florida / California")
+    verification_state = st.text_input("Verified Jurisdiction", value=residency_state if 'residency_state' in locals() else "Florida")
 with col3:
     birth_year = st.text_input("Birth Year (For Registry Matching)")
 
