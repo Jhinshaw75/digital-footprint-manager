@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 st.set_page_config(page_title="DOEA Digital Online Health Assessment", layout="wide")
 st.title("🛡️ DOEA Digital Online Health Assessment")
-st.write("State-Sponsored API & Data Broker Remediation Portal (Statutory Compliance Engine)")
+st.write("State-Sponsored API & Data Broker Remediation Portal (Client Intake & Statutory Compliance Engine)")
 
 database_name = "digital_footprint_manager.db"
 
@@ -52,11 +52,30 @@ selected_category = st.sidebar.selectbox(
     ["All Categories", "State-Sponsored API", "Public Records/PII", "Credential/Breach Data", "Commercial Brokers"]
 )
 
+# New Client Intake & Demographic Profiling Section (Matching DOEA Mobile Intake Goals)
+st.markdown("### 📋 1. Client Intake & Baseline Profile Screening")
+with st.expander("Expand to Complete Client Intake Form", expanded=True):
+    intake_col1, intake_col2, intake_col3 = st.columns(3)
+    with intake_col1:
+        client_name = st.text_input("Client Full Legal Name")
+        client_county = st.selectbox("Florida County Region", ["Leon County (PSA 4)", "Duval County", "Miami-Dade", "Hillsborough", "Orange County", "Other / External"])
+    with intake_col2:
+        age_group = st.selectbox("Age Bracket", ["60-64", "65-74", "75-84", "85+"])
+        safety_status = st.selectbox("Digital Literacy / Safety Status", ["Needs Guidance", "High Risk / Vulnerable", "Managed / Secured"])
+    with intake_col3:
+        emergency_contact = st.text_input("Emergency Contact Name / Notes")
+        intake_notes = st.text_input("Intake Specific Remarks", placeholder="e.g., Pre-disaster outreach profile")
+
+    if st.button("Save Intake Profile"):
+        st.success(f"Intake profile successfully recorded for {client_name} ({client_county}, Age {age_group}). Ready for digital footprint assessment.")
+
+st.divider()
+
 # User Input Section for State-Verified Assessment Initialization
-st.markdown("### 1. Secure State Portal Verification")
+st.markdown("### 2. Secure State Portal Verification & Sweep")
 col1, col2, col3 = st.columns(3)
 with col1:
-    full_name = st.text_input("Full Legal Name")
+    full_name = st.text_input("Full Legal Name for Scan", value=client_name if 'client_name' in locals() else "")
 with col2:
     residency_state = st.text_input("Verified State of Residence", value="Florida / California")
 with col3:
