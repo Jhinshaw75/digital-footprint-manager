@@ -100,23 +100,23 @@ database_name = "digital_footprint_manager.db"
 if 'stage' not in st.session_state:
     st.session_state['stage'] = 'search'
 
-# --- STAGE 1: SEARCH INPUT WITH MIDDLE NAME & AGE SEGMENTS ---
+# --- STAGE 1: SEARCH INPUT (Completely Blank for Privacy) ---
 if st.session_state['stage'] == 'search':
     st.markdown('<div class="search-card">', unsafe_allow_html=True)
     st.markdown("### 🔍 Search Subject")
-    st.write("Enter name details, location, and age segment to narrow down public records.")
+    st.write("Enter name details, location, and age segment to begin confidential verification.")
     
     s_col1, s_col2, s_col3 = st.columns(3)
     with s_col1:
-        search_first = st.text_input("First Name", placeholder="e.g., Joshua")
+        search_first = st.text_input("First Name", value="", placeholder="Enter first name")
     with s_col2:
-        search_middle = st.text_input("Middle Name / Initial", placeholder="e.g., Adam")
+        search_middle = st.text_input("Middle Name / Initial", value="", placeholder="Enter middle name or initial")
     with s_col3:
-        search_last = st.text_input("Last Name", placeholder="e.g., Hinshaw")
+        search_last = st.text_input("Last Name", value="", placeholder="Enter last name")
 
     loc_col1, loc_col2, loc_col3 = st.columns(3)
     with loc_col1:
-        search_city = st.text_input("City", placeholder="e.g., Tallahassee")
+        search_city = st.text_input("City", value="", placeholder="Enter city")
     with loc_col2:
         states_list = [
             "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", 
@@ -127,13 +127,13 @@ if st.session_state['stage'] == 'search':
             "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", 
             "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
         ]
-        search_state = st.selectbox("State", states_list, index=8)
+        search_state = st.selectbox("State", states_list, index=8) # Default to Florida
     with loc_col3:
         age_segment = st.selectbox("Age Segment", ["18-29", "30-49", "50-64", "65-74", "75+"], index=2)
 
     if st.button("Begin Search & Verify Identity"):
         if search_first and search_last and search_city:
-            full_search_name = f"{search_first} {search_middle + ' ' if search_middle else ''}{search_last}"
+            full_search_name = f"{search_first} {search_middle + ' ' if search_middle else ''}{search_last}".strip()
             st.session_state['searched_name'] = full_search_name
             st.session_state['searched_city'] = search_city
             st.session_state['searched_state'] = search_state
@@ -205,7 +205,7 @@ elif st.session_state['stage'] == 'wizard_q3':
     st.markdown("---")
     st.markdown("### ⚠️ Confirm Information")
     st.caption("Help Narrow Down Your Results")
-    st.markdown(f"**As far as you know, is {st.session_state['searched_name']} related to Adrina Frazier, Isabella M. Hinshaw, or Jeanette Hinshaw?**")
+    st.markdown(f"**As far as you know, is {st.session_state['searched_name']} related to listed public associates?**")
     
     wq3_c1, wq3_c2, wq3_c3 = st.columns(3)
     with wq3_c1:
@@ -227,20 +227,22 @@ elif st.session_state['stage'] == 'results':
     age_seg = st.session_state.get('searched_age_segment', '50-64')
     target_city = st.session_state.get('searched_city', 'Tallahassee')
     target_state_abbr = st.session_state.get('searched_state', 'Florida')
-    st.markdown(f"### Next Step: Select A Result Below for {st.session_state['searched_name']}")
+    searched_name = st.session_state.get('searched_name', 'User')
+    
+    st.markdown(f"### Next Step: Select A Result Below for {searched_name}")
     st.write(f"Filtered for records within age segment **{age_seg}** across verified public data sources:")
 
     with st.container():
         col_res1, col_res2, col_res3, col_res4 = st.columns([3, 1, 2, 2])
         with col_res1:
-            st.markdown(f"**⭐ BEST RESULT (Verified Match)**\n### {st.session_state['searched_name']}")
+            st.markdown(f"**⭐ BEST RESULT (Verified Match)**\n### {searched_name}")
             st.caption(f"Phone Number Found! • {target_city}, {target_state_abbr}")
         with col_res2:
             st.markdown(f"**AGE SEGMENT**\n### {age_seg}")
         with col_res3:
             st.markdown(f"**LOCATIONS**\n{target_city}, {target_state_abbr}\nIndianapolis, IN\nMobile, AL")
         with col_res4:
-            st.markdown("**POSSIBLE RELATIVES**\nAdrina Frazier\nIsabella M. Hinshaw\nJeanette Hinshaw")
+            st.markdown("**POSSIBLE ASSOCIATES**\nPublic Directory Match #1\nPublic Directory Match #2")
         
         if st.button("OPEN REPORT / THAT'S ME"):
             default_deadline = (datetime.now() + timedelta(days=45)).strftime('%Y-%m-%d')
@@ -301,7 +303,7 @@ elif st.session_state['stage'] == 'dashboard':
 
     # --- CLEAN ON-SCREEN CERTIFICATE & REPORT ---
     st.markdown("### 📄 Official Digital Health Assessment Report")
-    st.markdown("This clean, easy-to-read report summarizes your scanned exposures, identified risks, and completed statutory protections.")
+    st.markdown("This clean, easy-to-read report summarizes scanned exposures, identified risks, and completed statutory protections.")
 
     st.markdown(f"""
     <div class="report-container">
