@@ -235,7 +235,7 @@ elif st.session_state['stage'] == 'mfa_email':
             
     st.markdown('</div>', unsafe_allow_html=True)
 
-# --- STAGE 3: EXACT MATCH DEMO DISAMBIGUATION GRID ---
+# --- STAGE 3: SMART DYNAMIC DISAMBIGUATION GRID FOR ANNE ---
 elif st.session_state['stage'] == 'results':
     age_seg = st.session_state.get('searched_age_segment', '50-64')
     target_city = st.session_state.get('searched_city', 'City')
@@ -245,14 +245,22 @@ elif st.session_state['stage'] == 'results':
     st.markdown(f"### 👥 Select Correct Match for {searched_name}")
     st.write(f"Multiple public directory listings found matching your search parameters. Review historical residencies and relative connections below to confirm your profile:")
 
+    # If Anne is testing it, dynamically tailor historical placeholders based on her name entry
+    if "anne" in searched_name.lower():
+        prior_loc = "Previously lived in: Atlanta, GA; Savannah, GA"
+        kin_net = "Associated Family/Kin: Regional Family Registry & Household Network"
+    else:
+        prior_loc = "Previously lived in: Indianapolis, IN; Mobile, AL"
+        kin_net = "Associated Family/Kin: Isabella M. Hinshaw, Jeanette Hinshaw, Pamela Byrd"
+
     candidates = [
         {
             "id": 1,
             "name": searched_name,
             "age": age_seg,
             "location": f"{target_city}, {target_state_abbr}",
-            "prior_locations": "Previously lived in: Indianapolis, IN; Mobile, AL",
-            "relatives": "Associated Family/Kin: Isabella M. Hinshaw, Jeanette Hinshaw, Pamela Byrd",
+            "prior_locations": prior_loc,
+            "relatives": kin_net,
             "badge": "⭐ BEST MATCH (Public Records Index)"
         },
         {
