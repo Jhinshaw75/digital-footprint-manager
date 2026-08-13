@@ -39,14 +39,6 @@ st.markdown("""
         border-top: 6px solid #003366;
         margin-bottom: 25px;
     }
-    .audit-card {
-        background-color: white;
-        padding: 20px;
-        border-radius: 8px;
-        border-left: 5px solid #003366;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        margin-bottom: 20px;
-    }
     .report-container {
         background-color: white;
         padding: 30px;
@@ -226,7 +218,7 @@ elif st.session_state['stage'] == 'dashboard':
     st.markdown("### 📄 Official Digital Health Assessment Report")
     st.markdown("This clean, easy-to-read report summarizes scanned exposures, identified risks, and completed statutory protections.")
 
-    st.markdown(f"""
+    report_html = f"""
     <div class="report-container">
         <h2 style="color: #003366; margin-top: 0;">State of Florida — Department of Elder Affairs</h2>
         <h4 style="color: #4b5563;">Digital Online Health Assessment & Protection Summary</h4>
@@ -239,10 +231,12 @@ elif st.session_state['stage'] == 'dashboard':
         <p><strong>Overall Status:</strong> <span style="color: #28a745; font-weight: bold;">Fully Protected ({completed_count} of {total} Threats Addressed)</span></p>
         
         <h3 style="color: #111827; margin-top: 30px;">Identified Exposures & Remediation Actions</h3>
-    """, unsafe_allow_html=True)
+    </div>
+    """
+    st.markdown(report_html, unsafe_allow_html=True)
 
     for index, row in df.iterrows():
-        st.markdown(f"""
+        item_html = f"""
         <div class="threat-item">
             <h4 style="color: #003366; margin: 0 0 8px 0;">🛡️ {row['broker_name']} — <span style="color: #28a745;">{row['status']}</span></h4>
             <p style="margin: 4px 0;"><strong>Why it was a risk:</strong> {row['threat_explanation']}</p>
@@ -250,15 +244,17 @@ elif st.session_state['stage'] == 'dashboard':
             <p style="margin: 4px 0;"><strong>Protection Deadline Window:</strong> {row['statutory_deadline']}</p>
             <p style="margin: 4px 0;"><strong>Official Registry Link:</strong> <a href="{row['target_url']}" target="_blank">{row['target_url']}</a></p>
         </div>
-        """, unsafe_allow_html=True)
+        """
+        st.markdown(item_html, unsafe_allow_html=True)
 
-    st.markdown("""
-        <hr style="border: 1px solid #e5e7eb; margin: 20px 0;">
-        <p style="font-size: 13px; color: #6b7280; text-align: center;">
+    footer_html = """
+    <div style="background-color: white; padding: 20px; border-radius: 10px; border: 1px solid #e5e7eb; margin-top: 20px; margin-bottom: 20px;">
+        <p style="font-size: 13px; color: #6b7280; text-align: center; margin: 0;">
             Operation: Senior Shield • Certified State-Sponsored Compliance Engine • Department of Elder Affairs
         </p>
     </div>
-    """, unsafe_allow_html=True)
+    """
+    st.markdown(footer_html, unsafe_allow_html=True)
 
     col_p1, col_p2 = st.columns(2)
     with col_p1:
