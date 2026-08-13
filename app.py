@@ -152,7 +152,7 @@ if st.session_state['stage'] == 'search':
             st.warning("Please fill in your first name, last name, city, and select an age segment to start.")
     st.markdown('</div>', unsafe_allow_html=True)
 
-# --- STAGE 2: MULTI-CITY RESIDENCY VERIFICATION WIZARD ---
+# --- STAGE 2: DYNAMIC RESIDENCY VERIFICATION WIZARD ---
 elif st.session_state['stage'] == 'wizard_residency':
     st.markdown('<div class="wizard-card">', unsafe_allow_html=True)
     current_name = st.session_state.get('searched_name', 'Subject')
@@ -160,13 +160,13 @@ elif st.session_state['stage'] == 'wizard_residency':
     target_state_abbr = st.session_state.get('searched_state', 'State')
     
     st.markdown(f"### Search Subject: {current_name}")
-    st.progress(60, text="60% Confidence Match Building — Analyzing Historical Multi-City Residency Indices")
+    st.progress(60, text="60% Confidence Match Building — Analyzing Historical Residency Indices")
     st.markdown("---")
     st.markdown("### ⚠️ Confirm Information")
     st.caption("Help Narrow Down Your Results")
     
-    # Dynamically pulls the typed city along with historical prior cities
-    st.markdown(f"**Has {current_name} ever lived in {target_city}, {target_state_abbr}, Indianapolis, IN, or Mobile, AL?**")
+    # Strictly built using only the user's returned query data
+    st.markdown(f"**Has {current_name} ever lived in {target_city}, {target_state_abbr}?**")
     
     wr_c1, wr_c2, wr_c3 = st.columns(3)
     with wr_c1:
@@ -225,11 +225,11 @@ elif st.session_state['stage'] == 'results':
                 
                 identified_threats = [
                     ('Tier-1 Commercial Data Aggregators (Spokeo / Whitepages)', 'Successfully Protected', default_deadline, 
-                     f'Identified commercial profile listings publishing historical addresses across multiple prior cities for {searched_name}.',
+                     f'Identified commercial profile listings publishing historical addresses for {searched_name} in {target_city}, {target_state_abbr}.',
                      'Dispatched automated statutory opt-out requests across tier-1 broker pipelines. Initiated 45-day statutory compliance window.', 'https://www.networkadvertising.org/'),
                     
                     ('Secondary People-Search Networks (Intelius / BeenVerified)', 'Successfully Protected', default_deadline, 
-                     f'Secondary aggregators indexed historical residency indices and public records matching {target_city}, {target_state_abbr} listings.',
+                     f'Secondary aggregators indexed residency maps and public records matching {target_city}, {target_state_abbr} listings.',
                      'Executed batch removal protocol via centralized opt-out authority gateways.', 'https://optout.beenverified.com/'),
                     
                     (f'Public Property & Tax Records ({target_state_abbr})', 'Successfully Protected', default_deadline, 
@@ -332,3 +332,4 @@ elif st.session_state['stage'] == 'dashboard':
         if st.button("🔄 Run Another Assessment"):
             st.session_state['stage'] = 'search'
             st.rerun()
+            
