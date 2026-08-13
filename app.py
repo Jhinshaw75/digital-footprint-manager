@@ -107,11 +107,11 @@ database_name = "digital_footprint_manager.db"
 if 'stage' not in st.session_state:
     st.session_state['stage'] = 'search'
 
-# --- STAGE 1: SEARCH & MFA CONTACT INTAKE ---
+# --- STAGE 1: SEARCH SUBJECT INTAKE ---
 if st.session_state['stage'] == 'search':
     st.markdown('<div class="search-card">', unsafe_allow_html=True)
-    st.markdown("### 🔍 Enterprise Subject & MFA Intake")
-    st.write("Enter identity and secure contact parameters to initiate your verified digital footprint audit.")
+    st.markdown("### 🔍 Enterprise Subject Intake")
+    st.write("Enter identity parameters to initiate your verified digital footprint audit.")
     
     s_col1, s_col2, s_col3 = st.columns(3)
     with s_col1:
@@ -139,94 +139,103 @@ if st.session_state['stage'] == 'search':
         age_options = ["-- Select Age Segment --", "18-29", "30-49", "50-64", "65-74", "75+"]
         age_segment = st.selectbox("Age Segment", age_options, index=0)
 
-    st.markdown("#### 🔒 Secure Ownership Verification (Dual MFA)")
-    mfa_col1, mfa_col2 = st.columns(2)
-    with mfa_col1:
-        user_email = st.text_input("Email Address (For Magic Link / OTP)", value="", placeholder="name@example.com")
-    with mfa_col2:
-        user_phone = st.text_input("Mobile Phone Number (For SMS Code)", value="", placeholder="(555) 000-0000")
-
-    if st.button("Initialize MFA & Verify Identity"):
-        if search_first and search_last and search_city and age_segment != "-- Select Age Segment --" and user_email and user_phone:
+    if st.button("Proceed to Sequential MFA Verification"):
+        if search_first and search_last and search_city and age_segment != "-- Select Age Segment --":
             full_search_name = f"{search_first} {search_middle + ' ' if search_middle else ''}{search_last}".strip()
             st.session_state['searched_name'] = full_search_name
             st.session_state['searched_city'] = search_city
             st.session_state['searched_state'] = search_state
             st.session_state['searched_location'] = f"{search_city}, {search_state}"
             st.session_state['searched_age_segment'] = age_segment
-            st.session_state['user_email'] = user_email
-            st.session_state['user_phone'] = user_phone
-            
-            # Generate mock secure OTP codes for simulation
-            st.session_state['email_otp'] = str(random.randint(100000, 999999))
-            st.session_state['sms_otp'] = str(random.randint(100000, 999999))
-            
             st.session_state['stage'] = 'mfa_email'
             st.rerun()
         else:
-            st.warning("Please complete all name, location, age segment, and MFA contact fields to proceed.")
+            st.warning("Please fill in your first name, last name, current city, and select an age segment to proceed.")
     st.markdown('</div>', unsafe_allow_html=True)
 
-# --- STAGE 2: MFA LAYER 1 — EMAIL VERIFICATION ---
+# --- STAGE 2: SEQUENTIAL MFA — STEP 1 (EMAIL VERIFICATION) ---
 elif st.session_state['stage'] == 'mfa_email':
     st.markdown('<div class="wizard-card">', unsafe_allow_html=True)
-    current_email = st.session_state.get('user_email', 'your email')
-    simulated_email_code = st.session_state.get('email_otp', '123456')
+    current_name = st.session_state.get('searched_name', 'Subject')
     
-    st.markdown("### 📧 Step 1 of 2: Email Ownership Verification")
-    st.progress(30, text="MFA Layer 1 in Progress — Validating Email Gateway")
+    st.markdown(f"### Subject: {current_name}")
+    st.progress(35, text="Step 1 of 2: Email Authentication Gateway")
     st.markdown("---")
-    st.write(f"A secure One-Time Password (OTP) has been dispatched to **{current_email}**.")
+    st.markdown("#### 📧 Step 1: Confirm Email Address")
     
-    # Simulation helper display for ease of testing
-    st.info(f"🧪 **[Simulation Helper]** Your active Email OTP code is: **{simulated_email_code}**")
+    user_email = st.text_input("Email Address (For Magic Link / OTP)", value="", placeholder="name@example.com")
+    
+    # Generate mock OTP code when user inputs an email
+    if user_email and 'email_otp' not in st.session_state:
+        st.session_state['email_otp'] = str(random.randint(100000, 999999))
+    
+    simulated_email_code = st.session_state.get('email_otp', '123456')
 
-    entered_email_code = st.text_input("Enter 6-Digit Email Code", value="", max_chars=6)
+    if user_email:
+        st.info(f"🧪 **[Simulation Helper]** Your active Email OTP code sent to {user_email} is: **{simulated_email_code}**")
+        entered_email_code = st.text_input("Enter 6-Digit Email Verification Code", value="", max_chars=6)
 
-    col_e1, col_e2 = st.columns(2)
-    with col_e1:
-        if st.button("Verify Email & Continue"):
-            if entered_email_code == simulated_email_code:
-                st.success("Email verified successfully!")
-                st.session_state['stage'] = 'mfa_sms'
+        col_e1, col_e2 = st.columns(2)
+        with col_e1:
+            if st.button("Verify Email & Proceed to Phone Authentication"):
+                if entered_email_code == simulated_email_code:
+                    st.session_state['user_email'] = user_email
+                    st.session_state['sms_otp'] = str(random.randint(100000, 999999))
+                    st.session_state['stage'] = 'mfa_sms'
+                    st.rerun()
+                else:
+                    st.error("Invalid email verification code. Please check the simulation helper.")
+        with col_e2:
+            if st.button("Back to Search Intake"):
+                st.session_state.pop('email_otp', None)
+                st.session_state['stage'] = 'search'
                 st.rerun()
-            else:
-                st.error("Invalid code. Please enter the correct 6-digit code shown in the simulation helper.")
-    with col_e2:
-        if st.button("Cancel / Restart Intake"):
+    else:
+        if st.button("Back to Search Intake"):
             st.session_state['stage'] = 'search'
             st.rerun()
+            
     st.markdown('</div>', unsafe_allow_html=True)
 
-# --- STAGE 3: MFA LAYER 2 — SMS VERIFICATION ---
+# --- STAGE 3: SEQUENTIAL MFA — STEP 2 (SMS MOBILE VERIFICATION) ---
 elif st.session_state['stage'] == 'mfa_sms':
     st.markdown('<div class="wizard-card">', unsafe_allow_html=True)
-    current_phone = st.session_state.get('user_phone', 'your phone')
-    simulated_sms_code = st.session_state.get('sms_otp', '654321')
+    current_name = st.session_state.get('searched_name', 'Subject')
+    current_email = st.session_state.get('user_email', '')
     
-    st.markdown("### 📱 Step 2 of 2: Mobile SMS Authentication")
-    st.progress(70, text="MFA Layer 2 in Progress — Validating Mobile Device Token")
+    st.markdown(f"### Subject: {current_name}")
+    st.progress(75, text="Step 2 of 2: Mobile SMS Authentication Gateway")
     st.markdown("---")
-    st.write(f"A secure confirmation code has been texted via SMS to **{current_phone}**.")
+    st.success(f"✅ Email Address (**{current_email}**) successfully verified!")
+    st.markdown("#### 📱 Step 2: Confirm Mobile Phone Number")
     
-    # Simulation helper display for ease of testing
-    st.info(f"🧪 **[Simulation Helper]** Your active SMS code is: **{simulated_sms_code}**")
+    user_phone = st.text_input("Mobile Phone Number (For SMS Code)", value="", placeholder="(555) 000-0000")
+    simulated_sms_code = st.session_state.get('sms_otp', '654321')
 
-    entered_sms_code = st.text_input("Enter 6-Digit SMS Code", value="", max_chars=6)
+    if user_phone:
+        st.info(f"🧪 **[Simulation Helper]** Your active SMS code sent to {user_phone} is: **{simulated_sms_code}**")
+        entered_sms_code = st.text_input("Enter 6-Digit SMS Verification Code", value="", max_chars=6)
 
-    col_s1, col_s2 = st.columns(2)
-    with col_s1:
-        if st.button("Verify Mobile & Access Report"):
-            if entered_sms_code == simulated_sms_code:
-                st.success("Mobile device verified successfully! Access granted.")
-                st.session_state['stage'] = 'results'
+        col_s1, col_s2 = st.columns(2)
+        with col_s1:
+            if st.button("Verify Mobile & Access Audit Report"):
+                if entered_sms_code == simulated_sms_code:
+                    st.session_state['user_phone'] = user_phone
+                    st.session_state['stage'] = 'results'
+                    st.rerun()
+                else:
+                    st.error("Invalid SMS verification code. Please check the simulation helper.")
+        with col_s2:
+            if st.button("Back to Email Verification"):
+                st.session_state.pop('sms_otp', None)
+                st.session_state['stage'] = 'mfa_email'
                 st.rerun()
-            else:
-                st.error("Invalid SMS code. Please check the simulation helper.")
-    with col_s2:
+    else:
         if st.button("Back to Email Verification"):
+            st.session_state.pop('sms_otp', None)
             st.session_state['stage'] = 'mfa_email'
             st.rerun()
+
     st.markdown('</div>', unsafe_allow_html=True)
 
 # --- STAGE 4: RESULTS MATCH GRID ---
@@ -242,7 +251,7 @@ elif st.session_state['stage'] == 'results':
     with st.container():
         col_res1, col_res2, col_res3 = st.columns([3, 1, 2])
         with col_res1:
-            st.markdown(f"**⭐ BEST RESULT (MFA-Verified Enterprise Match)**\n### {searched_name}")
+            st.markdown(f"**⭐ BEST RESULT (Dual MFA-Verified Enterprise Match)**\n### {searched_name}")
             st.caption(f"Multi-Vector Exposure Record Identified • {target_city}, {target_state_abbr}")
         with col_res2:
             st.markdown(f"**AGE SEGMENT**\n### {age_seg}")
@@ -299,7 +308,7 @@ elif st.session_state['stage'] == 'results':
 
 # --- STAGE 5: PERSONALIZED HEALTH ASSESSMENT DASHBOARD & CLEAN ON-SCREEN REPORT ---
 elif st.session_state['stage'] == 'dashboard':
-    st.success(f"Enterprise identity audit successfully completed and MFA-verified for **{st.session_state.get('searched_name', 'User')}**! Your official report is displayed below.")
+    st.success(f"Enterprise identity audit successfully completed and sequentially MFA-verified for **{st.session_state.get('searched_name', 'User')}**! Your official report is displayed below.")
 
     if st.button("🔒 Sign Out / New Search"):
         st.session_state['stage'] = 'search'
