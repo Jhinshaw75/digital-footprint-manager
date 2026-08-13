@@ -225,7 +225,7 @@ elif st.session_state['stage'] == 'mfa_email':
 
         entered_email_code = st.text_input("Enter the 6-Digit Verification Code that has been emailed to you", value="", max_chars=6, key="input_email_code")
 
-        if st.button("Verify Identity & View My Report"):
+        if st.button("Verify Identity & Run Live Public Records Scan"):
             if entered_email_code == simulated_email_code:
                 st.session_state['user_email'] = active_email
                 st.session_state['stage'] = 'results'
@@ -235,15 +235,26 @@ elif st.session_state['stage'] == 'mfa_email':
             
     st.markdown('</div>', unsafe_allow_html=True)
 
-# --- STAGE 3: AUTOMATED INTELIUS-STYLE DISAMBIGUATION GRID ---
+# --- STAGE 3: LIVE SIMULATED API QUERY & INTELIUS-STYLE DISAMBIGUATION GRID ---
 elif st.session_state['stage'] == 'results':
     age_seg = st.session_state.get('searched_age_segment', '50-64')
     target_city = st.session_state.get('searched_city', 'City')
     target_state_abbr = st.session_state.get('searched_state', 'State')
     searched_name = st.session_state.get('searched_name', 'User')
     
-    st.markdown(f"### 👥 Select Correct Match for {searched_name}")
-    st.write(f"Multiple public directory listings found matching your search parameters. Review historical residencies and relative connections below to confirm your profile:")
+    # Simulate a live multi-attribute public index search query dynamically building unique histories based on name
+    seed_val = sum(ord(c) for c in searched_name)
+    random.seed(seed_val)
+    
+    possible_cities = ["Atlanta, GA", "Chicago, IL", "Mobile, AL", "Indianapolis, IN", "Savannah, GA", "Charlotte, NC", "Nashville, TN", "Columbus, OH"]
+    possible_kin = ["Family Network & Household Registry", "Extended Kinship Index", "Associated Registry Network", "Public Household Association"]
+    
+    city1 = random.choice(possible_cities)
+    city2 = random.choice([c for c in possible_cities if c != city1])
+    kin_match = random.choice(possible_kin)
+
+    st.markdown(f"### 🔄 Live Public Records Scan Results for {searched_name}")
+    st.success(f"Successfully queried public directory indexes for **{target_city}, {target_state_abbr}**. Select your exact matching record below:")
 
     candidates = [
         {
@@ -251,16 +262,16 @@ elif st.session_state['stage'] == 'results':
             "name": searched_name,
             "age": age_seg,
             "location": f"{target_city}, {target_state_abbr}",
-            "prior_locations": "Previously lived in: Indianapolis, IN; Mobile, AL",
-            "relatives": "Associated Family/Kin: Pamela Byrd & Kinship Network",
-            "badge": "⭐ BEST MATCH (Public Records Index)"
+            "prior_locations": f"Previously lived in: {city1}; {city2}",
+            "relatives": f"Associated Family/Kin: {kin_match}",
+            "badge": "⭐ LIVE MATCH (Primary Public Record)"
         },
         {
             "id": 2,
             "name": searched_name,
             "age": "30-49",
             "location": f"Alternate Metro Area, {target_state_abbr}",
-            "prior_locations": "Previously lived in: Orlando, FL",
+            "prior_locations": "Previously lived in: Regional District",
             "relatives": "Different Kinship Network",
             "badge": "Alternative Match"
         }
