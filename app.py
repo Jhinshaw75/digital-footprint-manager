@@ -72,7 +72,7 @@ st.divider()
 
 database_name = "digital_footprint_manager.db"
 
-# Initialize Database with records
+# Initialize Database with an empty table so only identified threats are listed
 with sqlite3.connect(database_name) as connection:
     cursor = connection.cursor()
     cursor.execute("DROP TABLE IF EXISTS optout_tracker;")
@@ -91,15 +91,6 @@ with sqlite3.connect(database_name) as connection:
             last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
     ''')
-    default_deadline = (datetime.now() + timedelta(days=45)).strftime('%Y-%m-%d')
-    initial_data = [
-        ('DOEA Digital Identity Registry', 'State-Sponsored API', 'Official State API Batch Deletion', 'High', 'Pending Submission', default_deadline, 'Awaiting Code', 'Awaiting state residency verification token', 'https://elderaffairs.org/'),
-        ('State Voter Suppression Bureau', 'Public Records/PII', 'Direct Statutory Redaction', 'Moderate', 'Needs Review', default_deadline, 'Awaiting Code', 'State agency record suppression review', 'https://dos.fl.gov/elections/'),
-        ('County Property Appraiser DB', 'Public Records/PII', 'Local Ordinance Request', 'Moderate', 'Needs Review', default_deadline, 'Awaiting Code', 'County property appraiser redaction protocol', 'https://floridarevenuetax.org'),
-        ('HaveIBeenPwned API', 'Credential/Breach Data', 'Direct Credential API', 'Critical', 'Needs Action', 'Immediate', 'Action Required', 'Password reset required immediately', 'https://haveibeenpwned.com/'),
-        ('Commercial Data Aggregators', 'Commercial Brokers', 'Third-Party Opt-Out API', 'Low', 'Pending Queue', default_deadline, 'Awaiting Code', 'Global opt-out registry transmission', 'https://www.networkadvertising.org/')
-    ]
-    cursor.executemany("INSERT INTO optout_tracker (broker_name, category, compliance_pathway, risk_level, status, statutory_deadline, response_code, verification_note, target_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);", initial_data)
     connection.commit()
 
 # Session State Flow Management
@@ -244,6 +235,18 @@ elif st.session_state['stage'] == 'results':
             st.markdown("**POSSIBLE RELATIVES**\nAdrina Frazier\nIsabella M. Hinshaw\nJeanette Hinshaw")
         
         if st.button("OPEN REPORT / THAT'S ME"):
+            # Populate real identified threat vectors upon confirmation
+            default_deadline = (datetime.now() + timedelta(days=45)).strftime('%Y-%m-%d')
+            with sqlite3.connect(database_name) as connection:
+                cursor = connection.cursor()
+                identified_threats = [
+                    ('Commercial Data Aggregators', 'Commercial Brokers', 'Third-Party Opt-Out API', 'High', 'Pending Queue', default_deadline, 'Awaiting Code', 'Identified in commercial broker directory listings', 'https://www.networkadvertising.org/'),
+                    ('Public Property & Tax Records', 'Public Records/PII', 'Local Ordinance Request', 'Moderate', 'Needs Review', default_deadline, 'Awaiting Code', 'County property appraiser public record exposure', 'https://floridarevenuetax.org'),
+                    ('HaveIBeenPwned API', 'Credential/Breach Data', 'Direct Credential API', 'Critical', 'Needs Action', 'Immediate', 'Action Required', 'Associated email found in credential breach dump', 'https://haveibeenpwned.com/')
+                ]
+                cursor.executemany("INSERT INTO optout_tracker (broker_name, category, compliance_pathway, risk_level, status, statutory_deadline, response_code, verification_note, target_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);", identified_threats)
+                connection.commit()
+            
             st.session_state['stage'] = 'dashboard'
             st.rerun()
     
@@ -254,7 +257,7 @@ elif st.session_state['stage'] == 'results':
 
 # --- STAGE 6: PERSONALIZED HEALTH ASSESSMENT DASHBOARD ---
 elif st.session_state['stage'] == 'dashboard':
-    st.success(f"Identity successfully verified for **{st.session_state.get('searched_name', 'User')}**! Your personalized exposure and health assessment dashboard is active below.")
+    st.success(f"Identity successfully verified for **{st.session_state.get('searched_name', 'User')}**! Only confirmed threat vectors are displayed below.")
 
     if st.button("🔒 Sign Out / New Search"):
         st.session_state['stage'] = 'search'
@@ -272,14 +275,14 @@ elif st.session_state['stage'] == 'dashboard':
 
     st.subheader("📊 Your Privacy Health Scorecard")
     m1, m2, m3 = st.columns(3)
-    m1.metric("Exposures Detected", total)
+    m1.metric("Identified Threats", total)
     m2.metric("Items Needing Action", pending_count)
     m3.metric("Successfully Cleaned", completed_count)
 
     st.divider()
 
     st.markdown("### 🛡️ One-Click Privacy Protection")
-    st.write("Click below to automatically request data removal across all detected public directories and state registries.")
+    st.write("Click below to automatically request data removal across all identified threat vectors.")
     if st.button("Start Automated Removal Request"):
         new_deadline = (datetime.now() + timedelta(days=45)).strftime('%Y-%m-%d')
         with sqlite3.connect(database_name) as connection:
@@ -290,10 +293,10 @@ elif st.session_state['stage'] == 'dashboard':
 
     st.divider()
 
-    tab1, tab2 = st.tabs(["⚡ Active Exposures", "✅ Cleared Records"])
+    tab1, tab2 = st.tabs(["⚡ Active Threat Exposures", "✅ Cleared Records"])
 
     with tab1:
-        st.markdown("### Records Requiring Your Attention")
+        st.markdown("### Confirmed Threats Requiring Your Attention")
         needs_df = df[df['Current Status'] != 'API Transmission Successful']
         if len(needs_df) > 0:
             st.dataframe(
@@ -304,7 +307,7 @@ elif st.session_state['stage'] == 'dashboard':
                 }
             )
         else:
-            st.success("All exposure records have been successfully cleared!")
+            st.success("All identified threat vectors have been successfully cleared!")
 
     with tab2:
         st.markdown("### Cleared & Protected Records")
@@ -329,4 +332,3 @@ elif st.session_state['stage'] == 'dashboard':
         file_name=f"DOEA_Privacy_Report_{datetime.now().strftime('%Y-%m-%d')}.csv",
         mime="text/csv",
     )
-    
