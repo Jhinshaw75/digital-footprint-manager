@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 st.set_page_config(page_title="DOEA Digital Online Health Assessment", layout="wide")
 
-# Custom CSS for clean styling
+# Custom CSS for clean styling and grade badges
 st.markdown("""
     <style>
     .main {
@@ -47,6 +47,16 @@ st.markdown("""
         box-shadow: 0 4px 10px rgba(0,0,0,0.08);
         margin-top: 20px;
         margin-bottom: 20px;
+    }
+    .grade-badge-a {
+        background-color: #28a745;
+        color: white;
+        font-size: 36px;
+        font-weight: bold;
+        padding: 15px 25px;
+        border-radius: 10px;
+        text-align: center;
+        display: inline-block;
     }
     .threat-box {
         background-color: #f8f9fa;
@@ -269,15 +279,24 @@ elif st.session_state['stage'] == 'dashboard':
     total = len(df)
     completed_count = len(df[df['status'] == 'Successfully Protected'])
 
-    # --- CLEAN ON-SCREEN CERTIFICATE & REPORT (Using Native Streamlit Markdown) ---
+    # --- CLEAN ON-SCREEN CERTIFICATE & REPORT WITH A-F GRADE ---
     st.markdown("### 📄 Official Digital Health Assessment Report")
     st.markdown("This clean, easy-to-read report summarizes scanned exposures, identified risks, and completed statutory protections.")
 
     with st.container():
         st.markdown("""
         <div class="report-box">
-            <h2 style="color: #003366; margin-top: 0;">State of Florida — Department of Elder Affairs</h2>
-            <h4 style="color: #4b5563;">Digital Online Health Assessment & Protection Summary</h4>
+            <table width="100%" style="border: none;">
+                <tr>
+                    <td>
+                        <h2 style="color: #003366; margin-top: 0; margin-bottom: 5px;">State of Florida — Department of Elder Affairs</h2>
+                        <h4 style="color: #4b5563; margin-top: 0;">Digital Online Health Assessment & Protection Summary</h4>
+                    </td>
+                    <td align="right" style="vertical-align: middle;">
+                        <div class="grade-badge-a">Grade: A</div>
+                    </td>
+                </tr>
+            </table>
             <hr style="border: 1px solid #e5e7eb; margin: 20px 0;">
         """, unsafe_allow_html=True)
         
@@ -285,7 +304,7 @@ elif st.session_state['stage'] == 'dashboard':
         st.markdown(f"**Jurisdiction & Location:** {st.session_state.get('searched_location', 'N/A')}")
         st.markdown(f"**Age Segment:** {st.session_state.get('searched_age_segment', 'N/A')}")
         st.markdown(f"**Assessment Date:** {datetime.now().strftime('%B %d, %Y')}")
-        st.markdown(f"**Overall Status:** Fully Protected (**{completed_count} of {total} Threats Addressed**)")
+        st.markdown(f"**Digital Health Status:** Fully Protected (**{completed_count} of {total} Threats Addressed** — Grade A)")
         
         st.markdown("### Identified Exposures & Remediation Actions")
         
