@@ -40,6 +40,14 @@ st.markdown("""
         border-top: 6px solid #003366;
         margin-bottom: 25px;
     }
+    .result-row {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid #d1d5db;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+        margin-bottom: 15px;
+    }
     .report-box {
         background-color: white;
         padding: 35px;
@@ -182,68 +190,92 @@ elif st.session_state['stage'] == 'wizard_residency':
             st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
-# --- STAGE 3: RESULTS MATCH GRID ---
+# --- STAGE 3: MULTI-RESULT DISAMBIGUATION GRID ---
 elif st.session_state['stage'] == 'results':
     age_seg = st.session_state.get('searched_age_segment', '50-64')
     target_city = st.session_state.get('searched_city', 'City')
     target_state_abbr = st.session_state.get('searched_state', 'State')
     searched_name = st.session_state.get('searched_name', 'User')
     
-    st.markdown(f"### Next Step: Select A Result Below for {searched_name}")
-    st.write(f"Filtered for records within age segment **{age_seg}** across comprehensive public data networks:")
+    st.markdown(f"### 👥 Select Correct Match for {searched_name}")
+    st.write(f"Multiple public directory listings found matching your search parameters. Please select the correct profile below:")
 
-    with st.container():
-        col_res1, col_res2, col_res3 = st.columns([3, 1, 2])
-        with col_res1:
-            st.markdown(f"**⭐ BEST RESULT (Enterprise Verified Match)**\n### {searched_name}")
-            st.caption(f"Multi-Vector Exposure Record Identified • {target_city}, {target_state_abbr}")
-        with col_res2:
-            st.markdown(f"**AGE SEGMENT**\n### {age_seg}")
-        with col_res3:
-            st.markdown(f"**LOCATION**\n{target_city}, {target_state_abbr}")
-        
-        if st.button("OPEN COMPLIANCE REPORT / THAT'S ME"):
-            default_deadline = (datetime.now() + timedelta(days=45)).strftime('%Y-%m-%d')
-            property_link = f"https://www.google.com/search?q={target_state_abbr}+property+appraiser+public+record+search"
+    # Define multiple simulated candidate records to allow disambiguation
+    candidates = [
+        {
+            "id": 1,
+            "name": searched_name,
+            "age": age_seg,
+            "location": f"{target_city}, {target_state_abbr}",
+            "relatives": "Associated Family Records Linked",
+            "badge": "⭐ BEST MATCH (Primary Record)"
+        },
+        {
+            "id": 2,
+            "name": searched_name,
+            "age": "30-49",
+            "location": f"Alternate Metro Area, {target_state_abbr}",
+            "relatives": "Different Kinship Network",
+            "badge": "Alternative Match"
+        }
+    ]
 
-            with sqlite3.connect(database_name) as connection:
-                cursor = connection.cursor()
-                cursor.execute("DROP TABLE IF EXISTS optout_tracker;")
-                cursor.execute('''
-                    CREATE TABLE optout_tracker (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        broker_name TEXT,
-                        status TEXT,
-                        statutory_deadline TEXT,
-                        threat_explanation TEXT,
-                        action_description TEXT,
-                        target_url TEXT,
-                        last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                    );
-                ''')
+    for cand in candidates:
+        st.markdown(f'<div class="result-row">', unsafe_allow_html=True)
+        r_c1, r_c2, r_c3, r_c4 = st.columns([2, 1, 2, 2])
+        with r_c1:
+            st.markdown(f"**{cand['badge']}**\n### {cand['name']}")
+        with r_c2:
+            st.markdown(f"**AGE SEGMENT**\n{cand['age']}")
+        with r_c3:
+            st.markdown(f"**LOCATION & KIN**\n{cand['location']}<br><small>{cand['relatives']}</small>", unsafe_allow_html=True)
+        with r_c4:
+            st.markdown("<br>", unsafe_allow_html=True)
+            if st.button(f"SELECT THIS PROFILE", key=f"select_{cand['id']}"):
+                default_deadline = (datetime.now() + timedelta(days=45)).strftime('%Y-%m-%d')
+                property_link = f"https://www.google.com/search?q={target_state_abbr}+property+appraiser+public+record+search"
+
+                with sqlite3.connect(database_name) as connection:
+                    cursor = connection.cursor()
+                    cursor.execute("DROP TABLE IF EXISTS optout_tracker;")
+                    cursor.execute('''
+                        CREATE TABLE optout_tracker (
+                            id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            broker_name TEXT,
+                            status TEXT,
+                            statutory_deadline TEXT,
+                            threat_explanation TEXT,
+                            action_description TEXT,
+                            target_url TEXT,
+                            last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                        );
+                    ''')
+                    
+                    identified_threats = [
+                        ('Tier-1 Commercial Data Aggregators (Spokeo / Whitepages)', 'Successfully Protected', default_deadline, 
+                         f'Identified commercial profile listings publishing historical addresses and contact numbers for {searched_name} in {cand["location"]}.',
+                         'Dispatched automated statutory opt-out requests across tier-1 broker pipelines. Initiated 45-day statutory compliance window.', 'https://www.networkadvertising.org/'),
+                        
+                        ('Secondary People-Search Networks (Intelius / BeenVerified)', 'Successfully Protected', default_deadline, 
+                         f'Secondary aggregators indexed residency maps and public records matching {cand["location"]} listings.',
+                         'Executed batch removal protocol via centralized opt-out authority gateways.', 'https://optout.beenverified.com/'),
+                        
+                        (f'Public Property & Tax Records ({target_state_abbr})', 'Successfully Protected', default_deadline, 
+                         f'County assessment databases expose residential real estate holdings for {searched_name} in {cand["location"]}.',
+                         'Submitted formal state exemption record suppression requests to county property appraisers.', property_link),
+                        
+                        ('Global Credential Breach Registry (HIBP Integration)', 'Successfully Protected', default_deadline, 
+                         f'An associated digital login credential matching digital fingerprints for {searched_name} was identified in corporate breach dumps.',
+                         'Triggered automated breach mitigation guidance and logged event for 2FA password reset completion.', 'https://haveibeenpwned.com/')
+                    ]
+                    cursor.executemany("INSERT INTO optout_tracker (broker_name, status, statutory_deadline, threat_explanation, action_description, target_url) VALUES (?, ?, ?, ?, ?, ?);", identified_threats)
+                    connection.commit()
                 
-                identified_threats = [
-                    ('Tier-1 Commercial Data Aggregators (Spokeo / Whitepages)', 'Successfully Protected', default_deadline, 
-                     f'Identified commercial profile listings publishing historical addresses and contact numbers for {searched_name} in {target_city}, {target_state_abbr}.',
-                     'Dispatched automated statutory opt-out requests across tier-1 broker pipelines. Initiated 45-day statutory compliance window.', 'https://www.networkadvertising.org/'),
-                    
-                    ('Secondary People-Search Networks (Intelius / BeenVerified)', 'Successfully Protected', default_deadline, 
-                     f'Secondary aggregators indexed residency maps and public records matching {target_city}, {target_state_abbr} listings.',
-                     'Executed batch removal protocol via centralized opt-out authority gateways.', 'https://optout.beenverified.com/'),
-                    
-                    (f'Public Property & Tax Records ({target_state_abbr})', 'Successfully Protected', default_deadline, 
-                     f'County assessment databases expose residential real estate holdings for {searched_name} in {target_city}, {target_state_abbr}.',
-                     'Submitted formal state exemption record suppression requests to county property appraisers.', property_link),
-                    
-                    ('Global Credential Breach Registry (HIBP Integration)', 'Successfully Protected', default_deadline, 
-                     f'An associated digital login credential matching digital fingerprints for {searched_name} was identified in corporate breach dumps.',
-                     'Triggered automated breach mitigation guidance and logged event for 2FA password reset completion.', 'https://haveibeenpwned.com/')
-                ]
-                cursor.executemany("INSERT INTO optout_tracker (broker_name, status, statutory_deadline, threat_explanation, action_description, target_url) VALUES (?, ?, ?, ?, ?, ?);", identified_threats)
-                connection.commit()
-            
-            st.session_state['stage'] = 'dashboard'
-            st.rerun()
+                st.session_state['searched_location'] = cand['location']
+                st.session_state['searched_age_segment'] = cand['age']
+                st.session_state['stage'] = 'dashboard'
+                st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
     
     st.divider()
     if st.button("Modify Search / Start Over"):
