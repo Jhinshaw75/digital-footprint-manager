@@ -146,27 +146,26 @@ if st.session_state['stage'] == 'search':
             st.session_state['searched_state'] = search_state
             st.session_state['searched_location'] = f"{search_city}, {search_state}"
             st.session_state['searched_age_segment'] = age_segment
-            st.session_state['stage'] = 'wizard_relatives'
+            st.session_state['stage'] = 'wizard_residency'
             st.rerun()
         else:
             st.warning("Please fill in your first name, last name, city, and select an age segment to start.")
     st.markdown('</div>', unsafe_allow_html=True)
 
-# --- STAGE 2: RELATIVES VERIFICATION WIZARD (FULLY DYNAMIC) ---
-elif st.session_state['stage'] == 'wizard_relatives':
+# --- STAGE 2: RESIDENCY VERIFICATION WIZARD ---
+elif st.session_state['stage'] == 'wizard_residency':
     st.markdown('<div class="wizard-card">', unsafe_allow_html=True)
     current_name = st.session_state.get('searched_name', 'Subject')
     target_city = st.session_state.get('searched_city', 'City')
     target_state_abbr = st.session_state.get('searched_state', 'State')
-    age_seg = st.session_state.get('searched_age_segment', '50-64')
     
-    st.markdown(f"### Search Subject: {current_name} (Segment: {age_seg})")
-    st.progress(60, text="60% Confidence Match Building — Cross-Referencing Associated Relatives & Public Records")
+    st.markdown(f"### Search Subject: {current_name}")
+    st.progress(60, text="60% Confidence Match Building — Verifying Historical Residency Indices")
     st.markdown("---")
     st.markdown("### ⚠️ Confirm Information")
     st.caption("Help Narrow Down Your Results")
     
-    st.markdown(f"**As far as you know, does {current_name} (Age Segment {age_seg}) have known relatives or family members residing in or linked to {target_city}, {target_state_abbr}?**")
+    st.markdown(f"**Has {current_name} ever lived in {target_city}, {target_state_abbr}?**")
     
     wr_c1, wr_c2, wr_c3 = st.columns(3)
     with wr_c1:
@@ -225,11 +224,11 @@ elif st.session_state['stage'] == 'results':
                 
                 identified_threats = [
                     ('Tier-1 Commercial Data Aggregators (Spokeo / Whitepages)', 'Successfully Protected', default_deadline, 
-                     f'Identified commercial profile listings publishing historical addresses and relative associations for {searched_name} in {target_city}, {target_state_abbr}.',
+                     f'Identified commercial profile listings publishing historical addresses and contact numbers for {searched_name} in {target_city}, {target_state_abbr}.',
                      'Dispatched automated statutory opt-out requests across tier-1 broker pipelines. Initiated 45-day statutory compliance window.', 'https://www.networkadvertising.org/'),
                     
                     ('Secondary People-Search Networks (Intelius / BeenVerified)', 'Successfully Protected', default_deadline, 
-                     f'Secondary aggregators indexed family mapping and public records matching {target_city}, {target_state_abbr} listings.',
+                     f'Secondary aggregators indexed residency maps and public records matching {target_city}, {target_state_abbr} listings.',
                      'Executed batch removal protocol via centralized opt-out authority gateways.', 'https://optout.beenverified.com/'),
                     
                     (f'Public Property & Tax Records ({target_state_abbr})', 'Successfully Protected', default_deadline, 
