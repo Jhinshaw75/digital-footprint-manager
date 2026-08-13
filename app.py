@@ -123,15 +123,15 @@ if st.session_state['stage'] == 'search':
     
     s_col1, s_col2, s_col3 = st.columns(3)
     with s_col1:
-        search_first = st.text_input("First Name", value="", placeholder="Enter first name")
+        search_first = st.text_input("First Name", value="", placeholder="Enter first name", key="f_name")
     with s_col2:
-        search_middle = st.text_input("Middle Name / Initial", value="", placeholder="Enter middle name or initial")
+        search_middle = st.text_input("Middle Name / Initial", value="", placeholder="Enter middle name or initial", key="m_name")
     with s_col3:
-        search_last = st.text_input("Last Name", value="", placeholder="Enter last name")
+        search_last = st.text_input("Last Name", value="", placeholder="Enter last name", key="l_name")
 
     loc_col1, loc_col2, loc_col3 = st.columns(3)
     with loc_col1:
-        search_city = st.text_input("Current City", value="", placeholder="Enter current city")
+        search_city = st.text_input("Current City", value="", placeholder="Enter current city", key="c_city")
     with loc_col2:
         states_list = [
             "Florida", "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", 
@@ -142,10 +142,10 @@ if st.session_state['stage'] == 'search':
             "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", 
             "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
         ]
-        search_state = st.selectbox("State", states_list, index=0)
+        search_state = st.selectbox("State", states_list, index=0, key="c_state")
     with loc_col3:
         age_options = ["-- Select Age Segment --", "18-29", "30-49", "50-64", "65-74", "75+"]
-        age_segment = st.selectbox("Age Segment", age_options, index=0)
+        age_segment = st.selectbox("Age Segment", age_options, index=0, key="c_age")
 
     if st.button("Proceed to Sequential MFA Verification"):
         if search_first and search_last and search_city and age_segment != "-- Select Age Segment --":
@@ -171,7 +171,7 @@ elif st.session_state['stage'] == 'mfa_email':
     st.markdown("---")
     st.markdown("#### 📧 Step 1: Confirm Email Address")
     
-    user_email = st.text_input("Email Address (For Magic Link / OTP)", value="", placeholder="name@example.com")
+    user_email = st.text_input("Email Address (For Magic Link / OTP)", value="", placeholder="name@example.com", key="input_email")
     
     if user_email and 'email_otp' not in st.session_state:
         st.session_state['email_otp'] = str(random.randint(100000, 999999))
@@ -180,7 +180,7 @@ elif st.session_state['stage'] == 'mfa_email':
 
     if user_email:
         st.info(f"🧪 **[Simulation Helper]** Your active Email OTP code sent to {user_email} is: **{simulated_email_code}**")
-        entered_email_code = st.text_input("Enter 6-Digit Email Verification Code", value="", max_chars=6)
+        entered_email_code = st.text_input("Enter 6-Digit Email Verification Code", value="", max_chars=6, key="input_email_code")
 
         col_e1, col_e2 = st.columns(2)
         with col_e1:
@@ -216,12 +216,12 @@ elif st.session_state['stage'] == 'mfa_sms':
     st.success(f"✅ Email Address (**{current_email}**) successfully verified!")
     st.markdown("#### 📱 Step 2: Confirm Mobile Phone Number")
     
-    user_phone = st.text_input("Mobile Phone Number (For SMS Code)", value="", placeholder="(555) 000-0000")
+    user_phone = st.text_input("Mobile Phone Number (For SMS Code)", value="", placeholder="(555) 000-0000", key="input_phone")
     simulated_sms_code = st.session_state.get('sms_otp', '654321')
 
     if user_phone:
         st.info(f"🧪 **[Simulation Helper]** Your active SMS code sent to {user_phone} is: **{simulated_sms_code}**")
-        entered_sms_code = st.text_input("Enter 6-Digit SMS Verification Code", value="", max_chars=6)
+        entered_sms_code = st.text_input("Enter 6-Digit SMS Verification Code", value="", max_chars=6, key="input_sms_code")
 
         col_s1, col_s2 = st.columns(2)
         with col_s1:
