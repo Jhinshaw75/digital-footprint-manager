@@ -88,23 +88,6 @@ st.divider()
 
 database_name = "digital_footprint_manager.db"
 
-# Initialize Database table structure
-with sqlite3.connect(database_name) as connection:
-    cursor = connection.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS optout_tracker (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            broker_name TEXT,
-            status TEXT,
-            statutory_deadline TEXT,
-            threat_explanation TEXT,
-            action_description TEXT,
-            target_url TEXT,
-            last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );
-    ''')
-    connection.commit()
-
 # Session State Flow Management
 if 'stage' not in st.session_state:
     st.session_state['stage'] = 'search'
@@ -250,7 +233,19 @@ elif st.session_state['stage'] == 'results':
             default_deadline = (datetime.now() + timedelta(days=45)).strftime('%Y-%m-%d')
             with sqlite3.connect(database_name) as connection:
                 cursor = connection.cursor()
-                cursor.execute("DELETE FROM optout_tracker;")
+                cursor.execute("DROP TABLE IF EXISTS optout_tracker;")
+                cursor.execute('''
+                    CREATE TABLE optout_tracker (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        broker_name TEXT,
+                        status TEXT,
+                        statutory_deadline TEXT,
+                        threat_explanation TEXT,
+                        action_description TEXT,
+                        target_url TEXT,
+                        last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    );
+                ''')
                 identified_threats = [
                     ('Commercial Data Aggregators', 'Successfully Protected', default_deadline, 
                      'Commercial data aggregators collect and resell home addresses and phone numbers for profit, exposing individuals to spam and marketing scams.',
