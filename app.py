@@ -135,6 +135,8 @@ if st.session_state['stage'] == 'search':
         if search_first and search_last and search_city:
             full_search_name = f"{search_first} {search_middle + ' ' if search_middle else ''}{search_last}"
             st.session_state['searched_name'] = full_search_name
+            st.session_state['searched_city'] = search_city
+            st.session_state['searched_state'] = search_state
             st.session_state['searched_location'] = f"{search_city}, {search_state}"
             st.session_state['searched_age_segment'] = age_segment
             st.session_state['stage'] = 'wizard_q1'
@@ -151,7 +153,8 @@ elif st.session_state['stage'] == 'wizard_q1':
     st.markdown("---")
     st.markdown("### ⚠️ Confirm Information")
     st.caption("Help Narrow Down Your Results")
-    st.markdown(f"**Has {st.session_state['searched_name']} ever lived in {st.session_state['searched_location']}, Indianapolis, IN, or Mobile, AL?**")
+    current_loc = st.session_state.get('searched_location', 'Tallahassee, Florida')
+    st.markdown(f"**Has {st.session_state['searched_name']} ever lived in {current_loc}, Indianapolis, IN, or Mobile, AL?**")
     
     wq1_c1, wq1_c2, wq1_c3 = st.columns(3)
     with wq1_c1:
@@ -222,6 +225,8 @@ elif st.session_state['stage'] == 'wizard_q3':
 # --- STAGE 5: RESULTS MATCH GRID ---
 elif st.session_state['stage'] == 'results':
     age_seg = st.session_state.get('searched_age_segment', '50-64')
+    target_city = st.session_state.get('searched_city', 'Tallahassee')
+    target_state_abbr = st.session_state.get('searched_state', 'Florida')
     st.markdown(f"### Next Step: Select A Result Below for {st.session_state['searched_name']}")
     st.write(f"Filtered for records within age segment **{age_seg}** across verified public data sources:")
 
@@ -229,11 +234,11 @@ elif st.session_state['stage'] == 'results':
         col_res1, col_res2, col_res3, col_res4 = st.columns([3, 1, 2, 2])
         with col_res1:
             st.markdown(f"**⭐ BEST RESULT (Verified Match)**\n### {st.session_state['searched_name']}")
-            st.caption("Phone Number Found! • Tallahassee, FL")
+            st.caption(f"Phone Number Found! • {target_city}, {target_state_abbr}")
         with col_res2:
             st.markdown(f"**AGE SEGMENT**\n### {age_seg}")
         with col_res3:
-            st.markdown("**LOCATIONS**\nTallahassee, FL\nIndianapolis, IN\nMobile, AL")
+            st.markdown(f"**LOCATIONS**\n{target_city}, {target_state_abbr}\nIndianapolis, IN\nMobile, AL")
         with col_res4:
             st.markdown("**POSSIBLE RELATIVES**\nAdrina Frazier\nIsabella M. Hinshaw\nJeanette Hinshaw")
         
@@ -332,7 +337,6 @@ elif st.session_state['stage'] == 'dashboard':
     </div>
     """, unsafe_allow_html=True)
 
-    # Print / Browser Action Button
     col_p1, col_p2 = st.columns(2)
     with col_p1:
         if st.button("🖨️ Print / Save Report (Use Browser Print)"):
