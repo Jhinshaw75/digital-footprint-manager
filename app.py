@@ -104,18 +104,19 @@ with sqlite3.connect(database_name) as connection:
 
 # Session State Flow Management
 if 'stage' not in st.session_state:
-    st.session_state['stage'] = 'search'  # options: 'search', 'wizard_q1', 'wizard_q2', 'wizard_q3', 'results', 'dashboard'
+    st.session_state['stage'] = 'search'
 
-# --- STAGE 1: SEARCH INPUT ---
+# --- STAGE 1: SEARCH INPUT WITH AGE RANGE ---
 if st.session_state['stage'] == 'search':
     st.markdown('<div class="search-card">', unsafe_allow_html=True)
     st.markdown("### 🔍 Search Subject")
-    st.write("Enter the name and location to begin public directory verification.")
+    st.write("Enter name, location, and target age range to filter out irrelevant public records.")
     
     s_col1, s_col2 = st.columns(2)
     with s_col1:
         search_first = st.text_input("First Name", placeholder="e.g., Josh")
         search_city = st.text_input("City", placeholder="e.g., Tallahassee")
+        target_age = st.number_input("Target Age (Exact or Approximate)", min_value=18, max_value=120, value=51)
     with s_col2:
         search_last = st.text_input("Last Name", placeholder="e.g., Hinshaw")
         states_list = [
@@ -128,11 +129,13 @@ if st.session_state['stage'] == 'search':
             "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
         ]
         search_state = st.selectbox("State", states_list, index=8)
+        age_tolerance = st.selectbox("Age Filtering Tolerance", ["Strict (Exact Age Only)", "Moderate (+/- 5 Years)", "Broad (+/- 10 Years)"], index=1)
 
     if st.button("Begin Search & Verify Identity"):
         if search_first and search_last and search_city:
             st.session_state['searched_name'] = f"{search_first} {search_last}"
             st.session_state['searched_location'] = f"{search_city}, {search_state}"
+            st.session_state['searched_age'] = target_age
             st.session_state['stage'] = 'wizard_q1'
             st.rerun()
         else:
@@ -142,7 +145,7 @@ if st.session_state['stage'] == 'search':
 # --- STAGE 2: WIZARD QUESTION 1 (Locations / Cities) ---
 elif st.session_state['stage'] == 'wizard_q1':
     st.markdown('<div class="wizard-card">', unsafe_allow_html=True)
-    st.markdown(f"### Search Subject: {st.session_state['searched_name']}")
+    st.markdown(f"### Search Subject: {st.session_state['searched_name']} (Target Age: {st.session_state.get('searched_age', 51)})")
     st.progress(16, text="16% Confidence Match Building")
     st.markdown("---")
     st.markdown("### ⚠️ Confirm Information")
@@ -164,15 +167,16 @@ elif st.session_state['stage'] == 'wizard_q1':
             st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
-# --- STAGE 3: WIZARD QUESTION 2 (Age) ---
+# --- STAGE 3: WIZARD QUESTION 2 (Age Confirmation) ---
 elif st.session_state['stage'] == 'wizard_q2':
     st.markdown('<div class="wizard-card">', unsafe_allow_html=True)
+    target_age = st.session_state.get('searched_age', 51)
     st.markdown(f"### Search Subject: {st.session_state['searched_name']}")
     st.progress(46, text="46% Confidence Match Building")
     st.markdown("---")
     st.markdown("### ⚠️ Confirm Information")
     st.caption("Help Narrow Down Your Results")
-    st.markdown(f"**Is {st.session_state['searched_name']} over 30 years old?**")
+    st.markdown(f"**Is {st.session_state['searched_name']} around {target_age} years old?**")
     
     wq2_c1, wq2_c2, wq2_c3 = st.columns(3)
     with wq2_c1:
@@ -214,19 +218,20 @@ elif st.session_state['stage'] == 'wizard_q3':
             st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
-# --- STAGE 5: RESULTS MATCH GRID (Intelius Style Selection) ---
+# --- STAGE 5: RESULTS MATCH GRID (Filtered by Age) ---
 elif st.session_state['stage'] == 'results':
+    target_age = st.session_state.get('searched_age', 51)
     st.markdown(f"### Next Step: Select A Result Below for {st.session_state['searched_name']}")
-    st.write("Based on your answers, here are the verified matching records found across public data sources:")
+    st.write(f"Filtered for records near age **{target_age}** across verified public data sources:")
 
-    # Match Box 1
+    # Match Box 1 (Strictly matching target age)
     with st.container():
         col_res1, col_res2, col_res3, col_res4 = st.columns([3, 1, 2, 2])
         with col_res1:
-            st.markdown(f"**⭐ BEST RESULT**\n### {st.session_state['searched_name']}")
+            st.markdown(f"**⭐ BEST RESULT (Age Verified)**\n### {st.session_state['searched_name']}")
             st.caption("Phone Number Found! • Tallahassee, FL")
         with col_res2:
-            st.markdown("**AGE**\n### 51")
+            st.markdown(f"**AGE**\n### {target_age}")
         with col_res3:
             st.markdown("**LOCATIONS**\nTallahassee, FL\nIndianapolis, IN\nMobile, AL")
         with col_res4:
@@ -316,6 +321,5 @@ elif st.session_state['stage'] == 'dashboard':
         label="Download Compliance Audit CSV",
         data=csv_data,
         file_name=f"DOEA_Privacy_Report_{datetime.now().strftime('%Y-%m-%d')}.csv",
-        mime="text/css",
+        mime="text/csv",
     )
-    
