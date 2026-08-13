@@ -152,16 +152,19 @@ if st.session_state['stage'] == 'search':
             st.warning("Please fill in your first name, last name, city, and select an age segment to start.")
     st.markdown('</div>', unsafe_allow_html=True)
 
-# --- STAGE 2: PRECISE NARROW-DOWN LOCATION WIZARD ---
+# --- STAGE 2: PRECISE NARROW-DOWN LOCATION WIZARD (FULLY DYNAMIC) ---
 elif st.session_state['stage'] == 'wizard_location':
     st.markdown('<div class="wizard-card">', unsafe_allow_html=True)
-    st.markdown(f"### Search Subject: {st.session_state['searched_name']} (Segment: {st.session_state.get('searched_age_segment', '50-64')})")
+    current_name = st.session_state.get('searched_name', 'Subject')
+    current_loc = st.session_state.get('searched_location', 'the selected location')
+    
+    st.markdown(f"### Search Subject: {current_name} (Segment: {st.session_state.get('searched_age_segment', '50-64')})")
     st.progress(35, text="35% Confidence Match Building — Analyzing Historical Residency Indices")
     st.markdown("---")
     st.markdown("### ⚠️ Confirm Information")
     st.caption("Help Narrow Down Your Results")
-    current_loc = st.session_state.get('searched_location', 'Tallahassee, Florida')
-    st.markdown(f"**Has {st.session_state['searched_name']} ever lived in {current_loc}, Indianapolis, IN, or Mobile, AL?**")
+    
+    st.markdown(f"**Has {current_name} ever lived in or been associated with public directories in {current_loc}?**")
     
     wq_c1, wq_c2, wq_c3 = st.columns(3)
     with wq_c1:
@@ -178,15 +181,18 @@ elif st.session_state['stage'] == 'wizard_location':
             st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
-# --- STAGE 3: RELATIVES VERIFICATION WIZARD ---
+# --- STAGE 3: RELATIVES VERIFICATION WIZARD (FULLY DYNAMIC) ---
 elif st.session_state['stage'] == 'wizard_relatives':
     st.markdown('<div class="wizard-card">', unsafe_allow_html=True)
-    st.markdown(f"### Search Subject: {st.session_state['searched_name']} (Segment: {st.session_state.get('searched_age_segment', '50-64')})")
+    current_name = st.session_state.get('searched_name', 'Subject')
+    current_state = st.session_state.get('searched_state', 'the selected state')
+    
+    st.markdown(f"### Search Subject: {current_name} (Segment: {st.session_state.get('searched_age_segment', '50-64')})")
     st.progress(75, text="75% Confidence Match Building — Cross-Referencing Associated Public Records")
     st.markdown("---")
     st.markdown("### ⚠️ Confirm Information")
     st.caption("Help Narrow Down Your Results")
-    st.markdown(f"**As far as you know, is {st.session_state['searched_name']} related to Adrina Frazier, Isabella M. Hinshaw, or Jeanette Hinshaw?**")
+    st.markdown(f"**As far as you know, does {current_name} have any historical directory or family association records indexed in {current_state}?**")
     
     wr_c1, wr_c2, wr_c3 = st.columns(3)
     with wr_c1:
@@ -245,19 +251,19 @@ elif st.session_state['stage'] == 'results':
                 
                 identified_threats = [
                     ('Tier-1 Commercial Data Aggregators (Spokeo / Whitepages)', 'Successfully Protected', default_deadline, 
-                     f'Identified commercial profile listings publishing historical addresses and phone numbers for {searched_name}.',
+                     f'Identified commercial profile listings publishing historical addresses and contact numbers for {searched_name} in {target_city}, {target_state_abbr}.',
                      'Dispatched automated statutory opt-out requests across tier-1 broker pipelines. Initiated 45-day statutory compliance window.', 'https://www.networkadvertising.org/'),
                     
                     ('Secondary People-Search Networks (Intelius / BeenVerified)', 'Successfully Protected', default_deadline, 
-                     'Secondary aggregators indexed deep family association maps and alias records.',
+                     f'Secondary aggregators indexed residency maps and public records matching {target_city}, {target_state_abbr} listings.',
                      'Executed batch removal protocol via centralized opt-out authority gateways.', 'https://optout.beenverified.com/'),
                     
                     (f'Public Property & Tax Records ({target_state_abbr})', 'Successfully Protected', default_deadline, 
-                     f'County assessment databases expose residential real estate holdings in {target_city}.',
+                     f'County assessment databases expose residential real estate holdings for {searched_name} in {target_city}, {target_state_abbr}.',
                      'Submitted formal state exemption record suppression requests to county property appraisers.', property_link),
                     
                     ('Global Credential Breach Registry (HIBP Integration)', 'Successfully Protected', default_deadline, 
-                     'An associated digital login credential was matched against known third-party corporate data breach dumps.',
+                     f'An associated digital login credential matching digital fingerprints for {searched_name} was identified in corporate breach dumps.',
                      'Triggered automated breach mitigation guidance and logged event for 2FA password reset completion.', 'https://haveibeenpwned.com/')
                 ]
                 cursor.executemany("INSERT INTO optout_tracker (broker_name, status, statutory_deadline, threat_explanation, action_description, target_url) VALUES (?, ?, ?, ?, ?, ?);", identified_threats)
@@ -344,7 +350,6 @@ elif st.session_state['stage'] == 'dashboard':
         if st.button("🖨️ Print / Save Report (Use Browser Print)"):
             st.info("Tip: Press Ctrl+P (or Cmd+P on Mac) to print this clean report directly or save it as a PDF.")
     with col_p2:
-        # Privacy-safe local calendar link generation for 45-day checkup
         cal_title = urllib.parse.quote("Senior Shield: Digital Health Re-Scan Reminder")
         cal_details = urllib.parse.quote("Time to run a fresh re-scan on your Digital Online Health Assessment portal to check for newly scraped data broker listings.")
         cal_url = f"https://calendar.google.com/calendar/render?action=TEMPLATE&text={cal_title}&dates={(datetime.now() + timedelta(days=45)).strftime('%Y%m%d')}/{(datetime.now() + timedelta(days=46)).strftime('%Y%m%d')}&details={cal_details}"
