@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 st.set_page_config(page_title="DOEA Digital Online Health Assessment", layout="wide")
 
-# Custom CSS for a clean, accessible, award-winning public sector design
+# Custom CSS for modern styling and wizard containers
 st.markdown("""
     <style>
     .main {
@@ -22,6 +22,14 @@ st.markdown("""
         display: flex;
         align-items: center;
         justify-content: space-between;
+    }
+    .wizard-card {
+        background-color: #0f2744;
+        color: white;
+        padding: 35px;
+        border-radius: 12px;
+        box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        margin-bottom: 25px;
     }
     .search-card {
         background-color: white;
@@ -59,7 +67,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.title("Digital Online Health Assessment")
-st.markdown("##### Find out what personal information is exposed online and protect your digital privacy.")
+st.markdown("##### Secure Identity Verification & Public Record Remediation Portal")
 st.divider()
 
 database_name = "digital_footprint_manager.db"
@@ -94,21 +102,19 @@ with sqlite3.connect(database_name) as connection:
     cursor.executemany("INSERT INTO optout_tracker (broker_name, category, compliance_pathway, risk_level, status, statutory_deadline, response_code, verification_note, target_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);", initial_data)
     connection.commit()
 
-# Session state management for simple user flow
-if 'search_performed' not in st.session_state:
-    st.session_state['search_performed'] = False
-if 'user_confirmed' not in st.session_state:
-    st.session_state['user_confirmed'] = False
+# Session State Flow Management
+if 'stage' not in st.session_state:
+    st.session_state['stage'] = 'search'  # options: 'search', 'wizard_q1', 'wizard_q2', 'wizard_q3', 'results', 'dashboard'
 
-# Step 1: Intelius-Style Public Search Box
-if not st.session_state['user_confirmed']:
+# --- STAGE 1: SEARCH INPUT ---
+if st.session_state['stage'] == 'search':
     st.markdown('<div class="search-card">', unsafe_allow_html=True)
-    st.markdown("### 🔍 Start Your Privacy Search")
-    st.write("Enter your details below to scan public directories and data broker networks.")
+    st.markdown("### 🔍 Search Subject")
+    st.write("Enter the name and location to begin public directory verification.")
     
     s_col1, s_col2 = st.columns(2)
     with s_col1:
-        search_first = st.text_input("First Name", placeholder="e.g., Joshua")
+        search_first = st.text_input("First Name", placeholder="e.g., Josh")
         search_city = st.text_input("City", placeholder="e.g., Tallahassee")
     with s_col2:
         search_last = st.text_input("Last Name", placeholder="e.g., Hinshaw")
@@ -123,51 +129,129 @@ if not st.session_state['user_confirmed']:
         ]
         search_state = st.selectbox("State", states_list, index=8)
 
-    if st.button("Search Public Records"):
+    if st.button("Begin Search & Verify Identity"):
         if search_first and search_last and search_city:
-            st.session_state['search_performed'] = True
             st.session_state['searched_name'] = f"{search_first} {search_last}"
             st.session_state['searched_location'] = f"{search_city}, {search_state}"
+            st.session_state['stage'] = 'wizard_q1'
             st.rerun()
         else:
-            st.warning("Please fill in your first name, last name, and city to run the search.")
+            st.warning("Please fill in first name, last name, and city to start.")
     st.markdown('</div>', unsafe_allow_html=True)
 
-# Step 2: Search Results Match Screen (Like Intelius matching)
-if st.session_state['search_performed'] and not st.session_state['user_confirmed']:
-    st.markdown("### 📋 Confirm Your Identity Match")
-    st.write(f"We found matching public records for **{st.session_state['searched_name']}** in **{st.session_state['searched_location']}**. Please select your record below to proceed:")
-
-    # Simulated matching records card
-    match_col1, match_col2 = st.columns([3, 1])
-    with match_col1:
-        st.markdown(f"""
-        **Profile Match #1 (Recommended)**
-        * **Name:** {st.session_state['searched_name']}
-        * **Location:** {st.session_state['searched_location']}
-        * **Associated Records:** Public Directories, Voter Registry, Property Records, Commercial Data Brokers
-        """)
-    with match_col2:
-        if st.button("That's Me — Start Assessment"):
-            st.session_state['user_confirmed'] = True
+# --- STAGE 2: WIZARD QUESTION 1 (Locations / Cities) ---
+elif st.session_state['stage'] == 'wizard_q1':
+    st.markdown('<div class="wizard-card">', unsafe_allow_html=True)
+    st.markdown(f"### Search Subject: {st.session_state['searched_name']}")
+    st.progress(16, text="16% Confidence Match Building")
+    st.markdown("---")
+    st.markdown("### ⚠️ Confirm Information")
+    st.caption("Help Narrow Down Your Results")
+    st.markdown(f"**Has {st.session_state['searched_name']} ever lived in {st.session_state['searched_location']}, Indianapolis, IN, or Mobile, AL?**")
+    
+    wq1_c1, wq1_c2, wq1_c3 = st.columns(3)
+    with wq1_c1:
+        if st.button("YES"):
+            st.session_state['stage'] = 'wizard_q2'
             st.rerun()
+    with wq1_c2:
+        if st.button("NO"):
+            st.session_state['stage'] = 'wizard_q2'
+            st.rerun()
+    with wq1_c3:
+        if st.button("I DON'T KNOW"):
+            st.session_state['stage'] = 'wizard_q2'
+            st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
 
-    if st.button("None of these are me (Search Again)"):
-        st.session_state['search_performed'] = False
+# --- STAGE 3: WIZARD QUESTION 2 (Age) ---
+elif st.session_state['stage'] == 'wizard_q2':
+    st.markdown('<div class="wizard-card">', unsafe_allow_html=True)
+    st.markdown(f"### Search Subject: {st.session_state['searched_name']}")
+    st.progress(46, text="46% Confidence Match Building")
+    st.markdown("---")
+    st.markdown("### ⚠️ Confirm Information")
+    st.caption("Help Narrow Down Your Results")
+    st.markdown(f"**Is {st.session_state['searched_name']} over 30 years old?**")
+    
+    wq2_c1, wq2_c2, wq2_c3 = st.columns(3)
+    with wq2_c1:
+        if st.button("YES"):
+            st.session_state['stage'] = 'wizard_q3'
+            st.rerun()
+    with wq2_c2:
+        if st.button("NO"):
+            st.session_state['stage'] = 'wizard_q3'
+            st.rerun()
+    with wq2_c3:
+        if st.button("I DON'T KNOW"):
+            st.session_state['stage'] = 'wizard_q3'
+            st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# --- STAGE 4: WIZARD QUESTION 3 (Relatives) ---
+elif st.session_state['stage'] == 'wizard_q3':
+    st.markdown('<div class="wizard-card">', unsafe_allow_html=True)
+    st.markdown(f"### Search Subject: {st.session_state['searched_name']}")
+    st.progress(75, text="75% Confidence Match Building")
+    st.markdown("---")
+    st.markdown("### ⚠️ Confirm Information")
+    st.caption("Help Narrow Down Your Results")
+    st.markdown(f"**As far as you know, is {st.session_state['searched_name']} related to Adrina Frazier, Isabella M. Hinshaw, or Jeanette Hinshaw?**")
+    
+    wq3_c1, wq3_c2, wq3_c3 = st.columns(3)
+    with wq3_c1:
+        if st.button("YES"):
+            st.session_state['stage'] = 'results'
+            st.rerun()
+    with wq3_c2:
+        if st.button("NO"):
+            st.session_state['stage'] = 'results'
+            st.rerun()
+    with wq3_c3:
+        if st.button("I DON'T KNOW"):
+            st.session_state['stage'] = 'results'
+            st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# --- STAGE 5: RESULTS MATCH GRID (Intelius Style Selection) ---
+elif st.session_state['stage'] == 'results':
+    st.markdown(f"### Next Step: Select A Result Below for {st.session_state['searched_name']}")
+    st.write("Based on your answers, here are the verified matching records found across public data sources:")
+
+    # Match Box 1
+    with st.container():
+        col_res1, col_res2, col_res3, col_res4 = st.columns([3, 1, 2, 2])
+        with col_res1:
+            st.markdown(f"**⭐ BEST RESULT**\n### {st.session_state['searched_name']}")
+            st.caption("Phone Number Found! • Tallahassee, FL")
+        with col_res2:
+            st.markdown("**AGE**\n### 51")
+        with col_res3:
+            st.markdown("**LOCATIONS**\nTallahassee, FL\nIndianapolis, IN\nMobile, AL")
+        with col_res4:
+            st.markdown("**POSSIBLE RELATIVES**\nAdrina Frazier\nIsabella M. Hinshaw\nJeanette Hinshaw")
+        
+        if st.button("OPEN REPORT / THAT'S ME"):
+            st.session_state['stage'] = 'dashboard'
+            st.rerun()
+    
+    st.divider()
+    if st.button("Modify Search / Start Over"):
+        st.session_state['stage'] = 'search'
         st.rerun()
 
-# Step 3: Main Health Assessment & Remediation Dashboard (Once Confirmed)
-if st.session_state['user_confirmed']:
-    st.success(f"Identity confirmed for **{st.session_state.get('searched_name', 'User')}**! Your personalized health assessment and exposure dashboard is active below.")
+# --- STAGE 6: PERSONALIZED HEALTH ASSESSMENT DASHBOARD ---
+elif st.session_state['stage'] == 'dashboard':
+    st.success(f"Identity successfully verified for **{st.session_state.get('searched_name', 'User')}**! Your personalized exposure and health assessment dashboard is active below.")
 
-    if st.button("🔓 Sign Out / Search Another Person"):
-        st.session_state['user_confirmed'] = False
-        st.session_state['search_performed'] = False
+    if st.button("🔒 Sign Out / New Search"):
+        st.session_state['stage'] = 'search'
         st.rerun()
 
     st.divider()
 
-    # Load data from database based on exposure channels
+    # Load database records
     with sqlite3.connect(database_name) as connection:
         df = pd.read_sql_query("SELECT id, broker_name AS 'Source/Broker', category AS 'Data Type', compliance_pathway AS 'API Pathway', risk_level AS 'Risk Severity', status AS 'Current Status', statutory_deadline AS '45-Day Deadline', response_code AS 'State Response Code', verification_note AS 'Audit Trail', target_url AS 'Portal Link', last_updated AS 'Last Updated' FROM optout_tracker;", connection)
 
@@ -183,7 +267,6 @@ if st.session_state['user_confirmed']:
 
     st.divider()
 
-    # Action Trigger Button for the User
     st.markdown("### 🛡️ One-Click Privacy Protection")
     st.write("Click below to automatically request data removal across all detected public directories and state registries.")
     if st.button("Start Automated Removal Request"):
@@ -196,7 +279,6 @@ if st.session_state['user_confirmed']:
 
     st.divider()
 
-    # Display Tables
     tab1, tab2 = st.tabs(["⚡ Active Exposures", "✅ Cleared Records"])
 
     with tab1:
@@ -227,7 +309,6 @@ if st.session_state['user_confirmed']:
         else:
             st.info("No records have been cleared yet.")
 
-    # Export Data Capability
     st.divider()
     st.subheader("📥 Download Your Privacy Audit Report")
     csv_data = df.to_csv(index=False).encode('utf-8')
@@ -235,5 +316,6 @@ if st.session_state['user_confirmed']:
         label="Download Compliance Audit CSV",
         data=csv_data,
         file_name=f"DOEA_Privacy_Report_{datetime.now().strftime('%Y-%m-%d')}.csv",
-        mime="text/csv",
+        mime="text/css",
     )
+    
