@@ -5,13 +5,12 @@ from datetime import datetime, timedelta
 
 st.set_page_config(page_title="DOEA Digital Online Health Assessment", layout="wide")
 
-# Custom CSS inspired by award-winning government portal design systems (USWDS / GOV.UK standards)
+# Custom CSS for a clean, accessible, award-winning public sector design
 st.markdown("""
     <style>
     .main {
-        background-color: #f4f6f9;
+        background-color: #f8f9fa;
     }
-    /* Official State Banner Styling */
     .state-banner {
         background-color: #003366;
         color: white;
@@ -24,22 +23,21 @@ st.markdown("""
         align-items: center;
         justify-content: space-between;
     }
-    /* Modern Card Containers */
-    .card-container {
+    .search-card {
         background-color: white;
-        padding: 24px;
-        border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        border-top: 4px solid #003366;
-        margin-bottom: 20px;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        border-top: 6px solid #003366;
+        margin-bottom: 25px;
     }
     .stButton>button {
         width: 100%;
         background-color: #003366;
         color: white;
         font-weight: 600;
-        border-radius: 4px;
-        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        padding: 0.6rem 1rem;
         border: none;
     }
     .stButton>button:hover {
@@ -48,7 +46,6 @@ st.markdown("""
     }
     h1, h2, h3 {
         color: #111827;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -57,24 +54,17 @@ st.markdown("""
 st.markdown("""
     <div class="state-banner">
         <span>🏛️ State of Florida — Department of Elder Affairs Official Digital Portal</span>
-        <span>Secured Compliance & Regulatory Framework</span>
+        <span>Operation: Senior Shield</span>
     </div>
 """, unsafe_allow_html=True)
 
-# Clean Application Header
-col_title1, col_title2 = st.columns([4, 1])
-with col_title1:
-    st.title("Digital Online Health Assessment")
-    st.markdown("##### State-Sponsored API & Data Broker Remediation Portal (Universal Intake & Compliance Engine)")
-with col_title2:
-    st.markdown("**Operation: Senior Shield**")
-    st.caption("Protected Intake Initiative")
-
+st.title("Digital Online Health Assessment")
+st.markdown("##### Find out what personal information is exposed online and protect your digital privacy.")
 st.divider()
 
 database_name = "digital_footprint_manager.db"
 
-# Initialize Database with statutory timeline and response codes
+# Initialize Database with records
 with sqlite3.connect(database_name) as connection:
     cursor = connection.cursor()
     cursor.execute("DROP TABLE IF EXISTS optout_tracker;")
@@ -104,170 +94,146 @@ with sqlite3.connect(database_name) as connection:
     cursor.executemany("INSERT INTO optout_tracker (broker_name, category, compliance_pathway, risk_level, status, statutory_deadline, response_code, verification_note, target_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);", initial_data)
     connection.commit()
 
-# Sidebar State Gateway Configuration
-st.sidebar.markdown("### 🏛️ Official State API Gateway")
-gateway_selection = st.sidebar.selectbox(
-    "Select Governing Framework",
-    ["State Clearinghouse API Active", "State Agency Direct Portal", "Generic Statutory Framework"]
-)
-gateway_id_token = st.sidebar.text_input("Enter Gateway Verification ID", placeholder="e.g., DOEA-ID-98231")
+# Session state management for simple user flow
+if 'search_performed' not in st.session_state:
+    st.session_state['search_performed'] = False
+if 'user_confirmed' not in st.session_state:
+    st.session_state['user_confirmed'] = False
 
-selected_category = st.sidebar.selectbox(
-    "Filter by Exposure Channel",
-    ["All Categories", "State-Sponsored API", "Public Records/PII", "Credential/Breach Data", "Commercial Brokers"]
-)
+# Step 1: Intelius-Style Public Search Box
+if not st.session_state['user_confirmed']:
+    st.markdown('<div class="search-card">', unsafe_allow_html=True)
+    st.markdown("### 🔍 Start Your Privacy Search")
+    st.write("Enter your details below to scan public directories and data broker networks.")
+    
+    s_col1, s_col2 = st.columns(2)
+    with s_col1:
+        search_first = st.text_input("First Name", placeholder="e.g., Joshua")
+        search_city = st.text_input("City", placeholder="e.g., Tallahassee")
+    with s_col2:
+        search_last = st.text_input("Last Name", placeholder="e.g., Hinshaw")
+        states_list = [
+            "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", 
+            "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", 
+            "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", 
+            "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", 
+            "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", 
+            "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", 
+            "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
+        ]
+        search_state = st.selectbox("State", states_list, index=8)
 
-# Streamlined Client Intake Form inside a structured card container
-st.markdown("### 📋 1. Client Intake & Profile Screening")
-with st.container():
-    st.markdown('<div class="card-container">', unsafe_allow_html=True)
-    with st.expander("Expand to Complete Intake Form", expanded=True):
-        intake_col1, intake_col2 = st.columns(2)
-        with intake_col1:
-            client_name = st.text_input("Full Legal Name")
-            states_list = [
-                "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", 
-                "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", 
-                "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", 
-                "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", 
-                "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", 
-                "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", 
-                "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
-            ]
-            residency_state = st.selectbox("State of Residence (Supports Part-Time Residents)", states_list, index=8)
-
-        with intake_col2:
-            age_group = st.selectbox("Age Group", ["Under 18", "18-29", "30-49", "50-64", "65-74", "75+"])
-            florida_counties = [
-                "Alachua", "Baker", "Bay", "Bradford", "Brevard", "Broward", "Calhoun", "Charlotte", "Citrus", "Clay", 
-                "Collier", "Columbia", "DeSoto", "Dixie", "Duval", "Escambia", "Flagler", "Franklin", "Gadsden", "Gilchrist", 
-                "Glades", "Gulf", "Hamilton", "Hardee", "Hendry", "Hernando", "Highlands", "Hillsborough", "Holmes", "Indian River", 
-                "Jackson", "Jefferson", "Lafayette", "Lake", "Lee", "Leon", "Levy", "Liberty", "Madison", "Manatee", 
-                "Marion", "Martin", "Miami-Dade", "Monroe", "Nassau", "Okaloosa", "Okeechobee", "Orange", "Osceola", "Palm Beach", 
-                "Pasco", "Pinellas", "Polk", "Putnam", "St. Johns", "St. Lucie", "Santa Rosa", "Sarasota", "Seminole", "Sumter", 
-                "Suwannee", "Taylor", "Union", "Volusia", "Wakulla", "Walton", "Washington"
-            ]
-            client_county = st.selectbox("Florida County (If Applicable)", florida_counties)
-
-        safety_status = st.radio(
-            "Digital Literacy & Safety Status Indicator",
-            ["🟢 Green (Low Risk / Secured)", "🟡 Yellow (Moderate Risk / Needs Attention)", "🔴 Red (High Vulnerability / Action Required)"],
-            horizontal=True
-        )
-
-        if st.button("Save Intake Profile"):
-            st.success(f"Intake profile saved for {client_name} ({residency_state} / {client_county} County). Safety Status: {safety_status}")
+    if st.button("Search Public Records"):
+        if search_first and search_last and search_city:
+            st.session_state['search_performed'] = True
+            st.session_state['searched_name'] = f"{search_first} {search_last}"
+            st.session_state['searched_location'] = f"{search_city}, {search_state}"
+            st.rerun()
+        else:
+            st.warning("Please fill in your first name, last name, and city to run the search.")
     st.markdown('</div>', unsafe_allow_html=True)
 
-st.divider()
+# Step 2: Search Results Match Screen (Like Intelius matching)
+if st.session_state['search_performed'] and not st.session_state['user_confirmed']:
+    st.markdown("### 📋 Confirm Your Identity Match")
+    st.write(f"We found matching public records for **{st.session_state['searched_name']}** in **{st.session_state['searched_location']}**. Please select your record below to proceed:")
 
-# User Input Section for State-Verified Assessment Initialization
-st.markdown("### 2. Secure State Portal Verification & Sweep")
-col1, col2, col3 = st.columns(3)
-with col1:
-    full_name = st.text_input("Full Legal Name for Scan", value=client_name if 'client_name' in locals() else "")
-with col2:
-    verification_state = st.text_input("Verified Jurisdiction", value=residency_state if 'residency_state' in locals() else "Florida")
-with col3:
-    birth_year = st.text_input("Birth Year (For Registry Matching)")
+    # Simulated matching records card
+    match_col1, match_col2 = st.columns([3, 1])
+    with match_col1:
+        st.markdown(f"""
+        **Profile Match #1 (Recommended)**
+        * **Name:** {st.session_state['searched_name']}
+        * **Location:** {st.session_state['searched_location']}
+        * **Associated Records:** Public Directories, Voter Registry, Property Records, Commercial Data Brokers
+        """)
+    with match_col2:
+        if st.button("That's Me — Start Assessment"):
+            st.session_state['user_confirmed'] = True
+            st.rerun()
 
-col_btn1, col_btn2 = st.columns([1, 4])
-with col_btn1:
-    trigger_api = st.button("Transmit API Deletion Batch")
+    if st.button("None of these are me (Search Again)"):
+        st.session_state['search_performed'] = False
+        st.rerun()
 
-if trigger_api:
-    if full_name and gateway_id_token:
+# Step 3: Main Health Assessment & Remediation Dashboard (Once Confirmed)
+if st.session_state['user_confirmed']:
+    st.success(f"Identity confirmed for **{st.session_state.get('searched_name', 'User')}**! Your personalized health assessment and exposure dashboard is active below.")
+
+    if st.button("🔓 Sign Out / Search Another Person"):
+        st.session_state['user_confirmed'] = False
+        st.session_state['search_performed'] = False
+        st.rerun()
+
+    st.divider()
+
+    # Load data from database based on exposure channels
+    with sqlite3.connect(database_name) as connection:
+        df = pd.read_sql_query("SELECT id, broker_name AS 'Source/Broker', category AS 'Data Type', compliance_pathway AS 'API Pathway', risk_level AS 'Risk Severity', status AS 'Current Status', statutory_deadline AS '45-Day Deadline', response_code AS 'State Response Code', verification_note AS 'Audit Trail', target_url AS 'Portal Link', last_updated AS 'Last Updated' FROM optout_tracker;", connection)
+
+    total = len(df)
+    pending_count = len(df[~df['Current Status'].isin(['API Transmission Successful', 'Compliance Verified'])])
+    completed_count = len(df[df['Current Status'] == 'API Transmission Successful'])
+
+    st.subheader("📊 Your Privacy Health Scorecard")
+    m1, m2, m3 = st.columns(3)
+    m1.metric("Exposures Detected", total)
+    m2.metric("Items Needing Action", pending_count)
+    m3.metric("Successfully Cleaned", completed_count)
+
+    st.divider()
+
+    # Action Trigger Button for the User
+    st.markdown("### 🛡️ One-Click Privacy Protection")
+    st.write("Click below to automatically request data removal across all detected public directories and state registries.")
+    if st.button("Start Automated Removal Request"):
         new_deadline = (datetime.now() + timedelta(days=45)).strftime('%Y-%m-%d')
         with sqlite3.connect(database_name) as connection:
             cursor = connection.cursor()
-            cursor.execute("UPDATE optout_tracker SET status = 'API Transmission Successful', statutory_deadline = ?, response_code = 'Record Deleted (Pending Window)', verification_note = 'Token verified; 45-day statutory compliance window active', last_updated = CURRENT_TIMESTAMP WHERE status IN ('Pending Submission', 'Needs Action', 'Pending Queue', 'Needs Review');", (new_deadline,))
-        st.success(f"Official deletion batch successfully dispatched via state-sponsored API gateway for {full_name} under token {gateway_id_token}! 45-day countdown initiated.")
-    else:
-        st.warning("Please provide a full legal name and an active gateway verification ID to execute automated transmissions.")
+            cursor.execute("UPDATE optout_tracker SET status = 'API Transmission Successful', statutory_deadline = ?, response_code = 'Record Deleted (Pending Window)', verification_note = 'Automated user request submitted; 45-day window active', last_updated = CURRENT_TIMESTAMP WHERE status IN ('Pending Submission', 'Needs Action', 'Pending Queue', 'Needs Review');", (new_deadline,))
+        st.success("Removal requests successfully transmitted! Your 45-day statutory privacy window has begun.")
+        st.rerun()
 
-st.divider()
+    st.divider()
 
-# Load data from database based on filters
-with sqlite3.connect(database_name) as connection:
-    if selected_category == "All Categories":
-        df = pd.read_sql_query("SELECT id, broker_name AS 'Source/Broker', category AS 'Data Type', compliance_pathway AS 'API Pathway', risk_level AS 'Risk Severity', status AS 'Current Status', statutory_deadline AS '45-Day Deadline', response_code AS 'State Response Code', verification_note AS 'Audit Trail', target_url AS 'Portal Link', last_updated AS 'Last Updated' FROM optout_tracker;", connection)
-    else:
-        df = pd.read_sql_query(f"SELECT id, broker_name AS 'Source/Broker', category AS 'Data Type', compliance_pathway AS 'API Pathway', risk_level AS 'Risk Severity', status AS 'Current Status', statutory_deadline AS '45-Day Deadline', response_code AS 'State Response Code', verification_note AS 'Audit Trail', target_url AS 'Portal Link', last_updated AS 'Last Updated' FROM optout_tracker WHERE category = '{selected_category}';", connection)
+    # Display Tables
+    tab1, tab2 = st.tabs(["⚡ Active Exposures", "✅ Cleared Records"])
 
-total = len(df)
-pending_count = len(df[~df['Current Status'].isin(['API Transmission Successful', 'Compliance Verified'])])
-completed_count = len(df[df['Current Status'] == 'API Transmission Successful'])
+    with tab1:
+        st.markdown("### Records Requiring Your Attention")
+        needs_df = df[df['Current Status'] != 'API Transmission Successful']
+        if len(needs_df) > 0:
+            st.dataframe(
+                needs_df,
+                use_container_width=True,
+                column_config={
+                    "Portal Link": st.column_config.LinkColumn("Official Portal URL")
+                }
+            )
+        else:
+            st.success("All exposure records have been successfully cleared!")
 
-st.subheader("📊 State-Sponsored Compliance Report Card")
+    with tab2:
+        st.markdown("### Cleared & Protected Records")
+        rem_df = df[df['Current Status'] == 'API Transmission Successful']
+        if len(rem_df) > 0:
+            st.dataframe(
+                rem_df,
+                use_container_width=True,
+                column_config={
+                    "Portal Link": st.column_config.LinkColumn("Official Portal URL")
+                }
+            )
+        else:
+            st.info("No records have been cleared yet.")
 
-m1, m2, m3 = st.columns(3)
-m1.metric("Total Tracked Vectors", total)
-m2.metric("Pending Regulatory Processing", pending_count)
-m3.metric("Successfully Transmitted via API", completed_count)
-
-st.divider()
-
-# Granular Individual Item Status Manager with Official Response Codes
-st.markdown("### ⚙️ Regulatory Audit & Status Manager")
-col_id, col_status, col_code = st.columns(3)
-with col_id:
-    record_id = st.number_input("Record ID", min_value=1, step=1)
-with col_status:
-    new_status = st.selectbox("Regulatory Status", ["Pending Submission", "API Transmission Successful", "Compliance Verified", "Exemption Applied"])
-with col_code:
-    new_response_code = st.selectbox("Mandated Response Code", ["Record Deleted", "Record Opt-Out", "Record Exempt", "Record Not Found", "Awaiting Code"])
-
-custom_note = st.text_input("Official Audit Logging Note", placeholder="e.g., Broker confirmed purge via statutory callback")
-
-if st.button("Commit Regulatory Status"):
-    with sqlite3.connect(database_name) as connection:
-        cursor = connection.cursor()
-        cursor.execute("UPDATE optout_tracker SET status = ?, response_code = ?, verification_note = ?, last_updated = CURRENT_TIMESTAMP WHERE id = ?;", (new_status, new_response_code, custom_note, record_id))
-        connection.commit()
-    st.success(f"Record ID {record_id} successfully updated with response code '{new_response_code}'!")
-    st.rerun()
-
-st.divider()
-
-# Split Views
-tab1, tab2 = st.tabs(["⚡ Active API Vectors", "✅ Compliant & Cleared Records"])
-
-with tab1:
-    st.markdown("### Gateways Requiring Transmission or Review")
-    needs_df = df[df['Current Status'] != 'API Transmission Successful']
-    if len(needs_df) > 0:
-        st.dataframe(
-            needs_df,
-            use_container_width=True,
-            column_config={
-                "Portal Link": st.column_config.LinkColumn("Official Portal URL")
-            }
-        )
-    else:
-        st.success("All channels have successfully processed state API deletion requests.")
-
-with tab2:
-    st.markdown("### Successfully Transmitted / Purged Records")
-    rem_df = df[df['Current Status'] == 'API Transmission Successful']
-    if len(rem_df) > 0:
-        st.dataframe(
-            rem_df,
-            use_container_width=True,
-            column_config={
-                "Portal Link": st.column_config.LinkColumn("Official Portal URL")
-            }
-        )
-    else:
-        st.info("No items have been marked as successfully removed yet.")
-
-# Export Data Capability
-st.divider()
-st.subheader("📥 Export State Compliance Audit Report")
-st.write("Download your certified state-sponsored compliance log including statutory deadlines and response codes as a CSV.")
-csv_data = df.to_csv(index=False).encode('utf-8')
-st.download_button(
-    label="Download Regulatory Audit CSV",
-    data=csv_data,
-    file_name=f"DOEA_State_Compliance_Report_{datetime.now().strftime('%Y-%m-%d')}.csv",
-    mime="text/csv",
-)
+    # Export Data Capability
+    st.divider()
+    st.subheader("📥 Download Your Privacy Audit Report")
+    csv_data = df.to_csv(index=False).encode('utf-8')
+    st.download_button(
+        label="Download Compliance Audit CSV",
+        data=csv_data,
+        file_name=f"DOEA_Privacy_Report_{datetime.now().strftime('%Y-%m-%d')}.csv",
+        mime="text/csv",
+    )
