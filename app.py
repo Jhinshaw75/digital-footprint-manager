@@ -106,18 +106,24 @@ with sqlite3.connect(database_name) as connection:
 if 'stage' not in st.session_state:
     st.session_state['stage'] = 'search'
 
-# --- STAGE 1: SEARCH INPUT WITH AGE SEGMENTS ---
+# --- STAGE 1: SEARCH INPUT WITH MIDDLE NAME & AGE SEGMENTS ---
 if st.session_state['stage'] == 'search':
     st.markdown('<div class="search-card">', unsafe_allow_html=True)
     st.markdown("### 🔍 Search Subject")
-    st.write("Enter name, location, and select the appropriate age segment to narrow down public records.")
+    st.write("Enter name details, location, and age segment to narrow down public records.")
     
-    s_col1, s_col2 = st.columns(2)
+    s_col1, s_col2, s_col3 = st.columns(3)
     with s_col1:
-        search_first = st.text_input("First Name", placeholder="e.g., Josh")
-        search_city = st.text_input("City", placeholder="e.g., Tallahassee")
+        search_first = st.text_input("First Name", placeholder="e.g., Joshua")
     with s_col2:
+        search_middle = st.text_input("Middle Name / Initial", placeholder="e.g., Adam")
+    with s_col3:
         search_last = st.text_input("Last Name", placeholder="e.g., Hinshaw")
+
+    loc_col1, loc_col2, loc_col3 = st.columns(3)
+    with loc_col1:
+        search_city = st.text_input("City", placeholder="e.g., Tallahassee")
+    with loc_col2:
         states_list = [
             "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", 
             "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", 
@@ -128,13 +134,13 @@ if st.session_state['stage'] == 'search':
             "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
         ]
         search_state = st.selectbox("State", states_list, index=8)
-
-    # Age Segment Selection
-    age_segment = st.selectbox("Age Segment", ["18-29", "30-49", "50-64", "65-74", "75+"], index=2)
+    with loc_col3:
+        age_segment = st.selectbox("Age Segment", ["18-29", "30-49", "50-64", "65-74", "75+"], index=2)
 
     if st.button("Begin Search & Verify Identity"):
         if search_first and search_last and search_city:
-            st.session_state['searched_name'] = f"{search_first} {search_last}"
+            full_search_name = f"{search_first} {search_middle + ' ' if search_middle else ''}{search_last}"
+            st.session_state['searched_name'] = full_search_name
             st.session_state['searched_location'] = f"{search_city}, {search_state}"
             st.session_state['searched_age_segment'] = age_segment
             st.session_state['stage'] = 'wizard_q1'
@@ -219,17 +225,16 @@ elif st.session_state['stage'] == 'wizard_q3':
             st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
-# --- STAGE 5: RESULTS MATCH GRID (Filtered by Age Segment) ---
+# --- STAGE 5: RESULTS MATCH GRID ---
 elif st.session_state['stage'] == 'results':
     age_seg = st.session_state.get('searched_age_segment', '50-64')
     st.markdown(f"### Next Step: Select A Result Below for {st.session_state['searched_name']}")
     st.write(f"Filtered for records within age segment **{age_seg}** across verified public data sources:")
 
-    # Match Box 1
     with st.container():
         col_res1, col_res2, col_res3, col_res4 = st.columns([3, 1, 2, 2])
         with col_res1:
-            st.markdown(f"**⭐ BEST RESULT (Segment Verified)**\n### {st.session_state['searched_name']}")
+            st.markdown(f"**⭐ BEST RESULT (Verified Match)**\n### {st.session_state['searched_name']}")
             st.caption("Phone Number Found! • Tallahassee, FL")
         with col_res2:
             st.markdown(f"**AGE SEGMENT**\n### {age_seg}")
@@ -324,3 +329,4 @@ elif st.session_state['stage'] == 'dashboard':
         file_name=f"DOEA_Privacy_Report_{datetime.now().strftime('%Y-%m-%d')}.csv",
         mime="text/csv",
     )
+    
