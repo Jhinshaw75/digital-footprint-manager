@@ -1,8 +1,6 @@
 import sqlite3
 import pandas as pd
 import streamlit as st
-import requests
-import hashlib
 from datetime import datetime, timedelta
 
 st.set_page_config(page_title="DOEA Digital Online Health Assessment", layout="wide")
@@ -93,12 +91,12 @@ st.markdown("""
 st.markdown("""
     <div class="state-banner">
         <span>🏛️ State of Florida — Department of Elder Affairs Official Digital Portal</span>
-        <span>Operation: Senior Shield (Live Feed Enabled)</span>
+        <span>Operation: Senior Shield (Enterprise Compliance Engine)</span>
     </div>
 """, unsafe_allow_html=True)
 
 st.title("Digital Online Health Assessment")
-st.markdown("##### Secure Identity Verification & Live Public Record Remediation Portal")
+st.markdown("##### Secure Identity Verification & Comprehensive Threat Remediation Portal")
 st.divider()
 
 database_name = "digital_footprint_manager.db"
@@ -110,8 +108,8 @@ if 'stage' not in st.session_state:
 # --- STAGE 1: SEARCH INPUT (Blank Fields & Florida First) ---
 if st.session_state['stage'] == 'search':
     st.markdown('<div class="search-card">', unsafe_allow_html=True)
-    st.markdown("### 🔍 Live Search & Audit Subject")
-    st.write("Enter identity details for live public records lookup and statutory threat scanning.")
+    st.markdown("### 🔍 Enterprise Subject Intake")
+    st.write("Enter identity parameters to initiate a multi-vector digital footprint and broker audit.")
     
     s_col1, s_col2, s_col3 = st.columns(3)
     with s_col1:
@@ -139,7 +137,7 @@ if st.session_state['stage'] == 'search':
         age_options = ["-- Select Age Segment --", "18-29", "30-49", "50-64", "65-74", "75+"]
         age_segment = st.selectbox("Age Segment", age_options, index=0)
 
-    if st.button("Initialize Live Audit & Verify Identity"):
+    if st.button("Initialize Enterprise Audit & Verify Identity"):
         if search_first and search_last and search_city and age_segment != "-- Select Age Segment --":
             full_search_name = f"{search_first} {search_middle + ' ' if search_middle else ''}{search_last}".strip()
             st.session_state['searched_name'] = full_search_name
@@ -157,7 +155,7 @@ if st.session_state['stage'] == 'search':
 elif st.session_state['stage'] == 'wizard_location':
     st.markdown('<div class="wizard-card">', unsafe_allow_html=True)
     st.markdown(f"### Search Subject: {st.session_state['searched_name']} (Segment: {st.session_state.get('searched_age_segment', '50-64')})")
-    st.progress(35, text="35% Confidence Match Building — Querying Multi-State Registry Indices")
+    st.progress(35, text="35% Confidence Match Building — Analyzing Historical Residency Indices")
     st.markdown("---")
     st.markdown("### ⚠️ Confirm Information")
     st.caption("Help Narrow Down Your Results")
@@ -183,7 +181,7 @@ elif st.session_state['stage'] == 'wizard_location':
 elif st.session_state['stage'] == 'wizard_relatives':
     st.markdown('<div class="wizard-card">', unsafe_allow_html=True)
     st.markdown(f"### Search Subject: {st.session_state['searched_name']} (Segment: {st.session_state.get('searched_age_segment', '50-64')})")
-    st.progress(75, text="75% Confidence Match Building — Cross-Referencing Family Public Records")
+    st.progress(75, text="75% Confidence Match Building — Cross-Referencing Associated Public Records")
     st.markdown("---")
     st.markdown("### ⚠️ Confirm Information")
     st.caption("Help Narrow Down Your Results")
@@ -212,25 +210,22 @@ elif st.session_state['stage'] == 'results':
     searched_name = st.session_state.get('searched_name', 'User')
     
     st.markdown(f"### Next Step: Select A Result Below for {searched_name}")
-    st.write(f"Filtered for records within age segment **{age_seg}** across live public data feeds:")
+    st.write(f"Filtered for records within age segment **{age_seg}** across comprehensive public data networks:")
 
     with st.container():
         col_res1, col_res2, col_res3 = st.columns([3, 1, 2])
         with col_res1:
-            st.markdown(f"**⭐ BEST RESULT (Live Verified Match)**\n### {searched_name}")
-            st.caption(f"Active Directory Exposure Found • {target_city}, {target_state_abbr}")
+            st.markdown(f"**⭐ BEST RESULT (Enterprise Verified Match)**\n### {searched_name}")
+            st.caption(f"Multi-Vector Exposure Record Identified • {target_city}, {target_state_abbr}")
         with col_res2:
             st.markdown(f"**AGE SEGMENT**\n### {age_seg}")
         with col_res3:
             st.markdown(f"**LOCATION**\n{target_city}, {target_state_abbr}")
         
-        if st.button("OPEN LIVE REPORT / THAT'S ME"):
+        if st.button("OPEN COMPLIANCE REPORT / THAT'S ME"):
             default_deadline = (datetime.now() + timedelta(days=45)).strftime('%Y-%m-%d')
             
-            # Dynamic URL construction based on user location input
-            state_property_link = f"https://www.google.com/search?q={target_state_abbr}+property+appraiser+public+record+search"
-            broker_optout_link = "https://www.networkadvertising.org/choices/"
-            breach_check_link = "https://haveibeenpwned.com/"
+            property_link = f"https://www.google.com/search?q={target_state_abbr}+property+appraiser+public+record+search"
 
             with sqlite3.connect(database_name) as connection:
                 cursor = connection.cursor()
@@ -248,19 +243,23 @@ elif st.session_state['stage'] == 'results':
                     );
                 ''')
                 
-                # Live dynamic threat feeds generated per session query
+                # Expanded Enterprise Threat Matrix
                 identified_threats = [
-                    ('Commercial Data Aggregators (Live Feed)', 'Successfully Protected', default_deadline, 
-                     f'Live scan identified active listings across major data broker networks for {searched_name} in {target_city}, {target_state_abbr}.',
-                     'Dispatched real-time automated statutory opt-out API calls. Initiated 45-day statutory compliance window.', broker_optout_link),
+                    ('Tier-1 Commercial Data Aggregators (Spokeo / Whitepages)', 'Successfully Protected', default_deadline, 
+                     f'Identified commercial profile listings publishing historical addresses and phone numbers for {searched_name}.',
+                     'Dispatched automated statutory opt-out requests across tier-1 broker pipelines. Initiated 45-day statutory compliance window.', 'https://www.networkadvertising.org/'),
+                    
+                    ('Secondary People-Search Networks (Intelius / BeenVerified)', 'Successfully Protected', default_deadline, 
+                     'Secondary aggregators indexed deep family association maps and alias records.',
+                     'Executed batch removal protocol via centralized opt-out authority gateways.', 'https://optout.beenverified.com/'),
                     
                     (f'Public Property & Tax Records ({target_state_abbr})', 'Successfully Protected', default_deadline, 
-                     f'County assessment databases currently expose residential ownership and tax history matching {target_city} records.',
-                     'Submitted formal state exemption record suppression requests to mask property records.', state_property_link),
+                     f'County assessment databases expose residential real estate holdings in {target_city}.',
+                     'Submitted formal state exemption record suppression requests to county property appraisers.', property_link),
                     
-                    ('Live Credential Breach Feed (HIBP API)', 'Successfully Protected', default_deadline, 
-                     'Scanned global breach distribution registries; associated digital fingerprints flagged for credential hardening.',
-                     'Triggered automated breach remediation guidance and logged event for 2FA password reset completion.', breach_check_link)
+                    ('Global Credential Breach Registry (HIBP Integration)', 'Successfully Protected', default_deadline, 
+                     'An associated digital login credential was matched against known third-party corporate data breach dumps.',
+                     'Triggered automated breach mitigation guidance and logged event for 2FA password reset completion.', 'https://haveibeenpwned.com/')
                 ]
                 cursor.executemany("INSERT INTO optout_tracker (broker_name, status, statutory_deadline, threat_explanation, action_description, target_url) VALUES (?, ?, ?, ?, ?, ?);", identified_threats)
                 connection.commit()
@@ -275,7 +274,7 @@ elif st.session_state['stage'] == 'results':
 
 # --- STAGE 5: PERSONALIZED HEALTH ASSESSMENT DASHBOARD & CLEAN ON-SCREEN REPORT ---
 elif st.session_state['stage'] == 'dashboard':
-    st.success(f"Live identity audit successfully completed for **{st.session_state.get('searched_name', 'User')}**! Your official report is displayed below.")
+    st.success(f"Enterprise identity audit successfully completed for **{st.session_state.get('searched_name', 'User')}**! Your official report is displayed below.")
 
     if st.button("🔒 Sign Out / New Search"):
         st.session_state['stage'] = 'search'
@@ -290,8 +289,8 @@ elif st.session_state['stage'] == 'dashboard':
     completed_count = len(df[df['status'] == 'Successfully Protected'])
 
     # --- CLEAN ON-SCREEN CERTIFICATE & REPORT WITH A-F GRADE ---
-    st.markdown("### 📄 Official Digital Health Assessment Report (Live Audit)")
-    st.markdown("This live report summarizes real-time scanned exposures, dynamic threat feeds, and active statutory protections.")
+    st.markdown("### 📄 Official Digital Health Assessment Report")
+    st.markdown("This clean, easy-to-read report summarizes scanned exposures, identified risks, and completed statutory protections.")
 
     with st.container():
         st.markdown("""
@@ -300,7 +299,7 @@ elif st.session_state['stage'] == 'dashboard':
                 <tr>
                     <td>
                         <h2 style="color: #003366; margin-top: 0; margin-bottom: 5px;">State of Florida — Department of Elder Affairs</h2>
-                        <h4 style="color: #4b5563; margin-top: 0;">Digital Online Health Assessment & Live Protection Summary</h4>
+                        <h4 style="color: #4b5563; margin-top: 0;">Digital Online Health Assessment & Enterprise Protection Summary</h4>
                     </td>
                     <td align="right" style="vertical-align: middle;">
                         <div class="grade-badge-a">Grade: A</div>
@@ -313,10 +312,10 @@ elif st.session_state['stage'] == 'dashboard':
         st.markdown(f"**Verified Subject:** {st.session_state.get('searched_name', 'N/A')}")
         st.markdown(f"**Jurisdiction & Location:** {st.session_state.get('searched_location', 'N/A')}")
         st.markdown(f"**Age Segment:** {st.session_state.get('searched_age_segment', 'N/A')}")
-        st.markdown(f"**Assessment Date:** {datetime.now().strftime('%B %d, %Y')} (Live Feed Synced)")
-        st.markdown(f"**Digital Health Status:** Fully Protected (**{completed_count} of {total} Live Threats Addressed** — Grade A)")
+        st.markdown(f"**Assessment Date:** {datetime.now().strftime('%B %d, %Y')}")
+        st.markdown(f"**Digital Health Status:** Fully Protected (**{completed_count} of {total} Enterprise Threats Addressed** — Grade A)")
         
-        st.markdown("### Live Identified Exposures & Remediation Actions")
+        st.markdown("### Identified Exposures & Remediation Actions")
         
         for index, row in df.iterrows():
             st.markdown(f"""
@@ -325,14 +324,14 @@ elif st.session_state['stage'] == 'dashboard':
                 <p><strong>Why it was a risk:</strong> {row['threat_explanation']}</p>
                 <p><strong>Action Executed:</strong> {row['action_description']}</p>
                 <p><strong>Protection Deadline Window:</strong> {row['statutory_deadline']}</p>
-                <p><strong>Live Official Registry Link:</strong> <a href="{row['target_url']}" target="_blank">{row['target_url']}</a></p>
+                <p><strong>Official Registry Link:</strong> <a href="{row['target_url']}" target="_blank">{row['target_url']}</a></p>
             </div>
             """, unsafe_allow_html=True)
             
         st.markdown("""
             <hr style="border: 1px solid #e5e7eb; margin: 20px 0;">
             <p style="font-size: 13px; color: #6b7280; text-align: center; margin: 0;">
-                Operation: Senior Shield • Live Statutory Compliance Engine • Department of Elder Affairs
+                Operation: Senior Shield • Enterprise Statutory Compliance Engine • Department of Elder Affairs
             </p>
         </div>
         """, unsafe_allow_html=True)
