@@ -151,7 +151,7 @@ elif st.session_state['stage'] == 'results':
         col_res1, col_res2, col_res3 = st.columns([3, 1, 2])
         with col_res1:
             st.markdown(f"**⭐ BEST RESULT (Verified Match)**\n### {searched_name}")
-            st.caption(f"Phone Number Found! • {target_city}, {target_state_abbr}")
+            st.caption(f"Public Exposure Record Identified • {target_city}, {target_state_abbr}")
         with col_res2:
             st.markdown(f"**AGE SEGMENT**\n### {age_seg}")
         with col_res3:
