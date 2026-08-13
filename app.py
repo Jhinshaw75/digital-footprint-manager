@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 st.set_page_config(page_title="DOEA Digital Online Health Assessment", layout="wide")
 
-# Custom CSS for modern styling and wizard containers
+# Custom CSS for clean, modern styling
 st.markdown("""
     <style>
     .main {
@@ -47,6 +47,14 @@ st.markdown("""
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         margin-bottom: 20px;
     }
+    .threat-detail-box {
+        background-color: #f0f4f8;
+        padding: 15px;
+        border-radius: 6px;
+        border-left: 4px solid #003366;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
     .stButton>button {
         width: 100%;
         background-color: #003366;
@@ -80,20 +88,17 @@ st.divider()
 
 database_name = "digital_footprint_manager.db"
 
-# Initialize Database table structure if not present
+# Initialize Database table structure
 with sqlite3.connect(database_name) as connection:
     cursor = connection.cursor()
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS optout_tracker (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             broker_name TEXT,
-            category TEXT,
-            compliance_pathway TEXT,
-            risk_level TEXT,
             status TEXT,
             statutory_deadline TEXT,
-            response_code TEXT,
-            verification_note TEXT,
+            threat_explanation TEXT,
+            action_description TEXT,
             target_url TEXT,
             last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
@@ -247,11 +252,19 @@ elif st.session_state['stage'] == 'results':
                 cursor = connection.cursor()
                 cursor.execute("DELETE FROM optout_tracker;")
                 identified_threats = [
-                    ('Commercial Data Aggregators', 'Commercial Brokers', 'Third-Party Opt-Out API', 'High', 'API Transmission Successful', default_deadline, 'Record Deleted', 'Automated state removal request executed; 45-day statutory compliance window active', 'https://www.networkadvertising.org/'),
-                    ('Public Property & Tax Records', 'Public Records/PII', 'Local Ordinance Request', 'Moderate', 'API Transmission Successful', default_deadline, 'Record Deleted', 'County property appraiser redaction protocol executed', 'https://floridarevenuetax.org'),
-                    ('HaveIBeenPwned API', 'Credential/Breach Data', 'Direct Credential API', 'Critical', 'API Transmission Successful', default_deadline, 'Record Deleted', 'Credential reset notice dispatched; breach exposure purged', 'https://haveibeenpwned.com/')
+                    ('Commercial Data Aggregators', 'Successfully Protected', default_deadline, 
+                     'Commercial data aggregators collect and resell home addresses and phone numbers for profit, exposing individuals to spam and marketing scams.',
+                     'Dispatched an automated statutory opt-out request via the state-sponsored API gateway. Initiated 45-day statutory compliance window.', 'https://www.networkadvertising.org/'),
+                    
+                    ('Public Property & Tax Records', 'Successfully Protected', default_deadline, 
+                     'Public county property records publish home ownership details and property tax histories online, allowing bad actors to physically locate individuals.',
+                     'Submitted a formal county record suppression request under state exemption guidelines to mask residential address details.', 'https://floridarevenuetax.org'),
+                    
+                    ('HaveIBeenPwned API', 'Successfully Protected', default_deadline, 
+                     'An associated email or password combination was detected in a third-party data breach dump, placing connected online accounts at risk.',
+                     'Triggered automated breach remediation guidance and logged the event for 2FA password reset completion.', 'https://haveibeenpwned.com/')
                 ]
-                cursor.executemany("INSERT INTO optout_tracker (broker_name, category, compliance_pathway, risk_level, status, statutory_deadline, response_code, verification_note, target_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);", identified_threats)
+                cursor.executemany("INSERT INTO optout_tracker (broker_name, status, statutory_deadline, threat_explanation, action_description, target_url) VALUES (?, ?, ?, ?, ?, ?);", identified_threats)
                 connection.commit()
             
             st.session_state['stage'] = 'dashboard'
@@ -264,7 +277,7 @@ elif st.session_state['stage'] == 'results':
 
 # --- STAGE 6: PERSONALIZED HEALTH ASSESSMENT DASHBOARD ---
 elif st.session_state['stage'] == 'dashboard':
-    st.success(f"Identity successfully verified for **{st.session_state.get('searched_name', 'User')}**! Case summary and audit trail active below.")
+    st.success(f"Identity successfully verified for **{st.session_state.get('searched_name', 'User')}**! Clean, simplified threat report active below.")
 
     if st.button("🔒 Sign Out / New Search"):
         st.session_state['stage'] = 'search'
@@ -272,67 +285,49 @@ elif st.session_state['stage'] == 'dashboard':
 
     st.divider()
 
-    # Operator Case Summary & Audit Trail Box
-    st.markdown("### 📋 Operator Case Summary & Audit Trail")
+    # Operator Case Summary
+    st.markdown("### 📋 Case Summary")
     st.markdown(f"""
     <div class="audit-card">
         <p><strong>👤 Verified Subject:</strong> {st.session_state.get('searched_name', 'N/A')} ({st.session_state.get('searched_location', 'N/A')})</p>
         <p><strong>🎯 Age Segment:</strong> {st.session_state.get('searched_age_segment', 'N/A')}</p>
-        <p><strong>⚡ Actions Taken:</strong> Automated state-sponsored API sweep executed across all identified commercial brokers, public property records, and credential breach databases.</p>
-        <p><strong>📌 Remaining Next Steps:</strong> All identified threats have been successfully purged under active 45-day statutory compliance monitoring. Review audit report CSV below for formal records.</p>
+        <p><strong>📌 Status:</strong> All identified exposures have been scanned, addressed, and placed under 45-day statutory protection monitoring.</p>
     </div>
     """, unsafe_allow_html=True)
 
     with sqlite3.connect(database_name) as connection:
-        df = pd.read_sql_query("SELECT id, broker_name AS 'Source/Broker', category AS 'Data Type', compliance_pathway AS 'API Pathway', risk_level AS 'Risk Severity', status AS 'Current Status', statutory_deadline AS '45-Day Deadline', response_code AS 'State Response Code', verification_note AS 'Audit Trail', target_url AS 'Portal Link', last_updated AS 'Last Updated' FROM optout_tracker;", connection)
+        df = pd.read_sql_query("SELECT id, broker_name AS 'Source / Threat', status AS 'Protection Status', statutory_deadline AS 'Statutory Deadline', threat_explanation, action_description, target_url FROM optout_tracker;", connection)
 
     total = len(df)
-    pending_count = len(df[~df['Current Status'].isin(['API Transmission Successful', 'Compliance Verified'])])
-    completed_count = len(df[df['Current Status'] == 'API Transmission Successful'])
+    completed_count = len(df[df['Protection Status'] == 'Successfully Protected'])
 
     st.subheader("📊 Your Privacy Health Scorecard")
-    m1, m2, m3 = st.columns(3)
-    m1.metric("Identified Threats", total)
-    m2.metric("Items Needing Action", pending_count)
-    m3.metric("Successfully Cleaned", completed_count)
+    m1, m2 = st.columns(2)
+    m1.metric("Threats Addressed", total)
+    m2.metric("Successfully Protected", completed_count)
 
     st.divider()
 
-    tab1, tab2 = st.tabs(["⚡ Active Threat Exposures", "✅ Cleared Records"])
+    # Clean, Simple Expanders for Each Threat
+    st.markdown("### 🔍 Threat & Protection Details")
+    st.caption("Click any item below to see why it was a risk and what action was taken.")
 
-    with tab1:
-        st.markdown("### Confirmed Threats Requiring Your Attention")
-        needs_df = df[df['Current Status'] != 'API Transmission Successful']
-        if len(needs_df) > 0:
-            st.dataframe(
-                needs_df,
-                use_container_width=True,
-                column_config={
-                    "Portal Link": st.column_config.LinkColumn("Official Portal URL")
-                }
-            )
-        else:
-            st.success("All identified threat vectors have been successfully cleared and purged!")
-
-    with tab2:
-        st.markdown("### Cleared & Protected Records")
-        rem_df = df[df['Current Status'] == 'API Transmission Successful']
-        if len(rem_df) > 0:
-            st.dataframe(
-                rem_df,
-                use_container_width=True,
-                column_config={
-                    "Portal Link": st.column_config.LinkColumn("Official Portal URL")
-                }
-            )
-        else:
-            st.info("No records have been cleared yet.")
+    for index, row in df.iterrows():
+        with st.expander(f"🛡️ **{row['Source / Threat']}** — Status: {row['Protection Status']}"):
+            st.markdown(f"""
+            <div class="threat-detail-box">
+                <p><strong>🚨 Why it was a risk:</strong> {row['threat_explanation']}</p>
+                <p><strong>🛠️ Action Taken:</strong> {row['action_description']}</p>
+                <p><strong>📅 Protection Window Deadline:</strong> {row['Statutory Deadline']}</p>
+                <p><strong>🔗 Official Portal:</strong> <a href="{row['target_url']}" target="_blank">{row['target_url']}</a></p>
+            </div>
+            """, unsafe_allow_html=True)
 
     st.divider()
-    st.subheader("📥 Download Your Privacy Audit Report")
+    st.subheader("📥 Download Your Audit Report")
     csv_data = df.to_csv(index=False).encode('utf-8')
     st.download_button(
-        label="Download Compliance Audit CSV",
+        label="Download Clean Audit CSV",
         data=csv_data,
         file_name=f"DOEA_Privacy_Report_{datetime.now().strftime('%Y-%m-%d')}.csv",
         mime="text/csv",
