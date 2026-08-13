@@ -131,13 +131,39 @@ if st.session_state['stage'] == 'search':
             st.session_state['searched_state'] = search_state
             st.session_state['searched_location'] = f"{search_city}, {search_state}"
             st.session_state['searched_age_segment'] = age_segment
-            st.session_state['stage'] = 'results'
+            st.session_state['stage'] = 'wizard_location'
             st.rerun()
         else:
             st.warning("Please fill in first name, last name, and city to start.")
     st.markdown('</div>', unsafe_allow_html=True)
 
-# --- STAGE 2: RESULTS MATCH GRID (Instant & Clean) ---
+# --- STAGE 2: LOCATION HISTORY WIZARD QUESTION ---
+elif st.session_state['stage'] == 'wizard_location':
+    st.markdown('<div class="wizard-card">', unsafe_allow_html=True)
+    st.markdown(f"### Search Subject: {st.session_state['searched_name']} (Segment: {st.session_state.get('searched_age_segment', '50-64')})")
+    st.progress(50, text="50% Confidence Match Building — Verifying Residency History")
+    st.markdown("---")
+    st.markdown("### ⚠️ Confirm Information")
+    st.caption("Help Narrow Down Your Results")
+    current_loc = st.session_state.get('searched_location', 'Tallahassee, Florida')
+    st.markdown(f"**Has {st.session_state['searched_name']} ever lived in other cities or states outside of {current_residency if 'current_residency' in locals() else current_loc}?**")
+    
+    wq_c1, wq_c2, wq_c3 = st.columns(3)
+    with wq_c1:
+        if st.button("YES"):
+            st.session_state['stage'] = 'results'
+            st.rerun()
+    with wq_c2:
+        if st.button("NO"):
+            st.session_state['stage'] = 'results'
+            st.rerun()
+    with wq_c3:
+        if st.button("I DON'T KNOW"):
+            st.session_state['stage'] = 'results'
+            st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# --- STAGE 3: RESULTS MATCH GRID ---
 elif st.session_state['stage'] == 'results':
     age_seg = st.session_state.get('searched_age_segment', '50-64')
     target_city = st.session_state.get('searched_city', 'Tallahassee')
@@ -198,7 +224,7 @@ elif st.session_state['stage'] == 'results':
         st.session_state['stage'] = 'search'
         st.rerun()
 
-# --- STAGE 3: PERSONALIZED HEALTH ASSESSMENT DASHBOARD & CLEAN ON-SCREEN REPORT ---
+# --- STAGE 4: PERSONALIZED HEALTH ASSESSMENT DASHBOARD & CLEAN ON-SCREEN REPORT ---
 elif st.session_state['stage'] == 'dashboard':
     st.success(f"Identity successfully verified for **{st.session_state.get('searched_name', 'User')}**! Your official report is displayed below.")
 
