@@ -156,7 +156,7 @@ if st.session_state['stage'] == 'search':
         age_options = ["-- Select Age Segment --", "18-29", "30-49", "50-64", "65-74", "75+"]
         age_segment = st.selectbox("Age Segment", age_options, index=0, key="c_age")
 
-    if st.button("Proceed to Sequential Verification"):
+    if st.button("Proceed to Verification"):
         if search_first and search_last and search_city and age_segment != "-- Select Age Segment --":
             full_search_name = f"{search_first} {search_middle + ' ' if search_middle else ''}{search_last}".strip()
             st.session_state['searched_name'] = full_search_name
@@ -170,18 +170,18 @@ if st.session_state['stage'] == 'search':
             st.warning("Please fill in your first name, last name, current city, and select an age segment to proceed.")
     st.markdown('</div>', unsafe_allow_html=True)
 
-# --- STAGE 2: SEQUENTIAL MFA — STEP 1 (EMAIL VERIFICATION WITH DEMO INBOX) ---
+# --- STAGE 2: STREAMLINED SINGLE-STEP EMAIL VERIFICATION ---
 elif st.session_state['stage'] == 'mfa_email':
     st.markdown('<div class="wizard-card">', unsafe_allow_html=True)
     current_name = st.session_state.get('searched_name', 'Subject')
     
     st.markdown(f"### Subject: {current_name}")
-    st.progress(35, text="Step 1 of 2: Email Identity Confirmation")
+    st.progress(50, text="Identity Confirmation Gateway")
     st.markdown("---")
-    st.markdown("#### 📧 Step 1: Confirm Your Email Address")
-    st.write("This is a simple **two-step process**. We will email you a verification code which will confirm your identity to securely perform your search.")
+    st.markdown("#### 📧 Confirm Your Email Address")
+    st.write("We will email you a quick verification code to confirm your identity so you can securely view your report.")
     
-    user_email = st.text_input("Your Email Address (We will email you a code to confirm it's you)", value="", placeholder="name@example.com", key="input_email")
+    user_email = st.text_input("Your Email Address", value="", placeholder="name@example.com", key="input_email")
     
     col_btn1, col_btn_spacer, col_btn2 = st.columns([2, 3, 2])
     with col_btn1:
@@ -225,79 +225,17 @@ elif st.session_state['stage'] == 'mfa_email':
 
         entered_email_code = st.text_input("Enter the 6-Digit Verification Code that has been emailed to you", value="", max_chars=6, key="input_email_code")
 
-        if st.button("Verify Email & Proceed to Phone Authentication"):
+        if st.button("Verify Identity & View My Report"):
             if entered_email_code == simulated_email_code:
                 st.session_state['user_email'] = active_email
-                st.session_state['sms_otp'] = str(random.randint(100000, 999999))
-                st.session_state['stage'] = 'mfa_sms'
+                st.session_state['stage'] = 'results'
                 st.rerun()
             else:
                 st.error("Invalid verification code. Please check your simulated inbox preview above.")
             
     st.markdown('</div>', unsafe_allow_html=True)
 
-# --- STAGE 3: SEQUENTIAL MFA — STEP 2 (SMS MOBILE VERIFICATION WITH DEMO INBOX) ---
-elif st.session_state['stage'] == 'mfa_sms':
-    st.markdown('<div class="wizard-card">', unsafe_allow_html=True)
-    current_name = st.session_state.get('searched_name', 'Subject')
-    current_email = st.session_state.get('user_email', '')
-    
-    st.markdown(f"### Subject: {current_name}")
-    st.progress(75, text="Step 2 of 2: Mobile Phone Identity Confirmation")
-    st.markdown("---")
-    st.success(f"✅ Email Address (**{current_email}**) successfully verified!")
-    st.markdown("#### 📱 Step 2: Confirm Your Mobile Phone Number")
-    st.write("We will text you a quick verification code to complete your second security step.")
-    
-    user_phone = st.text_input("Your Mobile Phone Number (For SMS Code)", value="", placeholder="(555) 000-0000", key="input_phone")
-    
-    col_s_btn1, col_s_btn_spacer, col_s_btn2 = st.columns([2, 3, 2])
-    with col_s_btn1:
-        send_sms_clicked = st.button("Send SMS Code")
-    with col_s_btn2:
-        back_email_clicked = st.button("Back to Email Verification")
-
-    if back_email_clicked:
-        st.session_state.pop('sms_otp', None)
-        st.session_state['stage'] = 'mfa_email'
-        st.rerun()
-
-    if send_sms_clicked:
-        if user_phone:
-            st.session_state['temp_phone'] = user_phone
-            st.rerun()
-        else:
-            st.warning("Please enter a valid mobile phone number before requesting an SMS code.")
-
-    if 'temp_phone' in st.session_state:
-        active_phone = st.session_state['temp_phone']
-        simulated_sms_code = st.session_state.get('sms_otp', '654321')
-        
-        st.success(f"📱 A verification code has been texted to **{active_phone}**. Please check your text messages.")
-        
-        with st.expander("💬 Demo SMS Message Preview (Click to open simulated text message)", expanded=True):
-            st.markdown(f"""
-            <div class="inbox-preview">
-                <strong>From:</strong> DOEA-ALERT (State Secure Gateway)<br>
-                <strong>To:</strong> {active_phone}<br>
-                <hr style="margin: 10px 0; border: 1px solid #cbd5e1;">
-                <p>State of Florida - Senior Shield: Your mobile verification code is <strong>{simulated_sms_code}</strong>. Do not share this code.</p>
-            </div>
-            """, unsafe_allow_html=True)
-
-        entered_sms_code = st.text_input("Enter the 6-Digit Verification Code that has been texted to you", value="", max_chars=6, key="input_sms_code")
-
-        if st.button("Verify Mobile & Select Profile Match"):
-            if entered_sms_code == simulated_sms_code:
-                st.session_state['user_phone'] = active_phone
-                st.session_state['stage'] = 'results'
-                st.rerun()
-            else:
-                st.error("Invalid SMS verification code. Please check your simulated text message preview above.")
-
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# --- STAGE 4: AUTOMATED INTELIUS-STYLE DISAMBIGUATION GRID ---
+# --- STAGE 3: AUTOMATED INTELIUS-STYLE DISAMBIGUATION GRID ---
 elif st.session_state['stage'] == 'results':
     age_seg = st.session_state.get('searched_age_segment', '50-64')
     target_city = st.session_state.get('searched_city', 'City')
@@ -307,7 +245,6 @@ elif st.session_state['stage'] == 'results':
     st.markdown(f"### 👥 Select Correct Match for {searched_name}")
     st.write(f"Multiple public directory listings found matching your search parameters. Review historical residencies and relative connections below to confirm your profile:")
 
-    # Automatically generated rich historical profile records mimicking Intelius
     candidates = [
         {
             "id": 1,
@@ -391,9 +328,9 @@ elif st.session_state['stage'] == 'results':
         st.session_state['stage'] = 'search'
         st.rerun()
 
-# --- STAGE 5: PERSONALIZED HEALTH ASSESSMENT DASHBOARD & CLEAN ON-SCREEN REPORT ---
+# --- STAGE 4: PERSONALIZED HEALTH ASSESSMENT DASHBOARD & CLEAN ON-SCREEN REPORT ---
 elif st.session_state['stage'] == 'dashboard':
-    st.success(f"Enterprise identity audit successfully completed and sequentially MFA-verified for **{st.session_state.get('searched_name', 'User')}**! Your official report is displayed below.")
+    st.success(f"Enterprise identity audit successfully completed and verified for **{st.session_state.get('searched_name', 'User')}**! Your official report is displayed below.")
 
     if st.button("🔒 Sign Out / New Search"):
         st.session_state['stage'] = 'search'
@@ -407,7 +344,6 @@ elif st.session_state['stage'] == 'dashboard':
     total = len(df)
     completed_count = len(df[df['status'] == 'Successfully Protected'])
 
-    # --- CLEAN ON-SCREEN CERTIFICATE & REPORT WITH A-F GRADE ---
     st.markdown("### 📄 Official Digital Health Assessment Report")
     st.markdown("This clean, easy-to-read report summarizes scanned exposures, identified risks, and completed statutory protections.")
 
@@ -434,7 +370,6 @@ elif st.session_state['stage'] == 'dashboard':
         st.markdown(f"**Assessment Date:** {datetime.now().strftime('%B %d, %Y')}")
         st.markdown(f"**Digital Health Status:** Fully Protected (**{completed_count} of {total} Enterprise Threats Addressed** — Grade A)")
         
-        # 45-Day Re-Scan Window Notice
         future_date = (datetime.now() + timedelta(days=45)).strftime('%B %d, %Y')
         st.info(f"⏳ **Statutory Window Active:** Your 45-day compliance window expires on **{future_date}**. Data brokers frequently re-scrape records over time. We recommend running a fresh audit on or after this date.")
 
@@ -472,4 +407,3 @@ elif st.session_state['stage'] == 'dashboard':
         if st.button("🔄 Run Another Assessment"):
             st.session_state['stage'] = 'search'
             st.rerun()
-            
