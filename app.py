@@ -152,7 +152,7 @@ if st.session_state['stage'] == 'search':
             st.warning("Please fill in your first name, last name, current city, and select an age segment to start.")
     st.markdown('</div>', unsafe_allow_html=True)
 
-# --- STAGE 2A: RESIDENCY VERIFICATION WIZARD ---
+# --- STAGE 2: RESIDENCY VERIFICATION WIZARD ---
 elif st.session_state['stage'] == 'wizard_residency':
     st.markdown('<div class="wizard-card">', unsafe_allow_html=True)
     current_name = st.session_state.get('searched_name', 'Subject')
@@ -160,7 +160,7 @@ elif st.session_state['stage'] == 'wizard_residency':
     target_state = st.session_state.get('searched_state', 'State')
     
     st.markdown(f"### Search Subject: {current_name}")
-    st.progress(40, text="40% Confidence Match Building — Analyzing Historical Residency Indices")
+    st.progress(60, text="60% Confidence Match Building — Analyzing Historical Residency Indices")
     st.markdown("---")
     st.markdown("### ⚠️ Confirm Residency Information")
     st.caption("Help Narrow Down Your Results")
@@ -170,43 +170,13 @@ elif st.session_state['stage'] == 'wizard_residency':
     wr_c1, wr_c2, wr_c3 = st.columns(3)
     with wr_c1:
         if st.button("YES"):
-            st.session_state['stage'] = 'wizard_relatives'
+            st.session_state['stage'] = 'results'
             st.rerun()
     with wr_c2:
         if st.button("NO"):
-            st.session_state['stage'] = 'wizard_relatives'
+            st.session_state['stage'] = 'results'
             st.rerun()
     with wr_c3:
-        if st.button("I DON'T KNOW"):
-            st.session_state['stage'] = 'wizard_relatives'
-            st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# --- STAGE 2B: RELATIVES VERIFICATION WIZARD ---
-elif st.session_state['stage'] == 'wizard_relatives':
-    st.markdown('<div class="wizard-card">', unsafe_allow_html=True)
-    current_name = st.session_state.get('searched_name', 'Subject')
-    target_city = st.session_state.get('searched_city', 'City')
-    target_state = st.session_state.get('searched_state', 'State')
-    
-    st.markdown(f"### Search Subject: {current_name}")
-    st.progress(75, text="75% Confidence Match Building — Cross-Referencing Associated Family Public Records")
-    st.markdown("---")
-    st.markdown("### ⚠️ Confirm Family Associations")
-    st.caption("Help Narrow Down Your Results")
-    
-    st.markdown(f"**As far as you know, does {current_name} have any associated family members or relatives linked to public records in {target_city}, {target_state}?**")
-    
-    rel_c1, rel_c2, rel_c3 = st.columns(3)
-    with rel_c1:
-        if st.button("YES"):
-            st.session_state['stage'] = 'results'
-            st.rerun()
-    with rel_c2:
-        if st.button("NO"):
-            st.session_state['stage'] = 'results'
-            st.rerun()
-    with rel_c3:
         if st.button("I DON'T KNOW"):
             st.session_state['stage'] = 'results'
             st.rerun()
@@ -254,11 +224,11 @@ elif st.session_state['stage'] == 'results':
                 
                 identified_threats = [
                     ('Tier-1 Commercial Data Aggregators (Spokeo / Whitepages)', 'Successfully Protected', default_deadline, 
-                     f'Identified commercial profile listings publishing historical addresses and relative associations for {searched_name} in {target_city}, {target_state_abbr}.',
+                     f'Identified commercial profile listings publishing historical addresses and contact numbers for {searched_name} in {target_city}, {target_state_abbr}.',
                      'Dispatched automated statutory opt-out requests across tier-1 broker pipelines. Initiated 45-day statutory compliance window.', 'https://www.networkadvertising.org/'),
                     
                     ('Secondary People-Search Networks (Intelius / BeenVerified)', 'Successfully Protected', default_deadline, 
-                     f'Secondary aggregators indexed family mapping and public records matching {target_city}, {target_state_abbr} listings.',
+                     f'Secondary aggregators indexed residency maps and public records matching {target_city}, {target_state_abbr} listings.',
                      'Executed batch removal protocol via centralized opt-out authority gateways.', 'https://optout.beenverified.com/'),
                     
                     (f'Public Property & Tax Records ({target_state_abbr})', 'Successfully Protected', default_deadline, 
