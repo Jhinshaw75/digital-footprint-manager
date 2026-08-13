@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 st.set_page_config(page_title="DOEA Digital Online Health Assessment", layout="wide")
 
-# Custom CSS for clean, modern styling
+# Custom CSS for clean, professional on-screen reporting
 st.markdown("""
     <style>
     .main {
@@ -47,13 +47,21 @@ st.markdown("""
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         margin-bottom: 20px;
     }
-    .threat-detail-box {
-        background-color: #f0f4f8;
+    .report-container {
+        background-color: white;
+        padding: 30px;
+        border-radius: 10px;
+        border: 2px solid #003366;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+    .threat-item {
+        background-color: #f8f9fa;
         padding: 15px;
         border-radius: 6px;
-        border-left: 4px solid #003366;
-        margin-top: 10px;
-        margin-bottom: 10px;
+        border-left: 4px solid #28a745;
+        margin-bottom: 12px;
     }
     .stButton>button {
         width: 100%;
@@ -270,9 +278,9 @@ elif st.session_state['stage'] == 'results':
         st.session_state['stage'] = 'search'
         st.rerun()
 
-# --- STAGE 6: PERSONALIZED HEALTH ASSESSMENT DASHBOARD ---
+# --- STAGE 6: PERSONALIZED HEALTH ASSESSMENT DASHBOARD & CLEAN ON-SCREEN REPORT ---
 elif st.session_state['stage'] == 'dashboard':
-    st.success(f"Identity successfully verified for **{st.session_state.get('searched_name', 'User')}**! Clean, simplified threat report active below.")
+    st.success(f"Identity successfully verified for **{st.session_state.get('searched_name', 'User')}**! Your official report is displayed below.")
 
     if st.button("🔒 Sign Out / New Search"):
         st.session_state['stage'] = 'search'
@@ -280,50 +288,56 @@ elif st.session_state['stage'] == 'dashboard':
 
     st.divider()
 
-    # Operator Case Summary
-    st.markdown("### 📋 Case Summary")
+    with sqlite3.connect(database_name) as connection:
+        df = pd.read_sql_query("SELECT broker_name, status, statutory_deadline, threat_explanation, action_description, target_url FROM optout_tracker;", connection)
+
+    total = len(df)
+    completed_count = len(df[df['status'] == 'Successfully Protected'])
+
+    # --- CLEAN ON-SCREEN CERTIFICATE & REPORT ---
+    st.markdown("### 📄 Official Digital Health Assessment Report")
+    st.markdown("This clean, easy-to-read report summarizes your scanned exposures, identified risks, and completed statutory protections.")
+
     st.markdown(f"""
-    <div class="audit-card">
-        <p><strong>👤 Verified Subject:</strong> {st.session_state.get('searched_name', 'N/A')} ({st.session_state.get('searched_location', 'N/A')})</p>
-        <p><strong>🎯 Age Segment:</strong> {st.session_state.get('searched_age_segment', 'N/A')}</p>
-        <p><strong>📌 Status:</strong> All identified exposures have been scanned, addressed, and placed under 45-day statutory protection monitoring.</p>
+    <div class="report-container">
+        <h2 style="color: #003366; margin-top: 0;">State of Florida — Department of Elder Affairs</h2>
+        <h4 style="color: #4b5563;">Digital Online Health Assessment & Protection Summary</h4>
+        <hr style="border: 1px solid #e5e7eb; margin: 20px 0;">
+        
+        <p><strong>Verified Subject:</strong> {st.session_state.get('searched_name', 'N/A')}</p>
+        <p><strong>Jurisdiction & Location:</strong> {st.session_state.get('searched_location', 'N/A')}</p>
+        <p><strong>Age Segment:</strong> {st.session_state.get('searched_age_segment', 'N/A')}</p>
+        <p><strong>Assessment Date:</strong> {datetime.now().strftime('%B %d, %Y')}</p>
+        <p><strong>Overall Status:</strong> <span style="color: #28a745; font-weight: bold;">Fully Protected ({completed_count} of {total} Threats Addressed)</span></p>
+        
+        <h3 style="color: #111827; margin-top: 30px;">Identified Exposures & Remediation Actions</h3>
+    """, unsafe_allow_html=True)
+
+    for index, row in df.iterrows():
+        st.markdown(f"""
+        <div class="threat-item">
+            <h4 style="color: #003366; margin: 0 0 8px 0;">🛡️ {row['broker_name']} — <span style="color: #28a745;">{row['status']}</span></h4>
+            <p style="margin: 4px 0;"><strong>Why it was a risk:</strong> {row['threat_explanation']}</p>
+            <p style="margin: 4px 0;"><strong>Action Executed:</strong> {row['action_description']}</p>
+            <p style="margin: 4px 0;"><strong>Protection Deadline Window:</strong> {row['statutory_deadline']}</p>
+            <p style="margin: 4px 0;"><strong>Official Registry Link:</strong> <a href="{row['target_url']}" target="_blank">{row['target_url']}</a></p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("""
+        <hr style="border: 1px solid #e5e7eb; margin: 20px 0;">
+        <p style="font-size: 13px; color: #6b7280; text-align: center;">
+            Operation: Senior Shield • Certified State-Sponsored Compliance Engine • Department of Elder Affairs
+        </p>
     </div>
     """, unsafe_allow_html=True)
 
-    with sqlite3.connect(database_name) as connection:
-        df = pd.read_sql_query("SELECT id, broker_name AS 'Source / Threat', status AS 'Protection Status', statutory_deadline AS 'Statutory Deadline', threat_explanation, action_description, target_url FROM optout_tracker;", connection)
-
-    total = len(df)
-    completed_count = len(df[df['Protection Status'] == 'Successfully Protected'])
-
-    st.subheader("📊 Your Privacy Health Scorecard")
-    m1, m2 = st.columns(2)
-    m1.metric("Threats Addressed", total)
-    m2.metric("Successfully Protected", completed_count)
-
-    st.divider()
-
-    # Clean, Simple Expanders for Each Threat
-    st.markdown("### 🔍 Threat & Protection Details")
-    st.caption("Click any item below to see why it was a risk and what action was taken.")
-
-    for index, row in df.iterrows():
-        with st.expander(f"🛡️ **{row['Source / Threat']}** — Status: {row['Protection Status']}"):
-            st.markdown(f"""
-            <div class="threat-detail-box">
-                <p><strong>🚨 Why it was a risk:</strong> {row['threat_explanation']}</p>
-                <p><strong>🛠️ Action Taken:</strong> {row['action_description']}</p>
-                <p><strong>📅 Protection Window Deadline:</strong> {row['Statutory Deadline']}</p>
-                <p><strong>🔗 Official Portal:</strong> <a href="{row['target_url']}" target="_blank">{row['target_url']}</a></p>
-            </div>
-            """, unsafe_allow_html=True)
-
-    st.divider()
-    st.subheader("📥 Download Your Audit Report")
-    csv_data = df.to_csv(index=False).encode('utf-8')
-    st.download_button(
-        label="Download Clean Audit CSV",
-        data=csv_data,
-        file_name=f"DOEA_Privacy_Report_{datetime.now().strftime('%Y-%m-%d')}.csv",
-        mime="text/csv",
-    )
+    # Print / Browser Action Button
+    col_p1, col_p2 = st.columns(2)
+    with col_p1:
+        if st.button("🖨️ Print / Save Report (Use Browser Print)"):
+            st.info("Tip: Press Ctrl+P (or Cmd+P on Mac) to print this clean report directly or save it as a PDF.")
+    with col_p2:
+        if st.button("🔄 Run Another Assessment"):
+            st.session_state['stage'] = 'search'
+            st.rerun()
