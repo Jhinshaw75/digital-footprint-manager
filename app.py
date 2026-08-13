@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 st.set_page_config(page_title="DOEA Digital Online Health Assessment", layout="wide")
 
-# Custom CSS for clean, professional on-screen reporting
+# Custom CSS for clean styling
 st.markdown("""
     <style>
     .main {
@@ -39,21 +39,24 @@ st.markdown("""
         border-top: 6px solid #003366;
         margin-bottom: 25px;
     }
-    .report-container {
+    .report-box {
         background-color: white;
-        padding: 30px;
+        padding: 35px;
         border-radius: 10px;
         border: 2px solid #003366;
         box-shadow: 0 4px 10px rgba(0,0,0,0.08);
         margin-top: 20px;
         margin-bottom: 20px;
     }
-    .threat-item {
+    .threat-box {
         background-color: #f8f9fa;
-        padding: 15px;
-        border-radius: 6px;
-        border-left: 4px solid #28a745;
-        margin-bottom: 12px;
+        padding: 20px;
+        border-radius: 8px;
+        border-left: 5px solid #28a745;
+        margin-bottom: 15px;
+        border-top: 1px solid #e5e7eb;
+        border-right: 1px solid #e5e7eb;
+        border-bottom: 1px solid #e5e7eb;
     }
     .stButton>button {
         width: 100%;
@@ -68,7 +71,7 @@ st.markdown("""
         background-color: #002244;
         color: white;
     }
-    h1, h2, h3 {
+    h1, h2, h3, h4 {
         color: #111827;
     }
     </style>
@@ -266,47 +269,44 @@ elif st.session_state['stage'] == 'dashboard':
     total = len(df)
     completed_count = len(df[df['status'] == 'Successfully Protected'])
 
-    # --- CLEAN ON-SCREEN CERTIFICATE & REPORT ---
+    # --- CLEAN ON-SCREEN CERTIFICATE & REPORT (Using Native Streamlit Markdown) ---
     st.markdown("### 📄 Official Digital Health Assessment Report")
     st.markdown("This clean, easy-to-read report summarizes scanned exposures, identified risks, and completed statutory protections.")
 
-    report_html = f"""
-    <div class="report-container">
-        <h2 style="color: #003366; margin-top: 0;">State of Florida — Department of Elder Affairs</h2>
-        <h4 style="color: #4b5563;">Digital Online Health Assessment & Protection Summary</h4>
-        <hr style="border: 1px solid #e5e7eb; margin: 20px 0;">
+    with st.container():
+        st.markdown("""
+        <div class="report-box">
+            <h2 style="color: #003366; margin-top: 0;">State of Florida — Department of Elder Affairs</h2>
+            <h4 style="color: #4b5563;">Digital Online Health Assessment & Protection Summary</h4>
+            <hr style="border: 1px solid #e5e7eb; margin: 20px 0;">
+        """, unsafe_allow_html=True)
         
-        <p><strong>Verified Subject:</strong> {st.session_state.get('searched_name', 'N/A')}</p>
-        <p><strong>Jurisdiction & Location:</strong> {st.session_state.get('searched_location', 'N/A')}</p>
-        <p><strong>Age Segment:</strong> {st.session_state.get('searched_age_segment', 'N/A')}</p>
-        <p><strong>Assessment Date:</strong> {datetime.now().strftime('%B %d, %Y')}</p>
-        <p><strong>Overall Status:</strong> <span style="color: #28a745; font-weight: bold;">Fully Protected ({completed_count} of {total} Threats Addressed)</span></p>
+        st.markdown(f"**Verified Subject:** {st.session_state.get('searched_name', 'N/A')}")
+        st.markdown(f"**Jurisdiction & Location:** {st.session_state.get('searched_location', 'N/A')}")
+        st.markdown(f"**Age Segment:** {st.session_state.get('searched_age_segment', 'N/A')}")
+        st.markdown(f"**Assessment Date:** {datetime.now().strftime('%B %d, %Y')}")
+        st.markdown(f"**Overall Status:** Fully Protected (**{completed_count} of {total} Threats Addressed**)")
         
-        <h3 style="color: #111827; margin-top: 30px;">Identified Exposures & Remediation Actions</h3>
-    </div>
-    """
-    st.markdown(report_html, unsafe_allow_html=True)
-
-    for index, row in df.iterrows():
-        item_html = f"""
-        <div class="threat-item">
-            <h4 style="color: #003366; margin: 0 0 8px 0;">🛡️ {row['broker_name']} — <span style="color: #28a745;">{row['status']}</span></h4>
-            <p style="margin: 4px 0;"><strong>Why it was a risk:</strong> {row['threat_explanation']}</p>
-            <p style="margin: 4px 0;"><strong>Action Executed:</strong> {row['action_description']}</p>
-            <p style="margin: 4px 0;"><strong>Protection Deadline Window:</strong> {row['statutory_deadline']}</p>
-            <p style="margin: 4px 0;"><strong>Official Registry Link:</strong> <a href="{row['target_url']}" target="_blank">{row['target_url']}</a></p>
+        st.markdown("### Identified Exposures & Remediation Actions")
+        
+        for index, row in df.iterrows():
+            st.markdown(f"""
+            <div class="threat-box">
+                <h4 style="color: #003366; margin-top: 0;">🛡️ {row['broker_name']} — <span style="color: #28a745;">{row['status']}</span></h4>
+                <p><strong>Why it was a risk:</strong> {row['threat_explanation']}</p>
+                <p><strong>Action Executed:</strong> {row['action_description']}</p>
+                <p><strong>Protection Deadline Window:</strong> {row['statutory_deadline']}</p>
+                <p><strong>Official Registry Link:</strong> <a href="{row['target_url']}" target="_blank">{row['target_url']}</a></p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+        st.markdown("""
+            <hr style="border: 1px solid #e5e7eb; margin: 20px 0;">
+            <p style="font-size: 13px; color: #6b7280; text-align: center; margin: 0;">
+                Operation: Senior Shield • Certified State-Sponsored Compliance Engine • Department of Elder Affairs
+            </p>
         </div>
-        """
-        st.markdown(item_html, unsafe_allow_html=True)
-
-    footer_html = """
-    <div style="background-color: white; padding: 20px; border-radius: 10px; border: 1px solid #e5e7eb; margin-top: 20px; margin-bottom: 20px;">
-        <p style="font-size: 13px; color: #6b7280; text-align: center; margin: 0;">
-            Operation: Senior Shield • Certified State-Sponsored Compliance Engine • Department of Elder Affairs
-        </p>
-    </div>
-    """
-    st.markdown(footer_html, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
 
     col_p1, col_p2 = st.columns(2)
     with col_p1:
