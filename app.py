@@ -92,7 +92,7 @@ database_name = "digital_footprint_manager.db"
 if 'stage' not in st.session_state:
     st.session_state['stage'] = 'search'
 
-# --- STAGE 1: SEARCH INPUT (Completely Blank for Privacy) ---
+# --- STAGE 1: SEARCH INPUT (Blank Fields & Florida First) ---
 if st.session_state['stage'] == 'search':
     st.markdown('<div class="search-card">', unsafe_allow_html=True)
     st.markdown("### 🔍 Search Subject")
@@ -110,21 +110,24 @@ if st.session_state['stage'] == 'search':
     with loc_col1:
         search_city = st.text_input("City", value="", placeholder="Enter city")
     with loc_col2:
+        # Florida placed first in the list
         states_list = [
-            "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", 
-            "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", 
+            "Florida", "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", 
+            "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", 
             "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", 
             "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", 
             "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", 
             "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", 
             "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
         ]
-        search_state = st.selectbox("State", states_list, index=8) # Default to Florida
+        search_state = st.selectbox("State", states_list, index=0) # Florida is index 0
     with loc_col3:
-        age_segment = st.selectbox("Age Segment", ["18-29", "30-49", "50-64", "65-74", "75+"], index=2)
+        # Age segment starts with a blank default option
+        age_options = ["-- Select Age Segment --", "18-29", "30-49", "50-64", "65-74", "75+"]
+        age_segment = st.selectbox("Age Segment", age_options, index=0)
 
     if st.button("Begin Search & Verify Identity"):
-        if search_first and search_last and search_city:
+        if search_first and search_last and search_city and age_segment != "-- Select Age Segment --":
             full_search_name = f"{search_first} {search_middle + ' ' if search_middle else ''}{search_last}".strip()
             st.session_state['searched_name'] = full_search_name
             st.session_state['searched_city'] = search_city
@@ -134,7 +137,7 @@ if st.session_state['stage'] == 'search':
             st.session_state['stage'] = 'wizard_location'
             st.rerun()
         else:
-            st.warning("Please fill in first name, last name, and city to start.")
+            st.warning("Please fill in your first name, last name, city, and select an age segment to start.")
     st.markdown('</div>', unsafe_allow_html=True)
 
 # --- STAGE 2: LOCATION HISTORY WIZARD QUESTION ---
@@ -146,7 +149,7 @@ elif st.session_state['stage'] == 'wizard_location':
     st.markdown("### ⚠️ Confirm Information")
     st.caption("Help Narrow Down Your Results")
     current_loc = st.session_state.get('searched_location', 'Tallahassee, Florida')
-    st.markdown(f"**Has {st.session_state['searched_name']} ever lived in other cities or states outside of {current_residency if 'current_residency' in locals() else current_loc}?**")
+    st.markdown(f"**Has {st.session_state['searched_name']} ever lived in other cities or states outside of {current_loc}?**")
     
     wq_c1, wq_c2, wq_c3 = st.columns(3)
     with wq_c1:
