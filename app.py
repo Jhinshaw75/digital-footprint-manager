@@ -41,6 +41,14 @@ st.markdown("""
         border-top: 6px solid #003366;
         margin-bottom: 25px;
     }
+    .inbox-preview {
+        background-color: #f1f5f9;
+        border: 1px dashed #003366;
+        padding: 20px;
+        border-radius: 8px;
+        color: #111827;
+        margin-bottom: 20px;
+    }
     .result-row {
         background-color: white;
         padding: 20px;
@@ -161,7 +169,7 @@ if st.session_state['stage'] == 'search':
             st.warning("Please fill in your first name, last name, current city, and select an age segment to proceed.")
     st.markdown('</div>', unsafe_allow_html=True)
 
-# --- STAGE 2: SEQUENTIAL MFA — STEP 1 (EMAIL VERIFICATION) ---
+# --- STAGE 2: SEQUENTIAL MFA — STEP 1 (EMAIL VERIFICATION WITH DEMO INBOX) ---
 elif st.session_state['stage'] == 'mfa_email':
     st.markdown('<div class="wizard-card">', unsafe_allow_html=True)
     current_name = st.session_state.get('searched_name', 'Subject')
@@ -171,7 +179,7 @@ elif st.session_state['stage'] == 'mfa_email':
     st.markdown("---")
     st.markdown("#### 📧 Step 1: Confirm Email Address")
     
-    user_email = st.text_input("Email Address (For Magic Link / OTP)", value="", placeholder="name@example.com", key="input_email")
+    user_email = st.text_input("Email Address (For Secure OTP Delivery)", value="", placeholder="name@example.com", key="input_email")
     
     if user_email and 'email_otp' not in st.session_state:
         st.session_state['email_otp'] = str(random.randint(100000, 999999))
@@ -179,8 +187,24 @@ elif st.session_state['stage'] == 'mfa_email':
     simulated_email_code = st.session_state.get('email_otp', '123456')
 
     if user_email:
-        st.info(f"🧪 **[Simulation Helper]** Your active Email OTP code sent to {user_email} is: **{simulated_email_code}**")
-        entered_email_code = st.text_input("Enter 6-Digit Email Verification Code", value="", max_chars=6, key="input_email_code")
+        st.success(f"📨 Secure dispatch triggered! An official authentication notice has been sent to **{user_email}**.")
+        
+        with st.expander("📥 Demo Inbox Preview (Click to open simulated incoming email)", expanded=True):
+            st.markdown(f"""
+            <div class="inbox-preview">
+                <strong>From:</strong> doea-security@elderaffairs.org<br>
+                <strong>To:</strong> {user_email}<br>
+                <strong>Subject:</strong> Action Required: DOEA Digital Health Assessment Verification Code<br>
+                <hr style="margin: 10px 0; border: 1px solid #cbd5e1;">
+                <p>Hello,</p>
+                <p>You have initiated a secure digital footprint audit through the State of Florida Department of Elder Affairs portal (Operation: Senior Shield).</p>
+                <p>Your confidential One-Time Password (OTP) verification code is:</p>
+                <h2 style="color: #003366; letter-spacing: 2px; margin: 10px 0;">{simulated_email_code}</h2>
+                <p><small>If you did not request this verification, please disregard this message.</small></p>
+            </div>
+            """, unsafe_allow_html=True)
+
+        entered_email_code = st.text_input("Enter 6-Digit Email Verification Code from Inbox", value="", max_chars=6, key="input_email_code")
 
         col_e1, col_e2 = st.columns(2)
         with col_e1:
@@ -191,7 +215,7 @@ elif st.session_state['stage'] == 'mfa_email':
                     st.session_state['stage'] = 'mfa_sms'
                     st.rerun()
                 else:
-                    st.error("Invalid email verification code. Please check the simulation helper.")
+                    st.error("Invalid verification code. Please check your simulated inbox preview above.")
         with col_e2:
             if st.button("Back to Search Intake"):
                 st.session_state.pop('email_otp', None)
@@ -204,7 +228,7 @@ elif st.session_state['stage'] == 'mfa_email':
             
     st.markdown('</div>', unsafe_allow_html=True)
 
-# --- STAGE 3: SEQUENTIAL MFA — STEP 2 (SMS MOBILE VERIFICATION) ---
+# --- STAGE 3: SEQUENTIAL MFA — STEP 2 (SMS MOBILE VERIFICATION WITH DEMO INBOX) ---
 elif st.session_state['stage'] == 'mfa_sms':
     st.markdown('<div class="wizard-card">', unsafe_allow_html=True)
     current_name = st.session_state.get('searched_name', 'Subject')
@@ -220,8 +244,19 @@ elif st.session_state['stage'] == 'mfa_sms':
     simulated_sms_code = st.session_state.get('sms_otp', '654321')
 
     if user_phone:
-        st.info(f"🧪 **[Simulation Helper]** Your active SMS code sent to {user_phone} is: **{simulated_sms_code}**")
-        entered_sms_code = st.text_input("Enter 6-Digit SMS Verification Code", value="", max_chars=6, key="input_sms_code")
+        st.success(f"📱 Secure SMS dispatch triggered! A text message has been sent to **{user_phone}**.")
+        
+        with st.expander("💬 Demo SMS Message Preview (Click to open simulated text message)", expanded=True):
+            st.markdown(f"""
+            <div class="inbox-preview">
+                <strong>From:</strong> DOEA-ALERT (State Secure Gateway)<br>
+                <strong>To:</strong> {user_phone}<br>
+                <hr style="margin: 10px 0; border: 1px solid #cbd5e1;">
+                <p>State of Florida - Senior Shield: Your mobile verification code is <strong>{simulated_sms_code}</strong>. Do not share this code.</p>
+            </div>
+            """, unsafe_allow_html=True)
+
+        entered_sms_code = st.text_input("Enter 6-Digit SMS Verification Code from Text Message", value="", max_chars=6, key="input_sms_code")
 
         col_s1, col_s2 = st.columns(2)
         with col_s1:
@@ -231,7 +266,7 @@ elif st.session_state['stage'] == 'mfa_sms':
                     st.session_state['stage'] = 'results'
                     st.rerun()
                 else:
-                    st.error("Invalid SMS verification code. Please check the simulation helper.")
+                    st.error("Invalid SMS verification code. Please check your simulated text message preview above.")
         with col_s2:
             if st.button("Back to Email Verification"):
                 st.session_state.pop('sms_otp', None)
