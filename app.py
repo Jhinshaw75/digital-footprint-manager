@@ -30,7 +30,7 @@ with sqlite3.connect(database_name) as connection:
     ''')
     default_deadline = (datetime.now() + timedelta(days=45)).strftime('%Y-%m-%d')
     initial_data = [
-        ('California DROP Registry', 'State-Sponsored API', 'Official State API Batch Deletion', 'High', 'Pending Submission', default_deadline, 'Awaiting Code', 'Awaiting state residency verification token', 'https://consumer.drop.privacy.ca.gov/'),
+        ('DOEA Digital Identity Registry', 'State-Sponsored API', 'Official State API Batch Deletion', 'High', 'Pending Submission', default_deadline, 'Awaiting Code', 'Awaiting state residency verification token', 'https://elderaffairs.org/'),
         ('State Voter Suppression Bureau', 'Public Records/PII', 'Direct Statutory Redaction', 'Moderate', 'Needs Review', default_deadline, 'Awaiting Code', 'State agency record suppression review', 'https://dos.fl.gov/elections/'),
         ('County Property Appraiser DB', 'Public Records/PII', 'Local Ordinance Request', 'Moderate', 'Needs Review', default_deadline, 'Awaiting Code', 'County property appraiser redaction protocol', 'https://floridarevenuetax.org'),
         ('HaveIBeenPwned API', 'Credential/Breach Data', 'Direct Credential API', 'Critical', 'Needs Action', 'Immediate', 'Action Required', 'Password reset required immediately', 'https://haveibeenpwned.com/'),
@@ -45,7 +45,7 @@ gateway_selection = st.sidebar.selectbox(
     "Select Governing Framework",
     ["State Clearinghouse API Active", "State Agency Direct Portal", "Generic Statutory Framework"]
 )
-gateway_id_token = st.sidebar.text_input("Enter Gateway Verification ID", placeholder="e.g., DROP-ID-98231")
+gateway_id_token = st.sidebar.text_input("Enter Gateway Verification ID", placeholder="e.g., DOEA-ID-98231")
 
 selected_category = st.sidebar.selectbox(
     "Filter by Exposure Channel",
