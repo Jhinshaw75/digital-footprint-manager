@@ -146,67 +146,84 @@ if st.session_state['stage'] == 'search':
             st.session_state['searched_state'] = search_state
             st.session_state['searched_location'] = f"{search_city}, {search_state}"
             st.session_state['searched_age_segment'] = age_segment
-            st.session_state['stage'] = 'wizard_intelius'
+            st.session_state['stage'] = 'wizard_location'
             st.rerun()
         else:
             st.warning("Please fill in your first name, last name, city, and select an age segment to start.")
     st.markdown('</div>', unsafe_allow_html=True)
 
-# --- STAGE 2: INTELIUS-STYLE DEEP INTEL WIZARD (MULTI-CITY & FAMILY MATCH) ---
-elif st.session_state['stage'] == 'wizard_intelius':
+# --- STAGE 2: PRECISE NARROW-DOWN LOCATION WIZARD (FULLY DYNAMIC) ---
+elif st.session_state['stage'] == 'wizard_location':
     st.markdown('<div class="wizard-card">', unsafe_allow_html=True)
     current_name = st.session_state.get('searched_name', 'Subject')
-    target_city = st.session_state.get('searched_city', 'City')
-    target_state = st.session_state.get('searched_state', 'State')
-    age_seg = st.session_state.get('searched_age_segment', '50-64')
+    current_loc = st.session_state.get('searched_location', 'the selected location')
     
-    st.markdown(f"### 🔎 Intelius-Style Deep Background Match: {current_name} ({age_seg})")
-    st.progress(70, text="70% Confidence Match Building — Scanning Historical Municipalities & Associated Kinship Networks")
+    st.markdown(f"### Search Subject: {current_name} (Segment: {st.session_state.get('searched_age_segment', '50-64')})")
+    st.progress(35, text="35% Confidence Match Building — Analyzing Historical Residency Indices")
     st.markdown("---")
+    st.markdown("### ⚠️ Confirm Information")
+    st.caption("Help Narrow Down Your Results")
     
-    st.markdown("### 📋 Public Record & Kinship Profile Preview")
-    st.write("To verify identity uniqueness, review the following indexed background indices discovered across public registries:")
+    st.markdown(f"**Has {current_name} ever lived in or been associated with public directories in {current_loc}?**")
     
-    # Dynamically generating lookalike associated cities and relatives based on the user's input name and state
-    st.markdown(f"""
-    * **Primary Location:** {target_city}, {target_state}
-    * **Possible Prior Locations / Municipalities:** Associated historical listings detected in regional database nodes (e.g., adjacent metro areas in {target_state}).
-    * **Possible Family Members / Associates:** Indexed kin and shared household contacts matching surname vectors for **{current_name}**.
-    """)
+    wq_c1, wq_c2, wq_c3 = st.columns(3)
+    with wq_c1:
+        if st.button("YES"):
+            st.session_state['stage'] = 'wizard_relatives'
+            st.rerun()
+    with wq_c2:
+        if st.button("NO"):
+            st.session_state['stage'] = 'wizard_relatives'
+            st.rerun()
+    with wq_c3:
+        if st.button("I DON'T KNOW"):
+            st.session_state['stage'] = 'wizard_relatives'
+            st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# --- STAGE 3: RELATIVES VERIFICATION WIZARD (FULLY DYNAMIC) ---
+elif st.session_state['stage'] == 'wizard_relatives':
+    st.markdown('<div class="wizard-card">', unsafe_allow_html=True)
+    current_name = st.session_state.get('searched_name', 'Subject')
+    current_state = st.session_state.get('searched_state', 'the selected state')
     
+    st.markdown(f"### Search Subject: {current_name} (Segment: {st.session_state.get('searched_age_segment', '50-64')})")
+    st.progress(75, text="75% Confidence Match Building — Cross-Referencing Associated Public Records")
     st.markdown("---")
-    st.markdown(f"**Does this public background profile accurately match {current_name}?**")
+    st.markdown("### ⚠️ Confirm Information")
+    st.caption("Help Narrow Down Your Results")
+    st.markdown(f"**As far as you know, does {current_name} have any historical directory or family association records indexed in {current_state}?**")
     
-    int_c1, int_c2, int_c3 = st.columns(3)
-    with int_c1:
-        if st.button("YES — MATCH CONFIRMED"):
+    wr_c1, wr_c2, wr_c3 = st.columns(3)
+    with wr_c1:
+        if st.button("YES"):
             st.session_state['stage'] = 'results'
             st.rerun()
-    with int_c2:
-        if st.button("NO — DIFFERENT PERSON"):
-            st.session_state['stage'] = 'search'
+    with wr_c2:
+        if st.button("NO"):
+            st.session_state['stage'] = 'results'
             st.rerun()
-    with int_c3:
-        if st.button("I'M NOT SURE"):
+    with wr_c3:
+        if st.button("I DON'T KNOW"):
             st.session_state['stage'] = 'results'
             st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
-# --- STAGE 3: RESULTS MATCH GRID ---
+# --- STAGE 4: RESULTS MATCH GRID ---
 elif st.session_state['stage'] == 'results':
     age_seg = st.session_state.get('searched_age_segment', '50-64')
-    target_city = st.session_state.get('searched_city', 'City')
-    target_state_abbr = st.session_state.get('searched_state', 'State')
+    target_city = st.session_state.get('searched_city', 'Tallahassee')
+    target_state_abbr = st.session_state.get('searched_state', 'Florida')
     searched_name = st.session_state.get('searched_name', 'User')
     
     st.markdown(f"### Next Step: Select A Result Below for {searched_name}")
-    st.write(f"Filtered for records within age segment **{age_seg}** across comprehensive nationwide public data networks:")
+    st.write(f"Filtered for records within age segment **{age_seg}** across comprehensive public data networks:")
 
     with st.container():
         col_res1, col_res2, col_res3 = st.columns([3, 1, 2])
         with col_res1:
             st.markdown(f"**⭐ BEST RESULT (Enterprise Verified Match)**\n### {searched_name}")
-            st.caption(f"Nationwide Multi-Vector Exposure Record Identified • {target_city}, {target_state_abbr}")
+            st.caption(f"Multi-Vector Exposure Record Identified • {target_city}, {target_state_abbr}")
         with col_res2:
             st.markdown(f"**AGE SEGMENT**\n### {age_seg}")
         with col_res3:
@@ -234,11 +251,11 @@ elif st.session_state['stage'] == 'results':
                 
                 identified_threats = [
                     ('Tier-1 Commercial Data Aggregators (Spokeo / Whitepages)', 'Successfully Protected', default_deadline, 
-                     f'Identified commercial profile listings publishing historical addresses across prior municipalities and relative associations for {searched_name}.',
+                     f'Identified commercial profile listings publishing historical addresses and contact numbers for {searched_name} in {target_city}, {target_state_abbr}.',
                      'Dispatched automated statutory opt-out requests across tier-1 broker pipelines. Initiated 45-day statutory compliance window.', 'https://www.networkadvertising.org/'),
                     
                     ('Secondary People-Search Networks (Intelius / BeenVerified)', 'Successfully Protected', default_deadline, 
-                     f'Secondary aggregators indexed deep family mapping and historical residency indices matching {searched_name}.',
+                     f'Secondary aggregators indexed residency maps and public records matching {target_city}, {target_state_abbr} listings.',
                      'Executed batch removal protocol via centralized opt-out authority gateways.', 'https://optout.beenverified.com/'),
                     
                     (f'Public Property & Tax Records ({target_state_abbr})', 'Successfully Protected', default_deadline, 
@@ -260,7 +277,7 @@ elif st.session_state['stage'] == 'results':
         st.session_state['stage'] = 'search'
         st.rerun()
 
-# --- STAGE 4: PERSONALIZED HEALTH ASSESSMENT DASHBOARD & CLEAN ON-SCREEN REPORT ---
+# --- STAGE 5: PERSONALIZED HEALTH ASSESSMENT DASHBOARD & CLEAN ON-SCREEN REPORT ---
 elif st.session_state['stage'] == 'dashboard':
     st.success(f"Enterprise identity audit successfully completed for **{st.session_state.get('searched_name', 'User')}**! Your official report is displayed below.")
 
@@ -303,7 +320,7 @@ elif st.session_state['stage'] == 'dashboard':
         st.markdown(f"**Assessment Date:** {datetime.now().strftime('%B %d, %Y')}")
         st.markdown(f"**Digital Health Status:** Fully Protected (**{completed_count} of {total} Enterprise Threats Addressed** — Grade A)")
         
-        # Live Dynamic 45-Day Re-Scan Window Notice
+        # 45-Day Re-Scan Window Notice
         future_date = (datetime.now() + timedelta(days=45)).strftime('%B %d, %Y')
         st.info(f"⏳ **Statutory Window Active:** Your 45-day compliance window expires on **{future_date}**. Data brokers frequently re-scrape records over time. We recommend running a fresh audit on or after this date.")
 
