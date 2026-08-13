@@ -114,7 +114,7 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-st.title("Digital Online Health Assessment")
+st.title("DOEA Digital Online Health Assessment")
 st.markdown("##### Secure Identity Verification & Comprehensive Threat Remediation Portal")
 st.divider()
 
@@ -235,7 +235,7 @@ elif st.session_state['stage'] == 'mfa_email':
             
     st.markdown('</div>', unsafe_allow_html=True)
 
-# --- STAGE 3: SMART DYNAMIC DISAMBIGUATION GRID FOR ANNE ---
+# --- STAGE 3: FULLY GENERALIZED DYNAMIC DISAMBIGUATION GRID ---
 elif st.session_state['stage'] == 'results':
     age_seg = st.session_state.get('searched_age_segment', '50-64')
     target_city = st.session_state.get('searched_city', 'City')
@@ -243,15 +243,7 @@ elif st.session_state['stage'] == 'results':
     searched_name = st.session_state.get('searched_name', 'User')
     
     st.markdown(f"### 👥 Select Correct Match for {searched_name}")
-    st.write(f"Multiple public directory listings found matching your search parameters. Review historical residencies and relative connections below to confirm your profile:")
-
-    # If Anne is testing it, dynamically tailor historical placeholders based on her name entry
-    if "anne" in searched_name.lower():
-        prior_loc = "Previously lived in: Atlanta, GA; Savannah, GA"
-        kin_net = "Associated Family/Kin: Regional Family Registry & Household Network"
-    else:
-        prior_loc = "Previously lived in: Indianapolis, IN; Mobile, AL"
-        kin_net = "Associated Family/Kin: Isabella M. Hinshaw, Jeanette Hinshaw, Pamela Byrd"
+    st.write(f"Multiple public directory listings found matching your search parameters for **{target_city}, {target_state_abbr}**. Confirm your profile below:")
 
     candidates = [
         {
@@ -259,16 +251,16 @@ elif st.session_state['stage'] == 'results':
             "name": searched_name,
             "age": age_seg,
             "location": f"{target_city}, {target_state_abbr}",
-            "prior_locations": prior_loc,
-            "relatives": kin_net,
+            "prior_locations": f"Previously registered in: Regional Metro Index & Surrounding Counties",
+            "relatives": f"Associated Family/Kin: Verified Household Kinship Registry",
             "badge": "⭐ BEST MATCH (Public Records Index)"
         },
         {
             "id": 2,
             "name": searched_name,
             "age": "30-49",
-            "location": f"Alternate Metro Area, {target_state_abbr}",
-            "prior_locations": "Previously lived in: Orlando, FL",
+            "location": f"Alternate District, {target_state_abbr}",
+            "prior_locations": "Previously lived in: Alternate Regional District",
             "relatives": "Different Kinship Network",
             "badge": "Alternative Match"
         }
@@ -307,7 +299,7 @@ elif st.session_state['stage'] == 'results':
                     
                     identified_threats = [
                         ('Tier-1 Commercial Data Aggregators (Spokeo / Whitepages)', 'Successfully Protected', default_deadline, 
-                         f'Identified commercial profile listings publishing historical addresses and contact numbers for {searched_name} across {cand["prior_locations"]}.',
+                         f'Identified commercial profile listings publishing historical addresses and contact numbers for {searched_name} in {cand["location"]}.',
                          'Dispatched automated statutory opt-out requests across tier-1 broker pipelines. Initiated 45-day statutory compliance window.', 'https://www.networkadvertising.org/'),
                         
                         ('Secondary People-Search Networks (Intelius / BeenVerified)', 'Successfully Protected', default_deadline, 
