@@ -142,7 +142,7 @@ if st.session_state['stage'] == 'search':
 elif st.session_state['stage'] == 'wizard_location':
     st.markdown('<div class="wizard-card">', unsafe_allow_html=True)
     st.markdown(f"### Search Subject: {st.session_state['searched_name']} (Segment: {st.session_state.get('searched_age_segment', '50-64')})")
-    st.progress(50, text="50% Confidence Match Building — Narrowing Down Residency Records")
+    st.progress(35, text="35% Confidence Match Building — Verifying Residency History")
     st.markdown("---")
     st.markdown("### ⚠️ Confirm Information")
     st.caption("Help Narrow Down Your Results")
@@ -152,19 +152,44 @@ elif st.session_state['stage'] == 'wizard_location':
     wq_c1, wq_c2, wq_c3 = st.columns(3)
     with wq_c1:
         if st.button("YES"):
-            st.session_state['stage'] = 'results'
+            st.session_state['stage'] = 'wizard_relatives'
             st.rerun()
     with wq_c2:
         if st.button("NO"):
-            st.session_state['stage'] = 'results'
+            st.session_state['stage'] = 'wizard_relatives'
             st.rerun()
     with wq_c3:
+        if st.button("I DON'T KNOW"):
+            st.session_state['stage'] = 'wizard_relatives'
+            st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# --- STAGE 3: RELATIVES VERIFICATION WIZARD ---
+elif st.session_state['stage'] == 'wizard_relatives':
+    st.markdown('<div class="wizard-card">', unsafe_allow_html=True)
+    st.markdown(f"### Search Subject: {st.session_state['searched_name']} (Segment: {st.session_state.get('searched_age_segment', '50-64')})")
+    st.progress(75, text="75% Confidence Match Building — Verifying Associated Records")
+    st.markdown("---")
+    st.markdown("### ⚠️ Confirm Information")
+    st.caption("Help Narrow Down Your Results")
+    st.markdown(f"**As far as you know, is {st.session_state['searched_name']} related to Adrina Frazier, Isabella M. Hinshaw, or Jeanette Hinshaw?**")
+    
+    wr_c1, wr_c2, wr_c3 = st.columns(3)
+    with wr_c1:
+        if st.button("YES"):
+            st.session_state['stage'] = 'results'
+            st.rerun()
+    with wr_c2:
+        if st.button("NO"):
+            st.session_state['stage'] = 'results'
+            st.rerun()
+    with wr_c3:
         if st.button("I DON'T KNOW"):
             st.session_state['stage'] = 'results'
             st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
-# --- STAGE 3: RESULTS MATCH GRID ---
+# --- STAGE 4: RESULTS MATCH GRID ---
 elif st.session_state['stage'] == 'results':
     age_seg = st.session_state.get('searched_age_segment', '50-64')
     target_city = st.session_state.get('searched_city', 'Tallahassee')
@@ -225,7 +250,7 @@ elif st.session_state['stage'] == 'results':
         st.session_state['stage'] = 'search'
         st.rerun()
 
-# --- STAGE 4: PERSONALIZED HEALTH ASSESSMENT DASHBOARD & CLEAN ON-SCREEN REPORT ---
+# --- STAGE 5: PERSONALIZED HEALTH ASSESSMENT DASHBOARD & CLEAN ON-SCREEN REPORT ---
 elif st.session_state['stage'] == 'dashboard':
     st.success(f"Identity successfully verified for **{st.session_state.get('searched_name', 'User')}**! Your official report is displayed below.")
 
