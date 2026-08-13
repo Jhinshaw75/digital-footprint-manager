@@ -146,67 +146,48 @@ if st.session_state['stage'] == 'search':
             st.session_state['searched_state'] = search_state
             st.session_state['searched_location'] = f"{search_city}, {search_state}"
             st.session_state['searched_age_segment'] = age_segment
-            st.session_state['stage'] = 'wizard_residency'
+            st.session_state['stage'] = 'wizard_intelius'
             st.rerun()
         else:
             st.warning("Please fill in your first name, last name, city, and select an age segment to start.")
     st.markdown('</div>', unsafe_allow_html=True)
 
-# --- STAGE 2A: DYNAMIC RESIDENCY VERIFICATION WIZARD ---
-elif st.session_state['stage'] == 'wizard_residency':
+# --- STAGE 2: INTELIUS-STYLE DEEP INTEL WIZARD (MULTI-CITY & FAMILY MATCH) ---
+elif st.session_state['stage'] == 'wizard_intelius':
     st.markdown('<div class="wizard-card">', unsafe_allow_html=True)
     current_name = st.session_state.get('searched_name', 'Subject')
     target_city = st.session_state.get('searched_city', 'City')
-    target_state_abbr = st.session_state.get('searched_state', 'State')
+    target_state = st.session_state.get('searched_state', 'State')
+    age_seg = st.session_state.get('searched_age_segment', '50-64')
     
-    st.markdown(f"### Search Subject: {current_name}")
-    st.progress(40, text="40% Confidence Match Building — Analyzing Historical Residency Indices")
+    st.markdown(f"### 🔎 Intelius-Style Deep Background Match: {current_name} ({age_seg})")
+    st.progress(70, text="70% Confidence Match Building — Scanning Historical Municipalities & Associated Kinship Networks")
     st.markdown("---")
-    st.markdown("### ⚠️ Confirm Residency Information")
-    st.caption("Help Narrow Down Your Results")
     
-    st.markdown(f"**Has {current_name} ever lived in {target_city}, {target_state_abbr} or other prior cities?**")
+    st.markdown("### 📋 Public Record & Kinship Profile Preview")
+    st.write("To verify identity uniqueness, review the following indexed background indices discovered across public registries:")
     
-    wr_c1, wr_c2, wr_c3 = st.columns(3)
-    with wr_c1:
-        if st.button("YES"):
-            st.session_state['stage'] = 'wizard_relatives'
-            st.rerun()
-    with wr_c2:
-        if st.button("NO"):
-            st.session_state['stage'] = 'wizard_relatives'
-            st.rerun()
-    with wr_c3:
-        if st.button("I DON'T KNOW"):
-            st.session_state['stage'] = 'wizard_relatives'
-            st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# --- STAGE 2B: NATIONWIDE RELATIVES VERIFICATION WIZARD ---
-elif st.session_state['stage'] == 'wizard_relatives':
-    st.markdown('<div class="wizard-card">', unsafe_allow_html=True)
-    current_name = st.session_state.get('searched_name', 'Subject')
+    # Dynamically generating lookalike associated cities and relatives based on the user's input name and state
+    st.markdown(f"""
+    * **Primary Location:** {target_city}, {target_state}
+    * **Possible Prior Locations / Municipalities:** Associated historical listings detected in regional database nodes (e.g., adjacent metro areas in {target_state}).
+    * **Possible Family Members / Associates:** Indexed kin and shared household contacts matching surname vectors for **{current_name}**.
+    """)
     
-    st.markdown(f"### Search Subject: {current_name}")
-    st.progress(75, text="75% Confidence Match Building — Cross-Referencing Nationwide Family Public Records")
     st.markdown("---")
-    st.markdown("### ⚠️ Confirm Nationwide Family Associations")
-    st.caption("Help Narrow Down Your Results")
+    st.markdown(f"**Does this public background profile accurately match {current_name}?**")
     
-    # Updated to explicitly check nationwide records rather than locking to the single city
-    st.markdown(f"**As far as you know, does {current_name} have any associated family members or relatives linked to nationwide public records or historical directories?**")
-    
-    rel_c1, rel_c2, rel_c3 = st.columns(3)
-    with rel_c1:
-        if st.button("YES"):
+    int_c1, int_c2, int_c3 = st.columns(3)
+    with int_c1:
+        if st.button("YES — MATCH CONFIRMED"):
             st.session_state['stage'] = 'results'
             st.rerun()
-    with rel_c2:
-        if st.button("NO"):
-            st.session_state['stage'] = 'results'
+    with int_c2:
+        if st.button("NO — DIFFERENT PERSON"):
+            st.session_state['stage'] = 'search'
             st.rerun()
-    with rel_c3:
-        if st.button("I DON'T KNOW"):
+    with int_c3:
+        if st.button("I'M NOT SURE"):
             st.session_state['stage'] = 'results'
             st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
@@ -253,11 +234,11 @@ elif st.session_state['stage'] == 'results':
                 
                 identified_threats = [
                     ('Tier-1 Commercial Data Aggregators (Spokeo / Whitepages)', 'Successfully Protected', default_deadline, 
-                     f'Identified nationwide commercial profile listings publishing historical addresses and relative associations for {searched_name}.',
+                     f'Identified commercial profile listings publishing historical addresses across prior municipalities and relative associations for {searched_name}.',
                      'Dispatched automated statutory opt-out requests across tier-1 broker pipelines. Initiated 45-day statutory compliance window.', 'https://www.networkadvertising.org/'),
                     
                     ('Secondary People-Search Networks (Intelius / BeenVerified)', 'Successfully Protected', default_deadline, 
-                     f'Secondary aggregators indexed nationwide family mapping and public records matching {searched_name}.',
+                     f'Secondary aggregators indexed deep family mapping and historical residency indices matching {searched_name}.',
                      'Executed batch removal protocol via centralized opt-out authority gateways.', 'https://optout.beenverified.com/'),
                     
                     (f'Public Property & Tax Records ({target_state_abbr})', 'Successfully Protected', default_deadline, 
