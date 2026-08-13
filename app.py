@@ -311,7 +311,7 @@ elif st.session_state['stage'] == 'dashboard':
         for index, row in df.iterrows():
             st.markdown(f"""
             <div class="threat-box">
-                <h4 style="color: #003366; margin-top: 0;">🛡️ {row['broker_name']} — <span style="color: #28a745;">{row['status']}</span></h4>
+                <h4 style="color: #003366; margin-top: 0;">{row['broker_name']} — <span style="color: #28a745;">{row['status']}</span></h4>
                 <p><strong>Why it was a risk:</strong> {row['threat_explanation']}</p>
                 <p><strong>Action Executed:</strong> {row['action_description']}</p>
                 <p><strong>Protection Deadline Window:</strong> {row['statutory_deadline']}</p>
