@@ -5,40 +5,71 @@ from datetime import datetime, timedelta
 
 st.set_page_config(page_title="DOEA Digital Online Health Assessment", layout="wide")
 
-# Custom CSS for a visually striking, professional enterprise layout
+# Custom CSS inspired by award-winning government portal design systems (USWDS / GOV.UK standards)
 st.markdown("""
     <style>
     .main {
-        background-color: #f8f9fa;
+        background-color: #f4f6f9;
+    }
+    /* Official State Banner Styling */
+    .state-banner {
+        background-color: #003366;
+        color: white;
+        padding: 12px 20px;
+        font-size: 14px;
+        font-weight: 500;
+        border-radius: 4px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    /* Modern Card Containers */
+    .card-container {
+        background-color: white;
+        padding: 24px;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        border-top: 4px solid #003366;
+        margin-bottom: 20px;
     }
     .stButton>button {
         width: 100%;
-        background-color: #004b87;
+        background-color: #003366;
         color: white;
-        font-weight: bold;
-        border-radius: 6px;
+        font-weight: 600;
+        border-radius: 4px;
         padding: 0.5rem 1rem;
+        border: none;
     }
     .stButton>button:hover {
-        background-color: #00335b;
+        background-color: #002244;
         color: white;
     }
     h1, h2, h3 {
-        color: #1f2937;
-    }
-    .metric-card {
-        background-color: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        border-left: 5px solid #004b87;
+        color: #111827;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# Header without the emoji
-st.title("DOEA Digital Online Health Assessment")
-st.markdown("##### State-Sponsored API & Data Broker Remediation Portal (Universal Intake & Compliance Engine)")
+# Official State Top Banner
+st.markdown("""
+    <div class="state-banner">
+        <span>🏛️ State of Florida — Department of Elder Affairs Official Digital Portal</span>
+        <span>Secured Compliance & Regulatory Framework</span>
+    </div>
+""", unsafe_allow_html=True)
+
+# Clean Application Header
+col_title1, col_title2 = st.columns([4, 1])
+with col_title1:
+    st.title("Digital Online Health Assessment")
+    st.markdown("##### State-Sponsored API & Data Broker Remediation Portal (Universal Intake & Compliance Engine)")
+with col_title2:
+    st.markdown("**Operation: Senior Shield**")
+    st.caption("Protected Intake Initiative")
+
 st.divider()
 
 database_name = "digital_footprint_manager.db"
@@ -86,44 +117,47 @@ selected_category = st.sidebar.selectbox(
     ["All Categories", "State-Sponsored API", "Public Records/PII", "Credential/Breach Data", "Commercial Brokers"]
 )
 
-# Streamlined Client Intake Form
+# Streamlined Client Intake Form inside a structured card container
 st.markdown("### 📋 1. Client Intake & Profile Screening")
-with st.expander("Expand to Complete Intake Form", expanded=True):
-    intake_col1, intake_col2 = st.columns(2)
-    with intake_col1:
-        client_name = st.text_input("Full Legal Name")
-        states_list = [
-            "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", 
-            "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", 
-            "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", 
-            "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", 
-            "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", 
-            "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", 
-            "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
-        ]
-        residency_state = st.selectbox("State of Residence (Supports Part-Time Residents)", states_list, index=8)
+with st.container():
+    st.markdown('<div class="card-container">', unsafe_allow_html=True)
+    with st.expander("Expand to Complete Intake Form", expanded=True):
+        intake_col1, intake_col2 = st.columns(2)
+        with intake_col1:
+            client_name = st.text_input("Full Legal Name")
+            states_list = [
+                "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", 
+                "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", 
+                "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", 
+                "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", 
+                "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", 
+                "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", 
+                "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
+            ]
+            residency_state = st.selectbox("State of Residence (Supports Part-Time Residents)", states_list, index=8)
 
-    with intake_col2:
-        age_group = st.selectbox("Age Group", ["Under 18", "18-29", "30-49", "50-64", "65-74", "75+"])
-        florida_counties = [
-            "Alachua", "Baker", "Bay", "Bradford", "Brevard", "Broward", "Calhoun", "Charlotte", "Citrus", "Clay", 
-            "Collier", "Columbia", "DeSoto", "Dixie", "Duval", "Escambia", "Flagler", "Franklin", "Gadsden", "Gilchrist", 
-            "Glades", "Gulf", "Hamilton", "Hardee", "Hendry", "Hernando", "Highlands", "Hillsborough", "Holmes", "Indian River", 
-            "Jackson", "Jefferson", "Lafayette", "Lake", "Lee", "Leon", "Levy", "Liberty", "Madison", "Manatee", 
-            "Marion", "Martin", "Miami-Dade", "Monroe", "Nassau", "Okaloosa", "Okeechobee", "Orange", "Osceola", "Palm Beach", 
-            "Pasco", "Pinellas", "Polk", "Putnam", "St. Johns", "St. Lucie", "Santa Rosa", "Sarasota", "Seminole", "Sumter", 
-            "Suwannee", "Taylor", "Union", "Volusia", "Wakulla", "Walton", "Washington"
-        ]
-        client_county = st.selectbox("Florida County (If Applicable)", florida_counties)
+        with intake_col2:
+            age_group = st.selectbox("Age Group", ["Under 18", "18-29", "30-49", "50-64", "65-74", "75+"])
+            florida_counties = [
+                "Alachua", "Baker", "Bay", "Bradford", "Brevard", "Broward", "Calhoun", "Charlotte", "Citrus", "Clay", 
+                "Collier", "Columbia", "DeSoto", "Dixie", "Duval", "Escambia", "Flagler", "Franklin", "Gadsden", "Gilchrist", 
+                "Glades", "Gulf", "Hamilton", "Hardee", "Hendry", "Hernando", "Highlands", "Hillsborough", "Holmes", "Indian River", 
+                "Jackson", "Jefferson", "Lafayette", "Lake", "Lee", "Leon", "Levy", "Liberty", "Madison", "Manatee", 
+                "Marion", "Martin", "Miami-Dade", "Monroe", "Nassau", "Okaloosa", "Okeechobee", "Orange", "Osceola", "Palm Beach", 
+                "Pasco", "Pinellas", "Polk", "Putnam", "St. Johns", "St. Lucie", "Santa Rosa", "Sarasota", "Seminole", "Sumter", 
+                "Suwannee", "Taylor", "Union", "Volusia", "Wakulla", "Walton", "Washington"
+            ]
+            client_county = st.selectbox("Florida County (If Applicable)", florida_counties)
 
-    safety_status = st.radio(
-        "Digital Literacy & Safety Status Indicator",
-        ["🟢 Green (Low Risk / Secured)", "🟡 Yellow (Moderate Risk / Needs Attention)", "🔴 Red (High Vulnerability / Action Required)"],
-        horizontal=True
-    )
+        safety_status = st.radio(
+            "Digital Literacy & Safety Status Indicator",
+            ["🟢 Green (Low Risk / Secured)", "🟡 Yellow (Moderate Risk / Needs Attention)", "🔴 Red (High Vulnerability / Action Required)"],
+            horizontal=True
+        )
 
-    if st.button("Save Intake Profile"):
-        st.success(f"Intake profile saved for {client_name} ({residency_state} / {client_county} County). Safety Status: {safety_status}")
+        if st.button("Save Intake Profile"):
+            st.success(f"Intake profile saved for {client_name} ({residency_state} / {client_county} County). Safety Status: {safety_status}")
+    st.markdown('</div>', unsafe_allow_html=True)
 
 st.divider()
 
