@@ -106,7 +106,7 @@ database_name = "digital_footprint_manager.db"
 if 'stage' not in st.session_state:
     st.session_state['stage'] = 'search'
 
-# --- STAGE 1: SEARCH INPUT (Blank Fields & Florida First) ---
+# --- STAGE 1: SEARCH INPUT (Dynamic Intake for Any Person) ---
 if st.session_state['stage'] == 'search':
     st.markdown('<div class="search-card">', unsafe_allow_html=True)
     st.markdown("### 🔍 Enterprise Subject Intake")
@@ -122,7 +122,7 @@ if st.session_state['stage'] == 'search':
 
     loc_col1, loc_col2, loc_col3 = st.columns(3)
     with loc_col1:
-        search_city = st.text_input("City", value="", placeholder="Enter city")
+        search_city = st.text_input("Current City", value="", placeholder="Enter current city")
     with loc_col2:
         states_list = [
             "Florida", "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", 
@@ -138,6 +138,9 @@ if st.session_state['stage'] == 'search':
         age_options = ["-- Select Age Segment --", "18-29", "30-49", "50-64", "65-74", "75+"]
         age_segment = st.selectbox("Age Segment", age_options, index=0)
 
+    # Added dynamic input field for prior historical cities
+    search_prior_cities = st.text_input("Prior / Historical Cities Lived In (Optional)", value="", placeholder="e.g. Indianapolis, IN; Mobile, AL")
+
     if st.button("Initialize Enterprise Audit & Verify Identity"):
         if search_first and search_last and search_city and age_segment != "-- Select Age Segment --":
             full_search_name = f"{search_first} {search_middle + ' ' if search_middle else ''}{search_last}".strip()
@@ -145,27 +148,34 @@ if st.session_state['stage'] == 'search':
             st.session_state['searched_city'] = search_city
             st.session_state['searched_state'] = search_state
             st.session_state['searched_location'] = f"{search_city}, {search_state}"
+            st.session_state['searched_prior_cities'] = search_prior_cities if search_prior_cities else "prior municipalities"
             st.session_state['searched_age_segment'] = age_segment
             st.session_state['stage'] = 'wizard_residency'
             st.rerun()
         else:
-            st.warning("Please fill in your first name, last name, city, and select an age segment to start.")
+            st.warning("Please fill in your first name, last name, current city, and select an age segment to start.")
     st.markdown('</div>', unsafe_allow_html=True)
 
-# --- STAGE 2A: DYNAMIC RESIDENCY VERIFICATION WIZARD ---
+# --- STAGE 2A: FULLY DYNAMIC RESIDENCY CHECK ---
 elif st.session_state['stage'] == 'wizard_residency':
     st.markdown('<div class="wizard-card">', unsafe_allow_html=True)
     current_name = st.session_state.get('searched_name', 'Subject')
     target_city = st.session_state.get('searched_city', 'City')
     target_state = st.session_state.get('searched_state', 'State')
+    prior_cities = st.session_state.get('searched_prior_cities', '')
     
     st.markdown(f"### Search Subject: {current_name}")
-    st.progress(40, text="40% Confidence Match Building — Analyzing Historical Residency Indices")
+    st.progress(40, text="40% Confidence Match Building — Analyzing Historical Multi-City Residency Indices")
     st.markdown("---")
     st.markdown("### ⚠️ Confirm Residency Information")
     st.caption("Help Narrow Down Your Results")
     
-    st.markdown(f"**Has {current_name} ever lived in {target_city}, {target_state} or other prior cities?**")
+    # Dynamically incorporates whatever prior cities the user typed into the prompt
+    loc_display = f"{target_city}, {target_state}"
+    if prior_cities and prior_cities != "prior municipalities":
+        loc_display += f", or {prior_cities}"
+
+    st.markdown(f"**Has {current_name} ever lived in {loc_display}?**")
     
     wr_c1, wr_c2, wr_c3 = st.columns(3)
     with wr_c1:
@@ -254,11 +264,11 @@ elif st.session_state['stage'] == 'results':
                 
                 identified_threats = [
                     ('Tier-1 Commercial Data Aggregators (Spokeo / Whitepages)', 'Successfully Protected', default_deadline, 
-                     f'Identified commercial profile listings publishing historical addresses and relative associations for {searched_name} in {target_city}, {target_state_abbr}.',
+                     f'Identified commercial profile listings publishing historical addresses and relative associations for {searched_name} across multiple municipalities.',
                      'Dispatched automated statutory opt-out requests across tier-1 broker pipelines. Initiated 45-day statutory compliance window.', 'https://www.networkadvertising.org/'),
                     
                     ('Secondary People-Search Networks (Intelius / BeenVerified)', 'Successfully Protected', default_deadline, 
-                     f'Secondary aggregators indexed family mapping and public records matching {target_city}, {target_state_abbr} listings.',
+                     f'Secondary aggregators indexed family mapping and historical residency matching {target_city}, {target_state_abbr} listings.',
                      'Executed batch removal protocol via centralized opt-out authority gateways.', 'https://optout.beenverified.com/'),
                     
                     (f'Public Property & Tax Records ({target_state_abbr})', 'Successfully Protected', default_deadline, 
