@@ -4,8 +4,42 @@ import streamlit as st
 from datetime import datetime, timedelta
 
 st.set_page_config(page_title="DOEA Digital Online Health Assessment", layout="wide")
-st.title("🛡️ DOEA Digital Online Health Assessment")
-st.write("State-Sponsored API & Data Broker Remediation Portal (Universal Intake & Compliance Engine)")
+
+# Custom CSS for a visually striking, professional enterprise layout
+st.markdown("""
+    <style>
+    .main {
+        background-color: #f8f9fa;
+    }
+    .stButton>button {
+        width: 100%;
+        background-color: #004b87;
+        color: white;
+        font-weight: bold;
+        border-radius: 6px;
+        padding: 0.5rem 1rem;
+    }
+    .stButton>button:hover {
+        background-color: #00335b;
+        color: white;
+    }
+    h1, h2, h3 {
+        color: #1f2937;
+    }
+    .metric-card {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border-left: 5px solid #004b87;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# Header without the emoji
+st.title("DOEA Digital Online Health Assessment")
+st.markdown("##### State-Sponsored API & Data Broker Remediation Portal (Universal Intake & Compliance Engine)")
+st.divider()
 
 database_name = "digital_footprint_manager.db"
 
@@ -52,14 +86,12 @@ selected_category = st.sidebar.selectbox(
     ["All Categories", "State-Sponsored API", "Public Records/PII", "Credential/Breach Data", "Commercial Brokers"]
 )
 
-# Streamlined Client Intake Form (All Age Groups, All 67 FL Counties, All 50 States, RGY Safety Status)
+# Streamlined Client Intake Form
 st.markdown("### 📋 1. Client Intake & Profile Screening")
 with st.expander("Expand to Complete Intake Form", expanded=True):
     intake_col1, intake_col2 = st.columns(2)
     with intake_col1:
         client_name = st.text_input("Full Legal Name")
-        
-        # All 50 U.S. States
         states_list = [
             "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", 
             "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", 
@@ -69,13 +101,10 @@ with st.expander("Expand to Complete Intake Form", expanded=True):
             "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", 
             "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
         ]
-        residency_state = st.selectbox("State of Residence (Supports Part-Time Residents)", states_list, index=8) # Default to Florida
+        residency_state = st.selectbox("State of Residence (Supports Part-Time Residents)", states_list, index=8)
 
     with intake_col2:
-        # Open to all age groups
         age_group = st.selectbox("Age Group", ["Under 18", "18-29", "30-49", "50-64", "65-74", "75+"])
-        
-        # All 67 Florida Counties list
         florida_counties = [
             "Alachua", "Baker", "Bay", "Bradford", "Brevard", "Broward", "Calhoun", "Charlotte", "Citrus", "Clay", 
             "Collier", "Columbia", "DeSoto", "Dixie", "Duval", "Escambia", "Flagler", "Franklin", "Gadsden", "Gilchrist", 
@@ -87,7 +116,6 @@ with st.expander("Expand to Complete Intake Form", expanded=True):
         ]
         client_county = st.selectbox("Florida County (If Applicable)", florida_counties)
 
-    # Green, Yellow, Red digital safety status method
     safety_status = st.radio(
         "Digital Literacy & Safety Status Indicator",
         ["🟢 Green (Low Risk / Secured)", "🟡 Yellow (Moderate Risk / Needs Attention)", "🔴 Red (High Vulnerability / Action Required)"],
