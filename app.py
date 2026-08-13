@@ -139,90 +139,13 @@ if st.session_state['stage'] == 'search':
             st.session_state['searched_state'] = search_state
             st.session_state['searched_location'] = f"{search_city}, {search_state}"
             st.session_state['searched_age_segment'] = age_segment
-            st.session_state['stage'] = 'wizard_q1'
+            st.session_state['stage'] = 'results'
             st.rerun()
         else:
             st.warning("Please fill in first name, last name, and city to start.")
     st.markdown('</div>', unsafe_allow_html=True)
 
-# --- STAGE 2: WIZARD QUESTION 1 (Locations / Cities) ---
-elif st.session_state['stage'] == 'wizard_q1':
-    st.markdown('<div class="wizard-card">', unsafe_allow_html=True)
-    st.markdown(f"### Search Subject: {st.session_state['searched_name']} (Segment: {st.session_state.get('searched_age_segment', '50-64')})")
-    st.progress(16, text="16% Confidence Match Building")
-    st.markdown("---")
-    st.markdown("### ⚠️ Confirm Information")
-    st.caption("Help Narrow Down Your Results")
-    current_loc = st.session_state.get('searched_location', 'Tallahassee, Florida')
-    st.markdown(f"**Has {st.session_state['searched_name']} ever lived in {current_loc}, Indianapolis, IN, or Mobile, AL?**")
-    
-    wq1_c1, wq1_c2, wq1_c3 = st.columns(3)
-    with wq1_c1:
-        if st.button("YES"):
-            st.session_state['stage'] = 'wizard_q2'
-            st.rerun()
-    with wq1_c2:
-        if st.button("NO"):
-            st.session_state['stage'] = 'wizard_q2'
-            st.rerun()
-    with wq1_c3:
-        if st.button("I DON'T KNOW"):
-            st.session_state['stage'] = 'wizard_q2'
-            st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# --- STAGE 3: WIZARD QUESTION 2 (Age Segment Confirmation) ---
-elif st.session_state['stage'] == 'wizard_q2':
-    st.markdown('<div class="wizard-card">', unsafe_allow_html=True)
-    age_seg = st.session_state.get('searched_age_segment', '50-64')
-    st.markdown(f"### Search Subject: {st.session_state['searched_name']}")
-    st.progress(46, text="46% Confidence Match Building")
-    st.markdown("---")
-    st.markdown("### ⚠️ Confirm Information")
-    st.caption("Help Narrow Down Your Results")
-    st.markdown(f"**Is {st.session_state['searched_name']} within the {age_seg} age bracket?**")
-    
-    wq2_c1, wq2_c2, wq2_c3 = st.columns(3)
-    with wq2_c1:
-        if st.button("YES"):
-            st.session_state['stage'] = 'wizard_q3'
-            st.rerun()
-    with wq2_c2:
-        if st.button("NO"):
-            st.session_state['stage'] = 'wizard_q3'
-            st.rerun()
-    with wq2_c3:
-        if st.button("I DON'T KNOW"):
-            st.session_state['stage'] = 'wizard_q3'
-            st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# --- STAGE 4: WIZARD QUESTION 3 (Relatives) ---
-elif st.session_state['stage'] == 'wizard_q3':
-    st.markdown('<div class="wizard-card">', unsafe_allow_html=True)
-    st.markdown(f"### Search Subject: {st.session_state['searched_name']}")
-    st.progress(75, text="75% Confidence Match Building")
-    st.markdown("---")
-    st.markdown("### ⚠️ Confirm Information")
-    st.caption("Help Narrow Down Your Results")
-    st.markdown(f"**As far as you know, is {st.session_state['searched_name']} related to listed public associates?**")
-    
-    wq3_c1, wq3_c2, wq3_c3 = st.columns(3)
-    with wq3_c1:
-        if st.button("YES"):
-            st.session_state['stage'] = 'results'
-            st.rerun()
-    with wq3_c2:
-        if st.button("NO"):
-            st.session_state['stage'] = 'results'
-            st.rerun()
-    with wq3_c3:
-        if st.button("I DON'T KNOW"):
-            st.session_state['stage'] = 'results'
-            st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# --- STAGE 5: RESULTS MATCH GRID ---
+# --- STAGE 2: RESULTS MATCH GRID (Instant & Clean) ---
 elif st.session_state['stage'] == 'results':
     age_seg = st.session_state.get('searched_age_segment', '50-64')
     target_city = st.session_state.get('searched_city', 'Tallahassee')
@@ -233,16 +156,14 @@ elif st.session_state['stage'] == 'results':
     st.write(f"Filtered for records within age segment **{age_seg}** across verified public data sources:")
 
     with st.container():
-        col_res1, col_res2, col_res3, col_res4 = st.columns([3, 1, 2, 2])
+        col_res1, col_res2, col_res3 = st.columns([3, 1, 2])
         with col_res1:
             st.markdown(f"**⭐ BEST RESULT (Verified Match)**\n### {searched_name}")
             st.caption(f"Phone Number Found! • {target_city}, {target_state_abbr}")
         with col_res2:
             st.markdown(f"**AGE SEGMENT**\n### {age_seg}")
         with col_res3:
-            st.markdown(f"**LOCATIONS**\n{target_city}, {target_state_abbr}\nIndianapolis, IN\nMobile, AL")
-        with col_res4:
-            st.markdown("**POSSIBLE ASSOCIATES**\nPublic Directory Match #1\nPublic Directory Match #2")
+            st.markdown(f"**LOCATION**\n{target_city}, {target_state_abbr}")
         
         if st.button("OPEN REPORT / THAT'S ME"):
             default_deadline = (datetime.now() + timedelta(days=45)).strftime('%Y-%m-%d')
@@ -285,7 +206,7 @@ elif st.session_state['stage'] == 'results':
         st.session_state['stage'] = 'search'
         st.rerun()
 
-# --- STAGE 6: PERSONALIZED HEALTH ASSESSMENT DASHBOARD & CLEAN ON-SCREEN REPORT ---
+# --- STAGE 3: PERSONALIZED HEALTH ASSESSMENT DASHBOARD & CLEAN ON-SCREEN REPORT ---
 elif st.session_state['stage'] == 'dashboard':
     st.success(f"Identity successfully verified for **{st.session_state.get('searched_name', 'User')}**! Your official report is displayed below.")
 
