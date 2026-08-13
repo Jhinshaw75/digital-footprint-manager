@@ -149,7 +149,7 @@ with tab2:
             }
         )
     else:
-        st.info("No records have been processed through the API gateway yet.")
+        st.info("No items have been marked as successfully removed yet.")
 
 # Export Data Capability
 st.divider()
