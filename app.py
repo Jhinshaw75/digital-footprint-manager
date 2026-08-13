@@ -7,7 +7,7 @@ import random
 
 st.set_page_config(page_title="DOEA Digital Online Health Assessment", layout="wide")
 
-# Custom CSS for clean styling and grade badges
+# Custom CSS for clean styling, senior-friendly prompts, and button alignment
 st.markdown("""
     <style>
     .main {
@@ -156,7 +156,7 @@ if st.session_state['stage'] == 'search':
         age_options = ["-- Select Age Segment --", "18-29", "30-49", "50-64", "65-74", "75+"]
         age_segment = st.selectbox("Age Segment", age_options, index=0, key="c_age")
 
-    if st.button("Proceed to Sequential MFA Verification"):
+    if st.button("Proceed to Sequential Verification"):
         if search_first and search_last and search_city and age_segment != "-- Select Age Segment --":
             full_search_name = f"{search_first} {search_middle + ' ' if search_middle else ''}{search_last}".strip()
             st.session_state['searched_name'] = full_search_name
@@ -176,18 +176,19 @@ elif st.session_state['stage'] == 'mfa_email':
     current_name = st.session_state.get('searched_name', 'Subject')
     
     st.markdown(f"### Subject: {current_name}")
-    st.progress(35, text="Step 1 of 2: Email Authentication Gateway")
+    st.progress(35, text="Step 1 of 2: Email Identity Confirmation")
     st.markdown("---")
-    st.markdown("#### 📧 Step 1: Confirm Email Address")
+    st.markdown("#### 📧 Step 1: Confirm Your Email Address")
+    st.write("This is a simple **two-step process**. We will email you a verification code which will confirm your identity to securely perform your search.")
     
-    user_email = st.text_input("Email Address (For Secure OTP Delivery)", value="", placeholder="name@example.com", key="input_email")
+    user_email = st.text_input("Your Email Address (We will email you a code to confirm it's you)", value="", placeholder="name@example.com", key="input_email")
     
-    # Button row to clearly separate "Send Code / Continue" from "Back"
-    col_btn1, col_btn2 = st.columns(2)
+    # Button row with 'Send Verification Code' on the left and 'Back to Main Page' on the far right
+    col_btn1, col_btn_spacer, col_btn2 = st.columns([2, 3, 2])
     with col_btn1:
         send_code_clicked = st.button("Send Verification Code")
     with col_btn2:
-        back_clicked = st.button("Back to Search Intake")
+        back_clicked = st.button("Back to Main Page")
 
     if back_clicked:
         st.session_state.pop('email_otp', None)
@@ -207,7 +208,7 @@ elif st.session_state['stage'] == 'mfa_email':
         active_email = st.session_state.get('temp_email', user_email)
         simulated_email_code = st.session_state['email_otp']
         
-        st.success(f"📨 Secure dispatch triggered! An official authentication notice has been sent to **{active_email}**.")
+        st.success(f"📨 A verification code has been emailed to **{active_email}**. Please check your inbox.")
         
         with st.expander("📥 Demo Inbox Preview (Click to open simulated incoming email)", expanded=True):
             st.markdown(f"""
@@ -224,7 +225,7 @@ elif st.session_state['stage'] == 'mfa_email':
             </div>
             """, unsafe_allow_html=True)
 
-        entered_email_code = st.text_input("Enter 6-Digit Email Verification Code from Inbox", value="", max_chars=6, key="input_email_code")
+        entered_email_code = st.text_input("Enter the 6-Digit Verification Code that has been emailed to you", value="", max_chars=6, key="input_email_code")
 
         if st.button("Verify Email & Proceed to Phone Authentication"):
             if entered_email_code == simulated_email_code:
@@ -244,14 +245,15 @@ elif st.session_state['stage'] == 'mfa_sms':
     current_email = st.session_state.get('user_email', '')
     
     st.markdown(f"### Subject: {current_name}")
-    st.progress(75, text="Step 2 of 2: Mobile SMS Authentication Gateway")
+    st.progress(75, text="Step 2 of 2: Mobile Phone Identity Confirmation")
     st.markdown("---")
     st.success(f"✅ Email Address (**{current_email}**) successfully verified!")
-    st.markdown("#### 📱 Step 2: Confirm Mobile Phone Number")
+    st.markdown("#### 📱 Step 2: Confirm Your Mobile Phone Number")
+    st.write("We will text you a quick verification code to complete your second security step.")
     
-    user_phone = st.text_input("Mobile Phone Number (For SMS Code)", value="", placeholder="(555) 000-0000", key="input_phone")
+    user_phone = st.text_input("Your Mobile Phone Number (For SMS Code)", value="", placeholder="(555) 000-0000", key="input_phone")
     
-    col_s_btn1, col_s_btn2 = st.columns(2)
+    col_s_btn1, col_s_btn_spacer, col_s_btn2 = st.columns([2, 3, 2])
     with col_s_btn1:
         send_sms_clicked = st.button("Send SMS Code")
     with col_s_btn2:
@@ -273,7 +275,7 @@ elif st.session_state['stage'] == 'mfa_sms':
         active_phone = st.session_state['temp_phone']
         simulated_sms_code = st.session_state.get('sms_otp', '654321')
         
-        st.success(f"📱 Secure SMS dispatch triggered! A text message has been sent to **{active_phone}**.")
+        st.success(f"📱 A verification code has been texted to **{active_phone}**. Please check your text messages.")
         
         with st.expander("💬 Demo SMS Message Preview (Click to open simulated text message)", expanded=True):
             st.markdown(f"""
@@ -285,7 +287,7 @@ elif st.session_state['stage'] == 'mfa_sms':
             </div>
             """, unsafe_allow_html=True)
 
-        entered_sms_code = st.text_input("Enter 6-Digit SMS Verification Code from Text Message", value="", max_chars=6, key="input_sms_code")
+        entered_sms_code = st.text_input("Enter the 6-Digit Verification Code that has been texted to you", value="", max_chars=6, key="input_sms_code")
 
         if st.button("Verify Mobile & Select Profile Match"):
             if entered_sms_code == simulated_sms_code:
