@@ -156,7 +156,8 @@ if st.session_state['stage'] == 'search':
 elif st.session_state['stage'] == 'wizard_location':
     st.markdown('<div class="wizard-card">', unsafe_allow_html=True)
     current_name = st.session_state.get('searched_name', 'Subject')
-    current_loc = st.session_state.get('searched_location', 'the selected location')
+    target_city = st.session_state.get('searched_city', 'City')
+    target_state_abbr = st.session_state.get('searched_state', 'State')
     
     st.markdown(f"### Search Subject: {current_name} (Segment: {st.session_state.get('searched_age_segment', '50-64')})")
     st.progress(35, text="35% Confidence Match Building — Analyzing Historical Residency Indices")
@@ -164,7 +165,7 @@ elif st.session_state['stage'] == 'wizard_location':
     st.markdown("### ⚠️ Confirm Information")
     st.caption("Help Narrow Down Your Results")
     
-    st.markdown(f"**Has {current_name} ever lived in or been associated with public directories in {current_loc}?**")
+    st.markdown(f"**Has {current_name} ever lived in or been associated with public directories in {target_city}, {target_state_abbr}?**")
     
     wq_c1, wq_c2, wq_c3 = st.columns(3)
     with wq_c1:
