@@ -2,6 +2,7 @@ import sqlite3
 import pandas as pd
 import streamlit as st
 from datetime import datetime, timedelta
+import urllib.parse
 
 st.set_page_config(page_title="DOEA Digital Online Health Assessment", layout="wide")
 
@@ -224,7 +225,6 @@ elif st.session_state['stage'] == 'results':
         
         if st.button("OPEN COMPLIANCE REPORT / THAT'S ME"):
             default_deadline = (datetime.now() + timedelta(days=45)).strftime('%Y-%m-%d')
-            
             property_link = f"https://www.google.com/search?q={target_state_abbr}+property+appraiser+public+record+search"
 
             with sqlite3.connect(database_name) as connection:
@@ -243,7 +243,6 @@ elif st.session_state['stage'] == 'results':
                     );
                 ''')
                 
-                # Expanded Enterprise Threat Matrix
                 identified_threats = [
                     ('Tier-1 Commercial Data Aggregators (Spokeo / Whitepages)', 'Successfully Protected', default_deadline, 
                      f'Identified commercial profile listings publishing historical addresses and phone numbers for {searched_name}.',
@@ -315,6 +314,10 @@ elif st.session_state['stage'] == 'dashboard':
         st.markdown(f"**Assessment Date:** {datetime.now().strftime('%B %d, %Y')}")
         st.markdown(f"**Digital Health Status:** Fully Protected (**{completed_count} of {total} Enterprise Threats Addressed** — Grade A)")
         
+        # 45-Day Re-Scan Window Notice
+        future_date = (datetime.now() + timedelta(days=45)).strftime('%B %d, %Y')
+        st.info(f"⏳ **Statutory Window Active:** Your 45-day compliance window expires on **{future_date}**. Data brokers frequently re-scrape records over time. We recommend running a fresh audit on or after this date.")
+
         st.markdown("### Identified Exposures & Remediation Actions")
         
         for index, row in df.iterrows():
@@ -336,11 +339,17 @@ elif st.session_state['stage'] == 'dashboard':
         </div>
         """, unsafe_allow_html=True)
 
-    col_p1, col_p2 = st.columns(2)
+    col_p1, col_p2, col_p3 = st.columns(3)
     with col_p1:
         if st.button("🖨️ Print / Save Report (Use Browser Print)"):
             st.info("Tip: Press Ctrl+P (or Cmd+P on Mac) to print this clean report directly or save it as a PDF.")
     with col_p2:
+        # Privacy-safe local calendar link generation for 45-day checkup
+        cal_title = urllib.parse.quote("Senior Shield: Digital Health Re-Scan Reminder")
+        cal_details = urllib.parse.quote("Time to run a fresh re-scan on your Digital Online Health Assessment portal to check for newly scraped data broker listings.")
+        cal_url = f"https://calendar.google.com/calendar/render?action=TEMPLATE&text={cal_title}&dates={(datetime.now() + timedelta(days=45)).strftime('%Y%m%d')}/{(datetime.now() + timedelta(days=46)).strftime('%Y%m%d')}&details={cal_details}"
+        st.markdown(f'<a href="{cal_url}" target="_blank"><button style="width:100%; background-color:#003366; color:white; font-weight:600; border-radius:6px; padding:0.6rem 1rem; border:none; cursor:pointer;">📅 Add 45-Day Checkup to Calendar</button></a>', unsafe_allow_html=True)
+    with col_p3:
         if st.button("🔄 Run Another Assessment"):
             st.session_state['stage'] = 'search'
             st.rerun()
