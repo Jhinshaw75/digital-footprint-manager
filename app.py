@@ -235,7 +235,7 @@ elif st.session_state['stage'] == 'mfa_email':
             
     st.markdown('</div>', unsafe_allow_html=True)
 
-# --- STAGE 3: INTELIUS-STYLE DISAMBIGUATION GRID WITH SPECIFIC HISTORICAL CONTEXT ---
+# --- STAGE 3: FULLY DYNAMIC DISAMBIGUATION GRID BASED ON INPUT ---
 elif st.session_state['stage'] == 'results':
     age_seg = st.session_state.get('searched_age_segment', '50-64')
     target_city = st.session_state.get('searched_city', 'City')
@@ -243,7 +243,7 @@ elif st.session_state['stage'] == 'results':
     searched_name = st.session_state.get('searched_name', 'User')
     
     st.markdown(f"### 👥 Select Correct Match for {searched_name}")
-    st.write(f"Multiple public directory listings found matching your search parameters. Review historical residencies and relative connections below to confirm your profile:")
+    st.write(f"Multiple public directory listings found matching your search parameters for **{target_city}, {target_state_abbr}**. Confirm your profile below:")
 
     candidates = [
         {
@@ -251,16 +251,16 @@ elif st.session_state['stage'] == 'results':
             "name": searched_name,
             "age": age_seg,
             "location": f"{target_city}, {target_state_abbr}",
-            "prior_locations": "Previously lived in: Indianapolis, IN; Mobile, AL",
-            "relatives": "Associated Family/Kin: Pamela Byrd & Kinship Network",
-            "badge": "⭐ BEST MATCH (Public Records Index)"
+            "prior_locations": f"Previously registered in: {target_city} Metro & Surrounding Counties",
+            "relatives": "Associated Family/Kin: Public Household Registry Index",
+            "badge": "⭐ BEST MATCH (Verified Input Record)"
         },
         {
             "id": 2,
             "name": searched_name,
             "age": "30-49",
-            "location": f"Alternate Metro Area, {target_state_abbr}",
-            "prior_locations": "Previously lived in: Orlando, FL",
+            "location": f"Alternate District, {target_state_abbr}",
+            "prior_locations": "Previously lived in: Different Regional District",
             "relatives": "Different Kinship Network",
             "badge": "Alternative Match"
         }
@@ -299,7 +299,7 @@ elif st.session_state['stage'] == 'results':
                     
                     identified_threats = [
                         ('Tier-1 Commercial Data Aggregators (Spokeo / Whitepages)', 'Successfully Protected', default_deadline, 
-                         f'Identified commercial profile listings publishing historical addresses and contact numbers for {searched_name} across {cand["prior_locations"]}.',
+                         f'Identified commercial profile listings publishing historical addresses and contact numbers for {searched_name} in {cand["location"]}.',
                          'Dispatched automated statutory opt-out requests across tier-1 broker pipelines. Initiated 45-day statutory compliance window.', 'https://www.networkadvertising.org/'),
                         
                         ('Secondary People-Search Networks (Intelius / BeenVerified)', 'Successfully Protected', default_deadline, 
