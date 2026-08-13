@@ -1,4 +1,4 @@
-import sqlite3
+ import sqlite3
 import pandas as pd
 import streamlit as st
 from datetime import datetime, timedelta
@@ -72,12 +72,11 @@ st.divider()
 
 database_name = "digital_footprint_manager.db"
 
-# Initialize Database with an empty table so only identified threats are listed
+# Initialize Database table structure if not present
 with sqlite3.connect(database_name) as connection:
     cursor = connection.cursor()
-    cursor.execute("DROP TABLE IF EXISTS optout_tracker;")
     cursor.execute('''
-        CREATE TABLE optout_tracker (
+        CREATE TABLE IF NOT EXISTS optout_tracker (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             broker_name TEXT,
             category TEXT,
@@ -235,10 +234,11 @@ elif st.session_state['stage'] == 'results':
             st.markdown("**POSSIBLE RELATIVES**\nAdrina Frazier\nIsabella M. Hinshaw\nJeanette Hinshaw")
         
         if st.button("OPEN REPORT / THAT'S ME"):
-            # Populate real identified threat vectors upon confirmation
+            # Automatically populate real identified threat vectors seamlessly upon confirmation
             default_deadline = (datetime.now() + timedelta(days=45)).strftime('%Y-%m-%d')
             with sqlite3.connect(database_name) as connection:
                 cursor = connection.cursor()
+                cursor.execute("DELETE FROM optout_tracker;") # Clear any previous entries
                 identified_threats = [
                     ('Commercial Data Aggregators', 'Commercial Brokers', 'Third-Party Opt-Out API', 'High', 'Pending Queue', default_deadline, 'Awaiting Code', 'Identified in commercial broker directory listings', 'https://www.networkadvertising.org/'),
                     ('Public Property & Tax Records', 'Public Records/PII', 'Local Ordinance Request', 'Moderate', 'Needs Review', default_deadline, 'Awaiting Code', 'County property appraiser public record exposure', 'https://floridarevenuetax.org'),
@@ -257,7 +257,7 @@ elif st.session_state['stage'] == 'results':
 
 # --- STAGE 6: PERSONALIZED HEALTH ASSESSMENT DASHBOARD ---
 elif st.session_state['stage'] == 'dashboard':
-    st.success(f"Identity successfully verified for **{st.session_state.get('searched_name', 'User')}**! Only confirmed threat vectors are displayed below.")
+    st.success(f"Identity successfully verified for **{st.session_state.get('searched_name', 'User')}**! Your threat assessment report card is active below.")
 
     if st.button("🔒 Sign Out / New Search"):
         st.session_state['stage'] = 'search'
@@ -265,7 +265,7 @@ elif st.session_state['stage'] == 'dashboard':
 
     st.divider()
 
-    # Load database records
+    # Load database records automatically
     with sqlite3.connect(database_name) as connection:
         df = pd.read_sql_query("SELECT id, broker_name AS 'Source/Broker', category AS 'Data Type', compliance_pathway AS 'API Pathway', risk_level AS 'Risk Severity', status AS 'Current Status', statutory_deadline AS '45-Day Deadline', response_code AS 'State Response Code', verification_note AS 'Audit Trail', target_url AS 'Portal Link', last_updated AS 'Last Updated' FROM optout_tracker;", connection)
 
@@ -282,8 +282,8 @@ elif st.session_state['stage'] == 'dashboard':
     st.divider()
 
     st.markdown("### 🛡️ One-Click Privacy Protection")
-    st.write("Click below to automatically request data removal across all identified threat vectors.")
-    if st.button("Start Automated Removal Request"):
+    st.write("Click below to automatically request data removal across all identified threat vectors and initiate your 45-day statutory compliance window.")
+    if st.button("Execute Automated State Removal Request"):
         new_deadline = (datetime.now() + timedelta(days=45)).strftime('%Y-%m-%d')
         with sqlite3.connect(database_name) as connection:
             cursor = connection.cursor()
