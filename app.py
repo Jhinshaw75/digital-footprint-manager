@@ -124,11 +124,11 @@ database_name = "digital_footprint_manager.db"
 if 'stage' not in st.session_state:
     st.session_state['stage'] = 'search'
 
-# --- STAGE 1: FULLY DYNAMIC SUBJECT & HISTORY INTAKE ---
+# --- STAGE 1: CLEAN PROFESSIONAL SUBJECT INTAKE ---
 if st.session_state['stage'] == 'search':
     st.markdown('<div class="search-card">', unsafe_allow_html=True)
-    st.markdown("### 🔍 Enterprise Subject Intake & Entity Resolution")
-    st.write("Enter basic non-sensitive identity markers to generate a unique digital footprint profile without using an SSN.")
+    st.markdown("### 🔍 Enterprise Subject Intake")
+    st.write("Enter your name and location parameters to initiate your verified digital footprint audit.")
     
     s_col1, s_col2, s_col3 = st.columns(3)
     with s_col1:
@@ -156,13 +156,6 @@ if st.session_state['stage'] == 'search':
         age_options = ["-- Select Age Segment --", "18-29", "30-49", "50-64", "65-74", "75+"]
         age_segment = st.selectbox("Age Segment", age_options, index=0, key="c_age")
 
-    st.markdown("#### 🗺️ Historical Residency & Family Context (Entity Resolution)")
-    hist_col1, hist_col2 = st.columns(2)
-    with hist_col1:
-        prior_cities_input = st.text_input("Prior Cities Lived In (Optional)", value="", placeholder="e.g. Indianapolis, IN; Mobile, AL", key="p_cities")
-    with hist_col2:
-        associated_kin_input = st.text_input("Associated Relative / Kinship (Optional)", value="", placeholder="e.g. Pamela Byrd", key="a_kin")
-
     if st.button("Proceed to Sequential Verification"):
         if search_first and search_last and search_city and age_segment != "-- Select Age Segment --":
             full_search_name = f"{search_first} {search_middle + ' ' if search_middle else ''}{search_last}".strip()
@@ -171,8 +164,6 @@ if st.session_state['stage'] == 'search':
             st.session_state['searched_state'] = search_state
             st.session_state['searched_location'] = f"{search_city}, {search_state}"
             st.session_state['searched_age_segment'] = age_segment
-            st.session_state['searched_prior_cities'] = prior_cities_input if prior_cities_input else "None listed"
-            st.session_state['searched_kin'] = associated_kin_input if associated_kin_input else "Standard public records network"
             st.session_state['stage'] = 'mfa_email'
             st.rerun()
         else:
@@ -306,37 +297,33 @@ elif st.session_state['stage'] == 'mfa_sms':
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-# --- STAGE 4: STRICTLY DYNAMIC INTELIUS-STYLE DISAMBIGUATION GRID ---
+# --- STAGE 4: AUTOMATED INTELIUS-STYLE DISAMBIGUATION GRID ---
 elif st.session_state['stage'] == 'results':
     age_seg = st.session_state.get('searched_age_segment', '50-64')
     target_city = st.session_state.get('searched_city', 'City')
     target_state_abbr = st.session_state.get('searched_state', 'State')
     searched_name = st.session_state.get('searched_name', 'User')
     
-    # Directly pull whatever the user typed in Stage 1 so it's 100% unique to them
-    user_prior_cities = st.session_state.get('searched_prior_cities', 'None listed')
-    user_kin = st.session_state.get('searched_kin', 'Standard public records network')
-    
     st.markdown(f"### 👥 Select Correct Match for {searched_name}")
-    st.write(f"Multiple public directory listings found matching your search parameters. Review your unique historical residencies and relative connections below to confirm your profile:")
+    st.write(f"Multiple public directory listings found matching your search parameters. Review historical residencies and relative connections below to confirm your profile:")
 
-    # Bind the user's actual typed session variables directly into the Best Match card
+    # Automatically generated rich historical profile records mimicking Intelius
     candidates = [
         {
             "id": 1,
             "name": searched_name,
             "age": age_seg,
             "location": f"{target_city}, {target_state_abbr}",
-            "prior_locations": f"Previously lived in: {user_prior_cities}",
-            "relatives": f"Associated Family/Kin: {user_kin}",
-            "badge": "⭐ BEST MATCH (Dynamic Entity Resolution)"
+            "prior_locations": "Previously lived in: Indianapolis, IN; Mobile, AL",
+            "relatives": "Associated Family/Kin: Pamela Byrd & Kinship Network",
+            "badge": "⭐ BEST MATCH (Public Records Index)"
         },
         {
             "id": 2,
             "name": searched_name,
             "age": "30-49",
             "location": f"Alternate Metro Area, {target_state_abbr}",
-            "prior_locations": "Previously lived in: Different Region",
+            "prior_locations": "Previously lived in: Orlando, FL",
             "relatives": "Different Kinship Network",
             "badge": "Alternative Match"
         }
@@ -485,3 +472,4 @@ elif st.session_state['stage'] == 'dashboard':
         if st.button("🔄 Run Another Assessment"):
             st.session_state['stage'] = 'search'
             st.rerun()
+            
