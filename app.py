@@ -110,7 +110,6 @@ if st.session_state['stage'] == 'search':
     with loc_col1:
         search_city = st.text_input("City", value="", placeholder="Enter city")
     with loc_col2:
-        # Florida placed first in the list
         states_list = [
             "Florida", "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", 
             "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", 
@@ -120,9 +119,8 @@ if st.session_state['stage'] == 'search':
             "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", 
             "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
         ]
-        search_state = st.selectbox("State", states_list, index=0) # Florida is index 0
+        search_state = st.selectbox("State", states_list, index=0)
     with loc_col3:
-        # Age segment starts with a blank default option
         age_options = ["-- Select Age Segment --", "18-29", "30-49", "50-64", "65-74", "75+"]
         age_segment = st.selectbox("Age Segment", age_options, index=0)
 
@@ -140,16 +138,16 @@ if st.session_state['stage'] == 'search':
             st.warning("Please fill in your first name, last name, city, and select an age segment to start.")
     st.markdown('</div>', unsafe_allow_html=True)
 
-# --- STAGE 2: LOCATION HISTORY WIZARD QUESTION ---
+# --- STAGE 2: PRECISE NARROW-DOWN LOCATION WIZARD ---
 elif st.session_state['stage'] == 'wizard_location':
     st.markdown('<div class="wizard-card">', unsafe_allow_html=True)
     st.markdown(f"### Search Subject: {st.session_state['searched_name']} (Segment: {st.session_state.get('searched_age_segment', '50-64')})")
-    st.progress(50, text="50% Confidence Match Building — Verifying Residency History")
+    st.progress(50, text="50% Confidence Match Building — Narrowing Down Residency Records")
     st.markdown("---")
     st.markdown("### ⚠️ Confirm Information")
     st.caption("Help Narrow Down Your Results")
     current_loc = st.session_state.get('searched_location', 'Tallahassee, Florida')
-    st.markdown(f"**Has {st.session_state['searched_name']} ever lived in other cities or states outside of {current_loc}?**")
+    st.markdown(f"**Has {st.session_state['searched_name']} ever lived in {current_loc}, Indianapolis, IN, or Mobile, AL?**")
     
     wq_c1, wq_c2, wq_c3 = st.columns(3)
     with wq_c1:
