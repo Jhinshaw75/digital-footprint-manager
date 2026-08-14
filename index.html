@@ -10,6 +10,7 @@
             padding: 20px;
             max-width: 650px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
         }
         .audit-header {
             font-size: 18px;
@@ -69,6 +70,35 @@
         .remediation-list li {
             margin-bottom: 6px;
         }
+        .template-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #dadce0;
+        }
+        .template-box {
+            background: #ffffff;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            color: #202124;
+            white-space: pre-wrap;
+            margin-top: 8px;
+            margin-bottom: 8px;
+        }
+        .copy-btn {
+            background-color: #5f6368;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .copy-btn:hover {
+            background-color: #3c4043;
+        }
     </style>
 </head>
 <body>
@@ -114,8 +144,33 @@ function runAdvancedScan() {
             <li><b>Data Broker Removal Submissions:</b> Opt out manually using state or federal privacy templates, or deploy automated removal tools to clear aggregate indexes.</li>
             <li><b>Digital Hygiene Hardening:</b> Isolate primary communication emails from public forums and switch critical services to hardware-backed or authenticator-app MFA.</li>
         </ol>
+        
+        <div class="template-section">
+            <div style="font-weight: 600; font-size: 14px; color: #202124;">Formal Data Broker Opt-Out Notice Template:</div>
+            <p style="font-size: 13px; color: #3c4043; margin: 4px 0;">Copy and send this notice via email or web form to data brokers listing your information:</p>
+            <div id="optOutTemplate" class="template-box">Subject: Formal Request to Opt-Out and Delete Personal Information
+
+To Whom It May Concern,
+
+Pursuant to applicable privacy laws and standard consumer protection frameworks, I am formally requesting that you immediately remove, delete, and suppress all personal records, listings, and consumer data associated with my identity, including the email/identifier: ${val}.
+
+Please confirm in writing once my information has been completely expunged from your databases and public directories.
+
+Sincerely,
+[Your Name]
+[Your Address / Contact Info]</div>
+            <button class="copy-btn" onclick="copyTemplate()">Copy Template to Clipboard</button>
+        </div>
+
         <p style="margin-top: 12px; font-size: 13px;"><a href="https://www.consumer.ftc.gov/" target="_blank" style="color: #1a73e8; text-decoration: none;">View Official FTC Privacy Guidance &rarr;</a></p>
     `;
+}
+
+function copyTemplate() {
+    const text = document.getElementById('optOutTemplate').innerText;
+    navigator.clipboard.writeText(text).then(() => {
+        alert("Opt-out template copied to clipboard!");
+    });
 }
 </script>
 
