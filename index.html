@@ -53,7 +53,7 @@
             margin-top: 15px;
             padding: 15px;
             background: #f8f9fa;
-            border-left: 4px solid #d93025;
+            border-left: 4px solid #1a73e8;
             border-radius: 4px;
         }
         .results-title {
@@ -144,14 +144,15 @@
             margin-top: 15px;
             font-size: 13px;
             background: #f1f3f4;
-            padding: 10px;
+            padding: 12px;
             border-radius: 4px;
         }
         .resources-box a {
             color: #1a73e8;
             text-decoration: none;
             display: block;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
+            font-weight: 500;
         }
         .resources-box a:hover {
             text-decoration: underline;
@@ -161,11 +162,16 @@
 <body>
 
 <div class="audit-container">
-    <div class="audit-header">Digital Footprint & Privacy Audit Tool</div>
+    <div class="audit-header">Operation Senior Shield: Digital Footprint & Privacy Guide</div>
+    <p style="font-size: 13px; color: #5f6368; margin-top: 0; margin-bottom: 15px;">
+        Use this interactive framework to run guided security checks, track your remediation steps, and generate privacy opt-out notices.
+    </p>
+    
     <div class="input-group">
-        <input type="text" id="targetInput" class="audit-input" placeholder="Enter email address or phone number...">
-        <button class="audit-btn" onclick="runAdvancedScan()">Run Deep Audit</button>
+        <input type="text" id="targetInput" class="audit-input" placeholder="Enter email address or name to customize templates...">
+        <button class="audit-btn" onclick="runAdvancedScan()">Load Action Plan</button>
     </div>
+    
     <div id="resultsArea" class="results-box">
         <div id="resultsTitle" class="results-title"></div>
         <div id="resultsContent"></div>
@@ -174,58 +180,61 @@
 
 <script>
 function runAdvancedScan() {
-    const val = document.getElementById('targetInput').value.trim();
+    const val = document.getElementById('targetInput').value.trim() || "Your Identifier";
     const area = document.getElementById('resultsArea');
     const title = document.getElementById('resultsTitle');
     const content = document.getElementById('resultsContent');
     
-    if(!val) {
-        alert("Please enter a valid email or identifier.");
-        return;
-    }
-    
     area.style.display = 'block';
-    title.style.color = '#c5221f';
-    title.innerText = "⚠️ Comprehensive Exposure & Breach Report for: " + val;
+    title.style.color = '#1a73e8';
+    title.innerText = "🛡️ Your Personal Action Plan for: " + val;
     
     content.innerHTML = `
-        <p style="font-size: 14px; color: #3c4043; margin: 5px 0;">Cross-referencing historical breach indexes and public registries:</p>
-        <ul class="remediation-list" style="margin-bottom: 12px;">
-            <li><b>Known Breach History:</b> Identified in historic credential compromises.</li>
-            <li><b>Data Broker Footprint:</b> Active listings discovered on open people-search aggregates (Exposed: Relatives, Historical Addresses, Phone Numbers).</li>
-            <li><b>Domain & Username Residue:</b> Matching profile handles detected across public indexes.</li>
-        </ul>
+        <div class="resources-box" style="background: #e8f0fe; border-left: 4px solid #1a73e8; margin-bottom: 12px;">
+            <div style="font-weight: 600; color: #174ea6; margin-bottom: 6px;">Step 1: Check for Corporate Data Breaches</div>
+            <p style="font-size: 13px; color: #3c4043; margin: 0 0 8px 0;">Verify if your email has appeared in any known security breaches using the trusted public index:</p>
+            <a href="https://haveibeenpwned.com" target="_blank">🔗 Open Have I Been Pwned (HaveIBeenPwned.com) &rarr;</a>
+        </div>
+
+        <div class="resources-box" style="background: #fef7e0; border-left: 4px solid #f9ab00; margin-bottom: 12px;">
+            <div style="font-weight: 600; color: #b06000; margin-bottom: 6px;">Step 2: Check Public Directories & Data Brokers</div>
+            <p style="font-size: 13px; color: #3c4043; margin: 0 0 8px 0;">Search your records in an incognito window, then submit opt-out removals directly at these major broker portals:</p>
+            <a href="https://www.truepeoplesearch.com/removal" target="_blank">🔗 TruePeopleSearch Removal Form &rarr;</a>
+            <a href="https://www.fastpeoplesearch.com/removal" target="_blank">🔗 FastPeopleSearch Removal Form &rarr;</a>
+            <a href="https://www.whitepages.com/suppression-requests" target="_blank">🔗 Whitepages Suppression Request &rarr;</a>
+            <a href="https://www.spokeo.com/optout" target="_blank">🔗 Spokeo Opt-Out Portal &rarr;</a>
+        </div>
 
         <div class="checklist-section">
-            <div style="font-weight: 600; font-size: 14px; color: #202124; margin-bottom: 8px;">Interactive Action Checklist:</div>
-            <label class="checklist-item"><input type="checkbox"> 1. Rotate compromised passwords and secure account recovery settings.</label>
-            <label class="checklist-item"><input type="checkbox"> 2. Submit formal opt-out notices to data brokers using template below.</label>
-            <label class="checklist-item"><input type="checkbox"> 3. Enable multi-factor authentication (MFA) on primary email accounts.</label>
+            <div style="font-weight: 600; font-size: 14px; color: #202124; margin-bottom: 8px;">Step 3: Interactive Progress Checklist</div>
+            <label class="checklist-item"><input type="checkbox"> Checked email on Have I Been Pwned and rotated passwords if needed.</label>
+            <label class="checklist-item"><input type="checkbox"> Searched name/city in private window for public directory listings.</label>
+            <label class="checklist-item"><input type="checkbox"> Submitted formal opt-out notices to data brokers using the template below.</label>
         </div>
         
         <div class="template-section">
-            <div style="font-weight: 600; font-size: 14px; color: #202124;">Data Broker Opt-Out Notice Template:</div>
-            <p style="font-size: 13px; color: #3c4043; margin: 4px 0;">Review template and trigger simulated removal workflow:</p>
+            <div style="font-weight: 600; font-size: 14px; color: #202124;">Step 4: Copy-and-Paste Data Broker Removal Template</div>
+            <p style="font-size: 13px; color: #3c4043; margin: 4px 0;">Customize and copy this notice to paste into broker removal forms:</p>
             <div id="optOutTemplate" class="template-box">Subject: Formal Request to Opt-Out and Delete Personal Information
 
 To Whom It May Concern,
 
-Pursuant to applicable privacy laws and standard consumer protection frameworks, I am formally requesting that you immediately remove, delete, and suppress all personal records, listings, and consumer data associated with my identity, including the email/identifier: ${val}.
+Pursuant to applicable consumer privacy frameworks, I am formally requesting that you immediately remove, delete, and suppress all personal records, listings, and consumer data associated with my identity, including: ${val}.
 
-Please confirm in writing once my information has been completely expunged from your databases and public directories.
+Please confirm in writing once my information has been completely expunged from your public directories.
 
 Sincerely,
 [Your Name]
 [Your Address / Contact Info]</div>
             <div class="btn-row">
-                <button class="copy-btn" onclick="copyTemplate()">Copy Template</button>
-                <button class="auto-btn" onclick="triggerAutoDispatch()">Simulate Opt-Out Queue</button>
+                <button class="copy-btn" onclick="copyTemplate()">Copy Template to Clipboard</button>
+                <button class="auto-btn" onclick="triggerAutoDispatch()">Simulate Queue Status</button>
             </div>
             <div id="statusLog" class="status-log"></div>
         </div>
 
-        <div class="resources-box">
-            <div style="font-weight: 600; margin-bottom: 4px; color: #202124;">Official Consumer Privacy Resources:</div>
+        <div class="resources-box" style="margin-top: 15px;">
+            <div style="font-weight: 600; margin-bottom: 4px; color: #202124;">Official Government & Consumer Guidance:</div>
             <a href="https://consumer.ftc.gov/consumer-alerts/2021/06/your-guide-protecting-your-privacy-online" target="_blank">🔗 FTC Guide: Protecting Your Privacy Online &rarr;</a>
             <a href="https://privacyrights.org/data-brokers" target="_blank">🔗 Privacy Rights Clearinghouse - Data Broker Directory &rarr;</a>
         </div>
@@ -242,18 +251,18 @@ function copyTemplate() {
 function triggerAutoDispatch() {
     const log = document.getElementById('statusLog');
     log.style.display = 'block';
-    log.innerHTML = "Initializing secure local simulation protocol...<br>";
+    log.innerHTML = "Initializing local privacy guidance protocol...<br>";
     
     setTimeout(() => {
-        log.innerHTML += "✓ Formatting payload for compliance standards...<br>";
+        log.innerHTML += "✓ Formatting removal notice with user identifier...<br>";
     }, 800);
     
     setTimeout(() => {
-        log.innerHTML += "✓ Queuing removal request steps for user action...<br>";
+        log.innerHTML += "✓ Preparing direct links for manual broker submission...<br>";
     }, 1600);
     
     setTimeout(() => {
-        log.innerHTML += "<b>Simulation Complete: Follow the checklist steps to submit notices manually to target brokers.</b>";
+        log.innerHTML += "<b>Action Plan Ready: Use the links above to submit requests directly to each platform.</b>";
     }, 2400);
 }
 </script>
