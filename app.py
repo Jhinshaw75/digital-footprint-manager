@@ -1,409 +1,271 @@
-import sqlite3
-import pandas as pd
-import streamlit as st
-from datetime import datetime, timedelta
-import urllib.parse
-import random
-
-st.set_page_config(page_title="DOEA Digital Online Health Assessment", layout="wide")
-
-# Custom CSS for clean styling and grade badges
-st.markdown("""
+<!DOCTYPE html>
+<html>
+<head>
     <style>
-    .main {
-        background-color: #f8f9fa;
-    }
-    .state-banner {
-        background-color: #003366;
-        color: white;
-        padding: 12px 20px;
-        font-size: 14px;
-        font-weight: 500;
-        border-radius: 4px;
-        margin-bottom: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-    .wizard-card {
-        background-color: #0f2744;
-        color: white;
-        padding: 35px;
-        border-radius: 12px;
-        box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-        margin-bottom: 25px;
-    }
-    .search-card {
-        background-color: white;
-        padding: 30px;
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        border-top: 6px solid #003366;
-        margin-bottom: 25px;
-    }
-    .inbox-preview {
-        background-color: #f1f5f9;
-        border: 1px dashed #003366;
-        padding: 20px;
-        border-radius: 8px;
-        color: #111827;
-        margin-bottom: 20px;
-        margin-top: 15px;
-    }
-    .result-row {
-        background-color: white;
-        padding: 20px;
-        border-radius: 8px;
-        border: 1px solid #d1d5db;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.04);
-        margin-bottom: 15px;
-    }
-    .report-box {
-        background-color: white;
-        padding: 35px;
-        border-radius: 10px;
-        border: 2px solid #003366;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-        margin-top: 20px;
-        margin-bottom: 20px;
-    }
-    .grade-badge-a {
-        background-color: #28a745;
-        color: white;
-        font-size: 36px;
-        font-weight: bold;
-        padding: 15px 25px;
-        border-radius: 10px;
-        text-align: center;
-        display: inline-block;
-    }
-    .threat-box {
-        background-color: #f8f9fa;
-        padding: 20px;
-        border-radius: 8px;
-        border-left: 5px solid #28a745;
-        margin-bottom: 15px;
-        border-top: 1px solid #e5e7eb;
-        border-right: 1px solid #e5e7eb;
-        border-bottom: 1px solid #e5e7eb;
-    }
-    .stButton>button {
-        width: 100%;
-        background-color: #003366;
-        color: white;
-        font-weight: 600;
-        border-radius: 6px;
-        padding: 0.6rem 1rem;
-        border: none;
-    }
-    .stButton>button:hover {
-        background-color: #002244;
-        color: white;
-    }
-    h1, h2, h3, h4 {
-        color: #111827;
-    }
-    </style>
-""", unsafe_allow_html=True)
-
-# Official State Top Banner
-st.markdown("""
-    <div class="state-banner">
-        <span>🏛️ State of Florida — Department of Elder Affairs Official Digital Portal</span>
-        <span>Operation: Senior Shield (Enterprise Compliance Engine)</span>
-    </div>
-""", unsafe_allow_html=True)
-
-st.title("DOEA Digital Online Health Assessment")
-st.markdown("##### Secure Identity Verification & Comprehensive Threat Remediation Portal")
-st.divider()
-
-database_name = "digital_footprint_manager.db"
-
-# Session State Flow Management
-if 'stage' not in st.session_state:
-    st.session_state['stage'] = 'search'
-
-# --- STAGE 1: CLEAN PROFESSIONAL SUBJECT INTAKE ---
-if st.session_state['stage'] == 'search':
-    st.markdown('<div class="search-card">', unsafe_allow_html=True)
-    st.markdown("### 🔍 Enterprise Subject Intake")
-    st.write("Enter your name and location parameters to initiate your verified digital footprint audit.")
-    
-    s_col1, s_col2, s_col3 = st.columns(3)
-    with s_col1:
-        search_first = st.text_input("First Name", value="", placeholder="Enter first name", key="f_name")
-    with s_col2:
-        search_middle = st.text_input("Middle Name / Initial", value="", placeholder="Enter middle name or initial", key="m_name")
-    with s_col3:
-        search_last = st.text_input("Last Name", value="", placeholder="Enter last name", key="l_name")
-
-    loc_col1, loc_col2, loc_col3 = st.columns(3)
-    with loc_col1:
-        search_city = st.text_input("Current City", value="", placeholder="Enter current city", key="c_city")
-    with loc_col2:
-        states_list = [
-            "Florida", "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", 
-            "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", 
-            "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", 
-            "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", 
-            "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", 
-            "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", 
-            "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
-        ]
-        search_state = st.selectbox("State", states_list, index=0, key="c_state")
-    with loc_col3:
-        age_options = ["-- Select Age Segment --", "18-29", "30-49", "50-64", "65-74", "75+"]
-        age_segment = st.selectbox("Age Segment", age_options, index=0, key="c_age")
-
-    if st.button("Proceed to Verification"):
-        if search_first and search_last and search_city and age_segment != "-- Select Age Segment --":
-            full_search_name = f"{search_first} {search_middle + ' ' if search_middle else ''}{search_last}".strip()
-            st.session_state['searched_name'] = full_search_name
-            st.session_state['searched_city'] = search_city
-            st.session_state['searched_state'] = search_state
-            st.session_state['searched_location'] = f"{search_city}, {search_state}"
-            st.session_state['searched_age_segment'] = age_segment
-            st.session_state['stage'] = 'mfa_email'
-            st.rerun()
-        else:
-            st.warning("Please fill in your first name, last name, current city, and select an age segment to proceed.")
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# --- STAGE 2: STREAMLINED SINGLE-STEP EMAIL VERIFICATION ---
-elif st.session_state['stage'] == 'mfa_email':
-    st.markdown('<div class="wizard-card">', unsafe_allow_html=True)
-    current_name = st.session_state.get('searched_name', 'Subject')
-    
-    st.markdown(f"### Subject: {current_name}")
-    st.progress(50, text="Identity Confirmation Gateway")
-    st.markdown("---")
-    st.markdown("#### 📧 Confirm Your Email Address")
-    st.write("We will email you a quick verification code to confirm your identity so you can securely view your report.")
-    
-    user_email = st.text_input("Your Email Address", value="", placeholder="name@example.com", key="input_email")
-    
-    col_btn1, col_btn_spacer, col_btn2 = st.columns([2, 3, 2])
-    with col_btn1:
-        send_code_clicked = st.button("Send Verification Code")
-    with col_btn2:
-        back_clicked = st.button("Back to Main Page")
-
-    if back_clicked:
-        st.session_state.pop('email_otp', None)
-        st.session_state['stage'] = 'search'
-        st.rerun()
-
-    if send_code_clicked:
-        if user_email:
-            st.session_state['temp_email'] = user_email
-            st.session_state['email_otp'] = str(random.randint(100000, 999999))
-            st.rerun()
-        else:
-            st.warning("Please enter a valid email address before requesting a verification code.")
-
-    if 'email_otp' in st.session_state:
-        active_email = st.session_state.get('temp_email', user_email)
-        simulated_email_code = st.session_state['email_otp']
-        
-        st.success(f"📨 A verification code has been emailed to **{active_email}**. Please check your inbox.")
-        
-        with st.expander("📥 Demo Inbox Preview (Click to open simulated incoming email)", expanded=True):
-            st.markdown(f"""
-            <div class="inbox-preview">
-                <strong>From:</strong> doea-security@elderaffairs.org<br>
-                <strong>To:</strong> {active_email}<br>
-                <strong>Subject:</strong> Action Required: DOEA Digital Health Assessment Verification Code<br>
-                <hr style="margin: 10px 0; border: 1px solid #cbd5e1;">
-                <p>Hello,</p>
-                <p>You have initiated a secure digital footprint audit through the State of Florida Department of Elder Affairs portal (Operation: Senior Shield).</p>
-                <p>Your confidential One-Time Password (OTP) verification code is:</p>
-                <h2 style="color: #003366; letter-spacing: 2px; margin: 10px 0;">{simulated_email_code}</h2>
-                <p><small>If you did not request this verification, please disregard this message.</small></p>
-            </div>
-            """, unsafe_allow_html=True)
-
-        entered_email_code = st.text_input("Enter the 6-Digit Verification Code that has been emailed to you", value="", max_chars=6, key="input_email_code")
-
-        if st.button("Verify Identity & View My Report"):
-            if entered_email_code == simulated_email_code:
-                st.session_state['user_email'] = active_email
-                st.session_state['stage'] = 'results'
-                st.rerun()
-            else:
-                st.error("Invalid verification code. Please check your simulated inbox preview above.")
-            
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# --- STAGE 3: EXACT MATCH DEMO DISAMBIGUATION GRID ---
-elif st.session_state['stage'] == 'results':
-    age_seg = st.session_state.get('searched_age_segment', '50-64')
-    target_city = st.session_state.get('searched_city', 'City')
-    target_state_abbr = st.session_state.get('searched_state', 'State')
-    searched_name = st.session_state.get('searched_name', 'User')
-    
-    st.markdown(f"### 👥 Select Correct Match for {searched_name}")
-    st.write(f"Multiple public directory listings found matching your search parameters. Review historical residencies and relative connections below to confirm your profile:")
-
-    candidates = [
-        {
-            "id": 1,
-            "name": searched_name,
-            "age": age_seg,
-            "location": f"{target_city}, {target_state_abbr}",
-            "prior_locations": "Previously lived in: Indianapolis, IN; Mobile, AL",
-            "relatives": "Associated Family/Kin: Isabella M. Hinshaw, Jeanette Hinshaw, Pamela Byrd",
-            "badge": "⭐ BEST MATCH (Public Records Index)"
-        },
-        {
-            "id": 2,
-            "name": searched_name,
-            "age": "30-49",
-            "location": f"Alternate Metro Area, {target_state_abbr}",
-            "prior_locations": "Previously lived in: Orlando, FL",
-            "relatives": "Different Kinship Network",
-            "badge": "Alternative Match"
+        .audit-container {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #fdfdfd;
+            border: 1px solid #dadce0;
+            border-radius: 8px;
+            padding: 20px;
+            max-width: 650px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
         }
-    ]
+        .audit-header {
+            font-size: 18px;
+            font-weight: 600;
+            color: #202124;
+            margin-bottom: 15px;
+        }
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .audit-input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid #bdc1c6;
+            border-radius: 4px;
+            font-size: 14px;
+            outline: none;
+        }
+        .audit-input:focus {
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 2px rgba(26,115,232,0.2);
+        }
+        .audit-btn {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .audit-btn:hover {
+            background-color: #1557b0;
+        }
+        .results-box {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-left: 4px solid #1a73e8;
+            border-radius: 4px;
+        }
+        .results-title {
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 8px;
+        }
+        .remediation-list {
+            margin: 8px 0 0 20px;
+            padding: 0;
+            font-size: 14px;
+            color: #3c4043;
+        }
+        .remediation-list li {
+            margin-bottom: 6px;
+        }
+        .checklist-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #dadce0;
+        }
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #202124;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+        .template-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #dadce0;
+        }
+        .template-box {
+            background: #ffffff;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            color: #202124;
+            white-space: pre-wrap;
+            margin-top: 8px;
+            margin-bottom: 8px;
+        }
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+        }
+        .copy-btn {
+            background-color: #5f6368;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .copy-btn:hover {
+            background-color: #3c4043;
+        }
+        .auto-btn {
+            background-color: #188038;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .auto-btn:hover {
+            background-color: #137333;
+        }
+        .status-log {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            background: #e6f4ea;
+            border: 1px solid #ceead6;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #137333;
+        }
+        .resources-box {
+            margin-top: 15px;
+            font-size: 13px;
+            background: #f1f3f4;
+            padding: 12px;
+            border-radius: 4px;
+        }
+        .resources-box a {
+            color: #1a73e8;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+        .resources-box a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
 
-    for cand in candidates:
-        st.markdown(f'<div class="result-row">', unsafe_allow_html=True)
-        r_c1, r_c2, r_c3, r_c4 = st.columns([2, 1, 2, 2])
-        with r_c1:
-            st.markdown(f"**{cand['badge']}**\n### {cand['name']}")
-        with r_c2:
-            st.markdown(f"**AGE SEGMENT**\n{cand['age']}")
-        with r_c3:
-            st.markdown(f"**RESIDENCY & KIN**\nCurrent: {cand['location']}<br><small style='color: #4b5563;'>{cand['prior_locations']}<br>{cand['relatives']}</small>", unsafe_allow_html=True)
-        with r_c4:
-            st.markdown("<br>", unsafe_allow_html=True)
-            if st.button(f"SELECT THIS PROFILE", key=f"select_{cand['id']}"):
-                default_deadline = (datetime.now() + timedelta(days=45)).strftime('%Y-%m-%d')
-                property_link = f"https://www.google.com/search?q={target_state_abbr}+property+appraiser+public+record+search"
-
-                with sqlite3.connect(database_name) as connection:
-                    cursor = connection.cursor()
-                    cursor.execute("DROP TABLE IF EXISTS optout_tracker;")
-                    cursor.execute('''
-                        CREATE TABLE optout_tracker (
-                            id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            broker_name TEXT,
-                            status TEXT,
-                            statutory_deadline TEXT,
-                            threat_explanation TEXT,
-                            action_description TEXT,
-                            target_url TEXT,
-                            last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                        );
-                    ''')
-                    
-                    identified_threats = [
-                        ('Tier-1 Commercial Data Aggregators (Spokeo / Whitepages)', 'Successfully Protected', default_deadline, 
-                         f'Identified commercial profile listings publishing historical addresses and contact numbers for {searched_name} across {cand["prior_locations"]}.',
-                         'Dispatched automated statutory opt-out requests across tier-1 broker pipelines. Initiated 45-day statutory compliance window.', 'https://www.networkadvertising.org/'),
-                        
-                        ('Secondary People-Search Networks (Intelius / BeenVerified)', 'Successfully Protected', default_deadline, 
-                         f'Secondary aggregators indexed residency maps and public records matching {cand["location"]} listings.',
-                         'Executed batch removal protocol via centralized opt-out authority gateways.', 'https://optout.beenverified.com/'),
-                        
-                        (f'Public Property & Tax Records ({target_state_abbr})', 'Successfully Protected', default_deadline, 
-                         f'County assessment databases expose residential real estate holdings for {searched_name} in {cand["location"]}.',
-                         'Submitted formal state exemption record suppression requests to county property appraisers.', property_link),
-                        
-                        ('Global Credential Breach Registry (HIBP Integration)', 'Successfully Protected', default_deadline, 
-                         f'An associated digital login credential matching digital fingerprints for {searched_name} was identified in corporate breach dumps.',
-                         'Triggered automated breach mitigation guidance and logged event for 2FA password reset completion.', 'https://haveibeenpwned.com/')
-                    ]
-                    cursor.executemany("INSERT INTO optout_tracker (broker_name, status, statutory_deadline, threat_explanation, action_description, target_url) VALUES (?, ?, ?, ?, ?, ?);", identified_threats)
-                    connection.commit()
-                
-                st.session_state['searched_location'] = cand['location']
-                st.session_state['searched_age_segment'] = cand['age']
-                st.session_state['stage'] = 'dashboard'
-                st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
+<div class="audit-container">
+    <div class="audit-header">Operation Senior Shield: Digital Footprint & Privacy Guide</div>
+    <p style="font-size: 13px; color: #5f6368; margin-top: 0; margin-bottom: 15px;">
+        Use this interactive framework to run guided security checks, track your remediation steps, and generate privacy opt-out notices.
+    </p>
     
-    st.divider()
-    if st.button("Modify Search / Start Over"):
-        st.session_state['stage'] = 'search'
-        st.rerun()
+    <div class="input-group">
+        <input type="text" id="targetInput" class="audit-input" placeholder="Enter email address or name to customize templates...">
+        <button class="audit-btn" onclick="runAdvancedScan()">Load Action Plan</button>
+    </div>
+    
+    <div id="resultsArea" class="results-box">
+        <div id="resultsTitle" class="results-title"></div>
+        <div id="resultsContent"></div>
+    </div>
+</div>
 
-# --- STAGE 4: PERSONALIZED HEALTH ASSESSMENT DASHBOARD & CLEAN ON-SCREEN REPORT ---
-elif st.session_state['stage'] == 'dashboard':
-    st.success(f"Enterprise identity audit successfully completed and verified for **{st.session_state.get('searched_name', 'User')}**! Your official report is displayed below.")
-
-    if st.button("🔒 Sign Out / New Search"):
-        st.session_state['stage'] = 'search'
-        st.rerun()
-
-    st.divider()
-
-    with sqlite3.connect(database_name) as connection:
-        df = pd.read_sql_query("SELECT broker_name, status, statutory_deadline, threat_explanation, action_description, target_url FROM optout_tracker;", connection)
-
-    total = len(df)
-    completed_count = len(df[df['status'] == 'Successfully Protected'])
-
-    st.markdown("### 📄 Official Digital Health Assessment Report")
-    st.markdown("This clean, easy-to-read report summarizes scanned exposures, identified risks, and completed statutory protections.")
-
-    with st.container():
-        st.markdown("""
-        <div class="report-box">
-            <table width="100%" style="border: none;">
-                <tr>
-                    <td>
-                        <h2 style="color: #003366; margin-top: 0; margin-bottom: 5px;">State of Florida — Department of Elder Affairs</h2>
-                        <h4 style="color: #4b5563; margin-top: 0;">Digital Online Health Assessment & Enterprise Protection Summary</h4>
-                    </td>
-                    <td align="right" style="vertical-align: middle;">
-                        <div class="grade-badge-a">Grade: A</div>
-                    </td>
-                </tr>
-            </table>
-            <hr style="border: 1px solid #e5e7eb; margin: 20px 0;">
-        """, unsafe_allow_html=True)
-        
-        st.markdown(f"**Verified Subject:** {st.session_state.get('searched_name', 'N/A')}")
-        st.markdown(f"**Jurisdiction & Location:** {st.session_state.get('searched_location', 'N/A')}")
-        st.markdown(f"**Age Segment:** {st.session_state.get('searched_age_segment', 'N/A')}")
-        st.markdown(f"**Assessment Date:** {datetime.now().strftime('%B %d, %Y')}")
-        st.markdown(f"**Digital Health Status:** Fully Protected (**{completed_count} of {total} Enterprise Threats Addressed** — Grade A)")
-        
-        future_date = (datetime.now() + timedelta(days=45)).strftime('%B %d, %Y')
-        st.info(f"⏳ **Statutory Window Active:** Your 45-day compliance window expires on **{future_date}**. Data brokers frequently re-scrape records over time. We recommend running a fresh audit on or after this date.")
-
-        st.markdown("### Identified Exposures & Remediation Actions")
-        
-        for index, row in df.iterrows():
-            st.markdown(f"""
-            <div class="threat-box">
-                <h4 style="color: #003366; margin-top: 0;">{row['broker_name']} — <span style="color: #28a745;">{row['status']}</span></h4>
-                <p><strong>Why it was a risk:</strong> {row['threat_explanation']}</p>
-                <p><strong>Action Executed:</strong> {row['action_description']}</p>
-                <p><strong>Protection Deadline Window:</strong> {row['staturation'] if 'staturation' in row else row['statutory_deadline']}</p>
-                <p><strong>Official Registry Link:</strong> <a href="{row['target_url']}" target="_blank">{row['target_url']}</a></p>
-            </div>
-            """, unsafe_allow_html=True)
-            
-        st.markdown("""
-            <hr style="border: 1px solid #e5e7eb; margin: 20px 0;">
-            <p style="font-size: 13px; color: #6b7280; text-align: center; margin: 0;">
-                Operation: Senior Shield • Enterprise Statutory Compliance Engine • Department of Elder Affairs
-            </p>
+<script>
+function runAdvancedScan() {
+    const val = document.getElementById('targetInput').value.trim() || "Your Identifier";
+    const area = document.getElementById('resultsArea');
+    const title = document.getElementById('resultsTitle');
+    const content = document.getElementById('resultsContent');
+    
+    area.style.display = 'block';
+    title.style.color = '#1a73e8';
+    title.innerText = "🛡️ Your Personal Action Plan for: " + val;
+    
+    content.innerHTML = `
+        <div class="resources-box" style="background: #e8f0fe; border-left: 4px solid #1a73e8; margin-bottom: 12px;">
+            <div style="font-weight: 600; color: #174ea6; margin-bottom: 6px;">Step 1: Check for Corporate Data Breaches</div>
+            <p style="font-size: 13px; color: #3c4043; margin: 0 0 8px 0;">Verify if your email has appeared in any known security breaches using the trusted public index:</p>
+            <a href="https://haveibeenpwned.com" target="_blank">🔗 Open Have I Been Pwned (HaveIBeenPwned.com) &rarr;</a>
         </div>
-        """, unsafe_allow_html=True)
 
-    col_p1, col_p2, col_p3 = st.columns(3)
-    with col_p1:
-        if st.button("🖨️ Print / Save Report (Use Browser Print)"):
-            st.info("Tip: Press Ctrl+P (or Cmd+P on Mac) to print this clean report directly or save it as a PDF.")
-    with col_p2:
-        cal_title = urllib.parse.quote("Senior Shield: Digital Health Re-Scan Reminder")
-        cal_details = urllib.parse.quote("Time to run a fresh re-scan on your Digital Online Health Assessment portal to check for newly scraped data broker listings.")
-        cal_url = f"https://calendar.google.com/calendar/render?action=TEMPLATE&text={cal_title}&dates={(datetime.now() + timedelta(days=45)).strftime('%Y%m%d')}/{(datetime.now() + timedelta(days=46)).strftime('%Y%m%d')}&details={cal_details}"
-        st.markdown(f'<a href="{cal_url}" target="_blank"><button style="width:100%; background-color:#003366; color:white; font-weight:600; border-radius:6px; padding:0.6rem 1rem; border:none; cursor:pointer;">📅 Add 45-Day Checkup to Calendar</button></a>', unsafe_allow_html=True)
-    with col_p3:
-        if st.button("🔄 Run Another Assessment"):
-            st.session_state['stage'] = 'search'
-            st.rerun()
+        <div class="resources-box" style="background: #fef7e0; border-left: 4px solid #f9ab00; margin-bottom: 12px;">
+            <div style="font-weight: 600; color: #b06000; margin-bottom: 6px;">Step 2: Check Public Directories & Data Brokers</div>
+            <p style="font-size: 13px; color: #3c4043; margin: 0 0 8px 0;">Search your records in an incognito window, then submit opt-out removals directly at these major broker portals:</p>
+            <a href="https://www.truepeoplesearch.com/removal" target="_blank">🔗 TruePeopleSearch Removal Form &rarr;</a>
+            <a href="https://www.fastpeoplesearch.com/removal" target="_blank">🔗 FastPeopleSearch Removal Form &rarr;</a>
+            <a href="https://www.whitepages.com/suppression-requests" target="_blank">🔗 Whitepages Suppression Request &rarr;</a>
+            <a href="https://www.spokeo.com/optout" target="_blank">🔗 Spokeo Opt-Out Portal &rarr;</a>
+        </div>
+
+        <div class="checklist-section">
+            <div style="font-weight: 600; font-size: 14px; color: #202124; margin-bottom: 8px;">Step 3: Interactive Progress Checklist</div>
+            <label class="checklist-item"><input type="checkbox"> Checked email on Have I Been Pwned and rotated passwords if needed.</label>
+            <label class="checklist-item"><input type="checkbox"> Searched name/city in private window for public directory listings.</label>
+            <label class="checklist-item"><input type="checkbox"> Submitted formal opt-out notices to data brokers using the template below.</label>
+        </div>
+        
+        <div class="template-section">
+            <div style="font-weight: 600; font-size: 14px; color: #202124;">Step 4: Copy-and-Paste Data Broker Removal Template</div>
+            <p style="font-size: 13px; color: #3c4043; margin: 4px 0;">Customize and copy this notice to paste into broker removal forms:</p>
+            <div id="optOutTemplate" class="template-box">Subject: Formal Request to Opt-Out and Delete Personal Information
+
+To Whom It May Concern,
+
+Pursuant to applicable consumer privacy frameworks, I am formally requesting that you immediately remove, delete, and suppress all personal records, listings, and consumer data associated with my identity, including: ${val}.
+
+Please confirm in writing once my information has been completely expunged from your public directories.
+
+Sincerely,
+[Your Name]
+[Your Address / Contact Info]</div>
+            <div class="btn-row">
+                <button class="copy-btn" onclick="copyTemplate()">Copy Template to Clipboard</button>
+                <button class="auto-btn" onclick="triggerAutoDispatch()">Simulate Queue Status</button>
+            </div>
+            <div id="statusLog" class="status-log"></div>
+        </div>
+
+        <div class="resources-box" style="margin-top: 15px;">
+            <div style="font-weight: 600; margin-bottom: 4px; color: #202124;">Official Government & Consumer Guidance:</div>
+            <a href="https://consumer.ftc.gov/consumer-alerts/2021/06/your-guide-protecting-your-privacy-online" target="_blank">🔗 FTC Guide: Protecting Your Privacy Online &rarr;</a>
+            <a href="https://privacyrights.org/data-brokers" target="_blank">🔗 Privacy Rights Clearinghouse - Data Broker Directory &rarr;</a>
+        </div>
+    `;
+}
+
+function copyTemplate() {
+    const text = document.getElementById('optOutTemplate').innerText;
+    navigator.clipboard.writeText(text).then(() => {
+        alert("Opt-out template copied to clipboard!");
+    });
+}
+
+function triggerAutoDispatch() {
+    const log = document.getElementById('statusLog');
+    log.style.display = 'block';
+    log.innerHTML = "Initializing local privacy guidance protocol...<br>";
+    
+    setTimeout(() => {
+        log.innerHTML += "✓ Formatting removal notice with user identifier...<br>";
+    }, 800);
+    
+    setTimeout(() => {
+        log.innerHTML += "✓ Preparing direct links for manual broker submission...<br>";
+    }, 1600);
+    
+    setTimeout(() => {
+        log.innerHTML += "<b>Action Plan Ready: Use the links above to submit requests directly to each platform.</b>";
+    }, 2400);
+}
+</script>
+
+</body>
+</html>
