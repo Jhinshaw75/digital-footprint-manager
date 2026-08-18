@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>"Senior Digital SafeGuard"</title>
+    <!-- Include qrcode.js library for on-page QR code generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         :root {
             --primary: #1e40af;
@@ -149,6 +151,36 @@
         }
         .purpose-banner ul li {
             margin-bottom: 8px;
+        }
+        /* QR Code Card Styling */
+        .qr-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%);
+            border: 1px solid #cbd5e1;
+            border-radius: 14px;
+            padding: 25px;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+        }
+        .qr-code-container {
+            background: #ffffff;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            display: inline-block;
+        }
+        .qr-info h3 {
+            color: var(--primary);
+            margin-top: 0;
+            margin-bottom: 8px;
+            font-size: 1.2rem;
+        }
+        .qr-info p {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 0.95rem;
         }
         /* Progress Bar Styles */
         .progress-container {
@@ -400,11 +432,15 @@
             h1 {
                 font-size: 2rem;
             }
+            .qr-card {
+                flex-direction: column;
+                text-align: center;
+            }
         }
 
         /* --- PRINT / PDF FRIENDLY STYLES --- */
         @media print {
-            nav, #back-to-top, .progress-container, .progress-text {
+            nav, #back-to-top, .progress-container, .progress-text, .qr-card {
                 display: none !important;
             }
             body {
@@ -460,6 +496,15 @@
 
         <h1>"Senior Digital SafeGuard"</h1>
         <div class="subtitle">Simple, easy-to-follow steps to clean up your personal information online and protect your privacy.</div>
+
+        <!-- QR Code Quick-Access Card -->
+        <div class="qr-card">
+            <div class="qr-code-container" id="qrcode"></div>
+            <div class="qr-info">
+                <h3>Scan to Open on Mobile</h3>
+                <p>Point your smartphone's camera at this QR code to instantly load this guide right on your mobile device for testing or sharing!</p>
+            </div>
+        </div>
 
         <!-- Purpose & Protection Banner -->
         <div class="purpose-banner">
@@ -785,10 +830,21 @@
     <!-- Floating Back to Top Button -->
     <button id="back-to-top" onclick="scrollToTop()" title="Back to Top">↑</button>
 
-    <!-- JavaScript to Handle Progress Bar, Local Storage, & Back to Top -->
+    <!-- JavaScript to Handle Progress Bar, Local Storage, QR Code Generation, & Back to Top -->
     <script>
-        // Load saved progress on page load
+        // Automatically Generate QR Code for this live page URL
         document.addEventListener("DOMContentLoaded", () => {
+            // Generate QR code pointing to the current live URL
+            new QRCode(document.getElementById("qrcode"), {
+                text: window.location.href,
+                width: 128,
+                height: 128,
+                colorDark: "#1e40af",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.M
+            });
+
+            // Load saved progress on page load
             const checkboxes = document.querySelectorAll('.task-checkbox');
             checkboxes.forEach(box => {
                 const taskId = box.getAttribute('data-id');
