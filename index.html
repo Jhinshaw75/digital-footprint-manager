@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -315,6 +315,28 @@
             font-size: 0.98rem;
             border: 1px solid #dcfce7;
         }
+        .maintenance-tag {
+            background-color: #e0f2fe;
+            color: #0369a1;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            float: right;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .setup-tag {
+            background-color: #f1f5f9;
+            color: #475569;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            float: right;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
         a {
             color: var(--primary-light);
             text-decoration: none;
@@ -533,7 +555,7 @@
                 <li><strong>Hide Your Real Inbox:</strong> Use free email masking so promotional sign-ups and corporate data leaks never flood your main email account.</li>
                 <li><strong>Scrub Hidden Location Data:</strong> Remove secret GPS coordinates and disable future geotagging on family photos before you text or email them online.</li>
             </ul>
-            <p style="margin-top: 15px;"><strong>Recommended Maintenance Schedule:</strong> Because data brokers constantly re-scrape public records, complete your initial cleanup now, do a follow-up check in <strong>30 to 90 days</strong>, and set a recurring calendar reminder to re-verify your listings <strong>every 3 to 4 months</strong>.</p>
+            <p style="margin-top: 15px;"><strong>Recommended Maintenance Schedule:</strong> Phases 1 and 2 require periodic 90-day maintenance checks because public records and data brokers continuously re-scrape information. Phases 3, 4, and 5 are one-time permanent setups that do not need to be repeated.</p>
         </div>
 
         <!-- Progress Tracker Bar -->
@@ -543,7 +565,8 @@
         </div>
 
         <h2 id="phase1">Phase 1: Check Where You Show Up</h2>
-        <div class="info-box">
+        <span class="maintenance-tag">🔄 90-Day Maintenance Cycle</span>
+        <div class="info-box" style="margin-top: 15px;">
             <strong>What is Have I Been Pwned?</strong> A trusted, secure public safety directory that tracks major corporate data breaches. Checking your email here lets you know immediately if an online store, doctor's office, or website you use was hacked so you can change your password before a scammer tries to log in.
         </div>
         <div class="card">
@@ -578,7 +601,8 @@
         </div>
 
         <h2 id="brokers">Phase 2: Remove Yourself From People-Search Websites</h2>
-        <div class="warning-box">
+        <span class="maintenance-tag">🔄 90-Day Maintenance Cycle</span>
+        <div class="warning-box" style="margin-top: 15px;">
             <strong>Important Note:</strong> These websites often try to scare you into paying for a monthly subscription service (like Onerep). <strong>Ignore and close those offers!</strong> Removing your information manually using these free guides costs $0.
         </div>
         <div class="mobile-tip">
@@ -687,12 +711,13 @@
         </div>
 
         <h2 id="phase3">Phase 3: Secure Your Web Browser & Passwords</h2>
-        <div class="info-box">
+        <span class="setup-tag">🛠️ One-Time Permanent Setup</span>
+        <div class="info-box" style="margin-top: 15px;">
             <strong>Why do this?</strong> Hackers and advertisers use hidden tracking scripts and weak passwords to access personal accounts. These free tools help block those trackers and lock your accounts behind a secure vault so you don't have to memorize dozens of passwords.
         </div>
         
         <div class="card">
-            <h3>1. uBlock Origin (Block Trackers & Pop-Ups)</h3>
+            <h3>1. uBlock Origin <span style="font-weight: normal; color: var(--text-muted); font-size: 0.95rem;">(Ad Blocker)</span></h3>
             <div class="risk-note">
                 <strong>What it is & Scam Risk:</strong> A browser extension that blocks malicious pop-ups and tracking scripts. Without it, fraudulent banner ads can trick users into clicking fake tech-support warning windows.
             </div>
@@ -712,7 +737,7 @@
         </div>
 
         <div class="card">
-            <h3>2. Bitwarden (Secure Password Manager)</h3>
+            <h3>2. Bitwarden <span style="font-weight: normal; color: var(--text-muted); font-size: 0.95rem;">(Password Vault)</span></h3>
             <div class="risk-note">
                 <strong>What it is & Scam Risk:</strong> A secure password vault that keeps login credentials encrypted. Leaving passwords written on paper near a computer allows anyone physical access to compromise banking and email accounts.
             </div>
@@ -732,7 +757,7 @@
         </div>
 
         <div class="card">
-            <h3>3. Two-Step Login (2FA)</h3>
+            <h3>3. Two-Step Login <span style="font-weight: normal; color: var(--text-muted); font-size: 0.95rem;">(Extra Security Lock)</span></h3>
             <div class="risk-note">
                 <strong>What it is & Scam Risk:</strong> An extra security layer requiring a phone code plus your password. If a scammer steals your password via phishing, 2FA blocks them from breaking into your account without your phone.
             </div>
@@ -749,11 +774,12 @@
         </div>
 
         <h2 id="phase4">Phase 4: Mask Your Email Address</h2>
-        <div class="info-box">
+        <span class="setup-tag">🛠️ One-Time Permanent Setup</span>
+        <div class="info-box" style="margin-top: 15px;">
             <strong>Why do this?</strong> Whenever you sign up for store discounts, newsletters, or online accounts, giving out your real email address opens you up to endless spam and risk if that company gets hacked. Email "masking" creates a temporary, private forwarding address so your real inbox stays completely hidden and clean.
         </div>
         <div class="card">
-            <h3>DuckDuckGo Email Protection</h3>
+            <h3>DuckDuckGo Email Protection <span style="font-weight: normal; color: var(--text-muted); font-size: 0.95rem;">(Private Email Forwarder)</span></h3>
             <details class="section-dropdown">
                 <summary>View Step-by-Step Setup Guide</summary>
                 <div class="dropdown-content">
@@ -770,11 +796,12 @@
         </div>
 
         <h2 id="phase5">Phase 5: Clean Hidden Location Data From Photos</h2>
-        <div class="info-box">
+        <span class="setup-tag">🛠️ One-Time Permanent Setup</span>
+        <div class="info-box" style="margin-top: 15px;">
             <strong>Why do this?</strong> When you take a picture with a smartphone, the file often saves invisible hidden details (called EXIF data) like the exact GPS coordinates where the photo was snapped, the date, and what device you used. Cleaning this data prevents strangers online from tracking your physical location or habits from shared pictures.
         </div>
         <div class="card">
-            <h3>Photo Metadata Scrubbing & Future Geotagging Control</h3>
+            <h3>Photo Metadata Scrubbing & Future Geotagging Control <span style="font-weight: normal; color: var(--text-muted); font-size: 0.95rem;">(Location Cleaner)</span></h3>
             <details class="section-dropdown">
                 <summary>View Device Instructions</summary>
                 <div class="dropdown-content">
@@ -831,7 +858,8 @@
 
         <!-- Optional 90-Day Reminder Section -->
         <h2 id="reminder">Optional: Set a 90-Day Maintenance Reminder</h2>
-        <div class="info-box">
+        <span class="maintenance-tag">🔄 Recurring Reminder</span>
+        <div class="info-box" style="margin-top: 15px;">
             <strong>Why set a reminder?</strong> Data broker websites frequently re-scrape public records every few months. Setting a quick calendar alert ensures you stay ahead of new listings and keep your personal information secure year-round.
         </div>
         <div class="card">
@@ -926,4 +954,4 @@
     </script>
 
 </body>
-</html> 
+</html>
