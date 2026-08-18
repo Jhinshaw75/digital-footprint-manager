@@ -319,17 +319,17 @@
                 items: [
                     {
                         id: 'task-5-1',
-                        title: 'Disable Location Access in Phone Camera Settings',
-                        desc: 'Go to your phone\'s privacy settings and turn off geotagging/location permissions for your camera app so future photos do not record your home coordinates.',
-                        linkText: 'View Smartphone Privacy Settings Guide',
-                        linkUrl: 'https://www.consumer.ftc.gov/articles/how-protect-your-privacy-smartphone'
+                        title: 'Clean Location Data from Existing Photos',
+                        desc: 'For iPhone/iPad: Open Photos, swipe up on the image, tap "Adjust" on the map, and select "No Location". For Android/Google Photos: Open the picture, swipe up, tap the Edit pencil icon next to the location, and select "Remove location".',
+                        linkText: 'View Apple & Android Photo Guide',
+                        linkUrl: 'https://support.apple.com/guide/iphone/view-photo-and-video-information-iph976e19195/ios'
                     },
                     {
                         id: 'task-5-2',
-                        title: 'Remove Metadata Before Sharing Online',
-                        desc: 'Use free built-in photo properties tools (Windows) or preview options (Mac) to strip location metadata before posting pictures publicly.',
-                        linkText: 'Digital Safety Tips from FTC',
-                        linkUrl: 'https://consumer.ftc.gov/'
+                        title: 'Disable Location Saving in Future Camera Settings',
+                        desc: 'For iPhone/iPad: Go to Settings > Privacy & Security > Location Services > Camera, and set access to "Never". For Android: Open Camera settings, find "Save location" or "Location tags", and switch it OFF.',
+                        linkText: 'View Smartphone Privacy Settings Guide',
+                        linkUrl: 'https://www.consumer.ftc.gov/articles/how-protect-your-privacy-smartphone'
                     }
                 ]
             }
@@ -409,7 +409,7 @@
             // Update Progress Bar & Text
             const percentage = Math.round((finishedTasks / totalTasks) * 100) || 0;
             document.getElementById('progress-bar').style.width = percentage + '%';
-            document.getElementById('progress-text5').innerText = `${finishedTasks} of ${totalTasks} Tasks Complete (${percentage}%)`;
+            document.getElementById('progress-text').innerText = `${finishedTasks} of ${totalTasks} Tasks Complete (${percentage}%)`;
             
             // Re-initialize Lucide icons for newly rendered elements
             lucide.createIcons();
@@ -468,7 +468,7 @@ END:VALARM
 END:VEVENT
 END:VCALENDAR`;
 
-            const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+            const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' };
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -492,7 +492,7 @@ END:VCALENDAR`;
         }
 
         // Initialize Theme on Load
-        if (localStorage.getItem('theme'] === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
         }
 
