@@ -1,506 +1,819 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Senior Digital SafeGuard | Privacy & Security Toolkit</title>
-    
-    <!-- PWA Meta Tags -->
-    <meta name="theme-color" content="#1b365d">
-    <meta name="description" content="A self-service digital privacy and scam-prevention guide designed for seniors and older adults.">
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <title>"Senior Digital SafeGuard"</title>
+    <style>
+        :root {
+            --primary: #1e40af;
+            --primary-light: #3b82f6;
+            --primary-bg: #f8fafc;
+            --accent: #0ea5e9;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --border-color: #e2e8f0;
+            --card-bg: #ffffff;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        body { 
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            line-height: 1.65; 
+            color: var(--text-main); 
+            background-color: #f1f5f9; 
+            margin: 0;
+            display: flex;
+            flex-direction: row;
+        }
+        /* Sticky Sidebar Navigation (Desktop) */
+        nav {
+            width: 280px;
+            background: #ffffff;
+            border-right: 1px solid var(--border-color);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 25px 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.02);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .sidebar-branding {
+            text-align: center;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .sidebar-branding img {
+            max-width: 150px;
+            height: auto;
+            margin-bottom: 12px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .sidebar-branding .oss-badge {
+            max-width: 85px;
+            height: auto;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+        nav h3 {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-top: 0;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 700;
+        }
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        nav ul li {
+            margin-bottom: 10px;
+        }
+        nav ul li a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.92rem;
+            display: block;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        nav ul li a:hover {
+            color: var(--primary);
+            background-color: #eff6ff;
+            transform: translateX(3px);
+        }
+        /* Main Content Area */
+        .main-content {
+            margin-left: 280px;
+            padding: 50px 70px;
+            max-width: 960px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        h1 { 
+            color: #0f172a; 
+            font-size: 2.5rem; 
+            margin-bottom: 6px; 
+            font-weight: 800;
+            letter-spacing: -0.025em;
+        }
+        .subtitle {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-size: 1.15rem;
+        }
+        /* Purpose / Protection Banner */
+        .purpose-banner {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid #cbd5e1;
+            border-left: 5px solid var(--primary-light);
+            padding: 30px 35px;
+            border-radius: 14px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -4px rgba(0, 0, 0, 0.02);
+        }
+        .purpose-banner h3 {
+            color: var(--primary);
+            margin-top: 0;
+            margin-bottom: 14px;
+            font-size: 1.35rem;
+            font-weight: 700;
+        }
+        .purpose-banner p {
+            margin-bottom: 12px;
+            color: #334155;
+            font-size: 1.02rem;
+        }
+        .purpose-banner ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #334155;
+        }
+        .purpose-banner ul li {
+            margin-bottom: 8px;
+        }
+        /* Progress Bar Styles */
+        .progress-container {
+            background: #e2e8f0;
+            border-radius: 10px;
+            height: 14px;
+            width: 100%;
+            margin-bottom: 40px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.06);
+        }
+        .progress-bar {
+            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+            height: 100%;
+            width: 0%;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 10px;
+        }
+        .progress-text {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        h2 { 
+            color: #0f172a; 
+            border-bottom: 2px solid var(--border-color); 
+            padding-bottom: 10px; 
+            margin-top: 60px; 
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+        h3 {
+            color: var(--primary);
+            margin-top: 0;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -2px rgba(0, 0, 0, 0.02);
+            transition: all 0.2s ease;
+        }
+        .card:hover {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+        }
+        ol { 
+            margin: 15px 0 0 0; 
+            padding-left: 20px; 
+        }
+        ol li { 
+            margin-bottom: 14px; 
+        }
+        .sub-steps { 
+            margin-top: 10px; 
+            color: var(--text-muted); 
+        }
+        /* Scam Risk Warning Callout */
+        .risk-note {
+            background-color: #fef2f2;
+            border-left: 4px solid var(--danger);
+            padding: 14px 18px;
+            border-radius: 8px;
+            color: #991b1b;
+            font-size: 0.92rem;
+            margin-top: 12px;
+            margin-bottom: 18px;
+            border-top: 1px solid #fee2e2;
+            border-right: 1px solid #fee2e2;
+            border-bottom: 1px solid #fee2e2;
+        }
+        /* Checkbox Styling */
+        .task-checkbox {
+            transform: scale(1.25);
+            margin-right: 10px;
+            cursor: pointer;
+            accent-color: var(--success);
+        }
+        .completed-task {
+            text-decoration: line-through;
+            color: #94a3b8;
+        }
+        .badge {
+            background-color: #eff6ff;
+            color: var(--primary-light);
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            display: inline-block;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .warning-box {
+            background-color: #fffbeb;
+            border-left: 4px solid var(--warning);
+            padding: 18px 22px;
+            border-radius: 10px;
+            color: #92400e;
+            margin-bottom: 30px;
+            font-size: 0.98rem;
+            border: 1px solid #fef3c7;
+        }
+        .info-box {
+            background-color: #f0fdf4;
+            border-left: 4px solid var(--success);
+            padding: 18px 22px;
+            border-radius: 10px;
+            color: #166534;
+            margin-bottom: 25px;
+            font-size: 0.98rem;
+            border: 1px solid #dcfce7;
+        }
+        a {
+            color: var(--primary-light);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        details.section-dropdown { 
+            margin-top: 18px; 
+            border: 1px solid var(--border-color); 
+            padding: 14px 20px; 
+            border-radius: 10px; 
+            background: #f8fafc; 
+            transition: background 0.2s ease;
+        }
+        details.section-dropdown[open] {
+            background: #ffffff;
+            border-color: #cbd5e1;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+        details.section-dropdown summary { 
+            cursor: pointer; 
+            font-weight: 700; 
+            color: var(--primary); 
+            font-size: 1.05rem;
+            outline: none;
+        }
+        .dropdown-content {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+        .checkbox-container {
+            margin-top: 18px;
+            padding-top: 14px;
+            border-top: 1px dashed var(--border-color);
+            font-weight: 700;
+            color: var(--success);
+        }
 
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        doea: {
-                            50: '#f0f6fc',
-                            100: '#d9e8f6',
-                            600: '#1b365d',
-                            700: '#142846',
-                            800: '#0e1b2f',
-                        }
-                    }
-                }
+        /* Calendar Button Styling */
+        .calendar-btn {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.92rem;
+            margin-top: 10px;
+            margin-right: 10px;
+            transition: background 0.2s;
+            text-decoration: none;
+        }
+        .calendar-btn:hover {
+            background-color: var(--primary-light);
+            color: white;
+            text-decoration: none;
+        }
+
+        /* Floating Back to Top Button */
+        #back-to-top {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transition: background 0.2s;
+        }
+        #back-to-top:hover {
+            background: var(--primary-light);
+        }
+
+        /* --- MOBILE RESPONSIVE STYLES --- */
+        @media screen and (max-width: 900px) {
+            body {
+                flex-direction: column;
+            }
+            nav {
+                position: relative;
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+                padding: 20px;
+                box-shadow: none;
+            }
+            .sidebar-branding {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 20px;
+                padding-bottom: 10px;
+            }
+            .sidebar-branding img {
+                max-width: 120px;
+                margin-bottom: 0;
+            }
+            .sidebar-branding .oss-badge {
+                max-width: 55px;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 25px 20px;
+                max-width: 100%;
+            }
+            h1 {
+                font-size: 2rem;
             }
         }
-    </script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- QRCode Generator Library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .completed-task { opacity: 0.6; background-color: rgba(27, 54, 93, 0.03); }
-        .dark .completed-task { background-color: rgba(255, 255, 255, 0.03); }
+
+        /* --- PRINT / PDF FRIENDLY STYLES --- */
         @media print {
-            .no-print { display: none !important; }
-            body { background: white !important; color: black !important; }
-            .print-border { border: 1px solid #cbd5e1 !important; break-inside: avoid; }
+            nav, #back-to-top, .progress-container, .progress-text {
+                display: none !important;
+            }
+            body {
+                display: block;
+                background: white;
+                color: black;
+            }
+            .main-content {
+                margin: 0;
+                padding: 0;
+                max-width: 100%;
+            }
+            details.section-dropdown {
+                open: true;
+                border: 1px solid #000;
+                background: white;
+            }
+            details.section-dropdown > div {
+                display: block !important;
+            }
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-200">
+<body>
 
-    <!-- Top Announcement / State Banner -->
-    <header class="bg-doea-600 text-white shadow-md sticky top-0 z-50 no-print">
-        <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-4">
-            <div class="flex items-center space-x-3">
-                <div class="bg-white p-1.5 rounded-lg shadow-inner flex items-center justify-center">
-                    <img src="elder-affairs-logo.png" alt="Department of Elder Affairs Logo" class="h-8 w-auto object-contain" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%231b365d\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><rect width=\'18\' height=\'18\' x=\'3\' y=\'3\' rx=\'2\'/><path d=\'M9 9h6\'/><path d=\'M9 13h6\'/><path d=\'M9 17h6\'/></svg>'">
-                </div>
-                <div>
-                    <h1 class="font-bold text-lg sm:text-xl tracking-tight leading-tight flex items-center gap-2">
-                        Senior Digital SafeGuard
-                        <span class="bg-amber-400 text-slate-900 text-xs px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider hidden sm:inline-block">Public Safety Tool</span>
-                    </h1>
-                    <p class="text-xs text-doea-100 opacity-90">Florida Department of Elder Affairs • Self-Service Privacy & Scam Prevention</p>
-                </div>
-            </div>
-            
-            <div class="flex items-center space-x-2">
-                <!-- Share / QR Modal Button -->
-                <button onclick="toggleShareModal()" class="bg-white/10 hover:bg-white/25 text-white px-3 py-2 rounded-lg text-sm font-medium transition flex items-center space-x-1.5" title="Get Mobile QR Code">
-                    <i data-lucide="qrcode" class="w-4 h-4"></i>
-                    <span class="hidden md:inline">Mobile QR</span>
-                </button>
-                <!-- Print Button -->
-                <button onclick="window.print()" class="bg-white/10 hover:bg-white/25 text-white px-3 py-2 rounded-lg text-sm font-medium transition flex items-center space-x-1.5" title="Print Guide">
-                    <i data-lucide="printer" class="w-4 h-4"></i>
-                    <span class="hidden md:inline">Printable Version</span>
-                </button>
-                <!-- Theme Toggle -->
-                <button onclick="toggleTheme()" class="bg-white/10 hover:bg-white/25 text-white p-2 rounded-lg transition" title="Toggle Dark/Light Mode">
-                    <i data-lucide="moon" id="theme-icon-dark" class="w-5 h-5 hidden dark:block"></i>
-                    <i data-lucide="sun" id="theme-icon-light" class="w-5 h-5 block dark:hidden"></i>
-                </button>
-            </div>
+    <!-- Sticky Sidebar Navigation Menu -->
+    <nav>
+        <div class="sidebar-branding">
+            <img src="elder-affairs-logo.png" alt="Elder Affairs Florida Logo" title="Florida Department of Elder Affairs">
+            <img src="senior-shield-badge.png" alt="Operation Senior Shield Badge" class="oss-badge" title="Operation: Senior Shield">
         </div>
-        <!-- Progress Bar Indicator -->
-        <div class="w-full bg-slate-800 h-1.5">
-            <div id="progress-bar" class="bg-amber-400 h-1.5 transition-all duration-500" style="width: 0%"></div>
+        <div>
+            <h3>Quick Navigation</h3>
+            <ul>
+                <li><a href="#phase1">1. Check Exposure</a></li>
+                <li><a href="#brokers">2. Remove Listings</a></li>
+                <ul>
+                    <li><a href="#truepeople">↳ TruePeopleSearch</a></li>
+                    <li><a href="#fastpeople">↳ FastPeopleSearch</a></li>
+                    <li><a href="#whitepages">↳ Whitepages</a></li>
+                    <li><a href="#spokeo">↳ Spokeo</a></li>
+                </ul>
+                <li><a href="#phase3">3. Secure Accounts</a></li>
+                <li><a href="#phase4">4. Mask Your Email</a></li>
+                <li><a href="#phase5">5. Clean Photos</a></li>
+                <li><a href="#reminder">📅 90-Day Reminder</a></li>
+            </ul>
         </div>
-    </header>
+    </nav>
 
-    <!-- Main Content Container -->
-    <main class="max-w-4xl mx-auto px-4 py-8 flex-grow w-full space-y-8">
+    <!-- Main Content Flow -->
+    <div class="main-content">
 
-        <!-- Welcome Card & Quick Stats -->
-        <section class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 sm:p-8">
-            <div class="max-w-3xl">
-                <div class="inline-flex items-center gap-2 bg-doea-50 dark:bg-slate-700 text-doea-600 dark:text-amber-300 px-3 py-1 rounded-full text-xs font-semibold mb-4">
-                    <i data-lucide="shield-check" class="w-4 h-4"></i> Secure, Private & Free Educational Resource
-                </div>
-                <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight mb-3">
-                    Take Control of Your Personal Digital Privacy
-                </h2>
-                <p class="text-slate-600 dark:text-slate-300 text-base leading-relaxed mb-6">
-                    Public records, data brokers, and scammers often compile personal details like phone numbers, previous addresses, and family connections. This self-paced toolkit guides you step-by-step through removing your data, hardening your passwords, and securing your devices. 
-                </p>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-100 dark:border-slate-700">
-                    <div class="flex items-center space-x-3">
-                        <div class="bg-blue-50 dark:bg-slate-700 p-2.5 rounded-xl text-doea-600 dark:text-amber-400">
-                            <i data-lucide="lock" class="w-5 h-5"></i>
-                        </div>
-                        <div>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Data Storage</p>
-                            <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">100% On Your Device</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-3">
-                        <div class="bg-blue-50 dark:bg-slate-700 p-2.5 rounded-xl text-doea-600 dark:text-amber-400">
-                            <i data-lucide="user-check" class="w-5 h-5"></i>
-                        </div>
-                        <div>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Control</p>
-                            <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">Self-Service & Manual</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-3">
-                        <div class="bg-blue-50 dark:bg-slate-700 p-2.5 rounded-xl text-doea-600 dark:text-amber-400">
-                            <i data-lucide="check-circle-2" class="w-5 h-5"></i>
-                        </div>
-                        <div>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Overall Progress</p>
-                            <p id="progress-text" class="text-sm font-semibold text-doea-600 dark:text-amber-400">0 of 5 Phases Complete</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <h1>"Senior Digital SafeGuard"</h1>
+        <div class="subtitle">Simple, easy-to-follow steps to clean up your personal information online and protect your privacy.</div>
 
-        <!-- Interactive Checklist Container -->
-        <div id="checklist-container" class="space-y-6">
-            <!-- JavaScript will dynamically render phases here -->
+        <!-- Purpose & Protection Banner -->
+        <div class="purpose-banner">
+            <h3>About This Guide & Maintenance Schedule</h3>
+            <p><strong>What is the purpose of this guide?</strong> This tool is designed to help you regain control of your personal privacy. Over time, personal details like your home address, phone number, and email accumulate across public directories and corporate data breaches without your knowledge.</p>
+            <p><strong>How does it protect you?</strong> By following these simple steps, you will:</p>
+            <ul>
+                <li><strong>Block Scammers & Fraudsters:</strong> Remove your phone numbers and family histories from public search sites so scammers cannot use them to impersonate government agents or run "grandparent scams."</li>
+                <li><strong>Secure Your Accounts:</strong> Lock down your passwords with an encrypted manager and stop hidden web trackers from monitoring your browsing habits.</li>
+                <li><strong>Hide Your Real Inbox:</strong> Use free email masking so promotional sign-ups and corporate data leaks never flood your main email account.</li>
+                <li><strong>Scrub Hidden Location Data:</strong> Remove secret GPS coordinates from family photos before you text or email them online.</li>
+            </ul>
+            <p style="margin-top: 15px;"><strong>Recommended Maintenance Schedule:</strong> Because data brokers constantly re-scrape public records, complete your initial cleanup now, do a follow-up check in <strong>30 to 90 days</strong>, and set a recurring calendar reminder to re-verify your listings <strong>every 3 to 4 months</strong>.</p>
         </div>
 
-        <!-- Maintenance & Reminders Section -->
-        <section class="bg-doea-50 dark:bg-slate-800/60 border border-doea-100 dark:border-slate-700 rounded-2xl p-6 sm:p-8">
-            <div class="flex items-start space-x-4">
-                <div class="bg-doea-600 text-white p-3 rounded-xl hidden sm:flex items-center justify-center shrink-0">
-                    <i data-lucide="bell-ring" class="w-6 h-6"></i>
-                </div>
-                <div class="space-y-3 flex-grow">
-                    <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                        <i data-lucide="bell-ring" class="w-5 h-5 text-doea-600 dark:text-amber-400 sm:hidden"></i>
-                        Quarterly Privacy & Security Maintenance
-                    </h3>
-                    <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                        Data brokers periodically re-scrape public registries and directories. We recommend scheduling a brief privacy review every 3 to 6 months. Click below to add a recurring reminder to your personal calendar or download an event file.
-                    </p>
-                    <div class="flex flex-wrap gap-3 pt-2">
-                        <button onclick="downloadCalendarReminder()" class="bg-doea-600 hover:bg-doea-700 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition flex items-center space-x-2 shadow-sm">
-                            <i data-lucide="calendar-plus" class="w-4 h-4"></i>
-                            <span>Add 3-Month Checkup Reminder</span>
-                        </button>
-                        <button onclick="resetProgress()" class="bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 px-4 py-2.5 rounded-xl text-sm font-medium transition">
-                            Reset Checklist Progress
-                        </button>
+        <!-- Progress Tracker Bar -->
+        <div class="progress-text" id="progress-label">Progress: 0 of 5 tasks completed (0%)</div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar-fill"></div>
+        </div>
+
+        <h2 id="phase1">Phase 1: Check Where You Show Up</h2>
+        <div class="info-box">
+            <strong>What is Have I Been Pwned?</strong> A trusted, secure public safety directory that tracks major corporate data breaches. Checking your email here lets you know immediately if an online store, doctor's office, or website you use was hacked so you can change your password before a scammer tries to log in.
+        </div>
+        <div class="card">
+            <span class="badge">Safety Check</span>
+            <ol>
+                <li>
+                    <strong>Check Your Email Address</strong>
+                    <div class="sub-steps">Go to <a href="https://haveibeenpwned.com" target="_blank">Have I Been Pwned</a>, type in your email address, and press enter to see if your information appeared in any past company data leaks.</div>
+                </li>
+                <li>
+                    <strong>See What Was Exposed</strong>
+                    <div class="sub-steps">Look to see if things like old passwords, phone numbers, or home addresses showed up in those leaks.</div>
+                </li>
+                <li>
+                    <strong>Update Your Passwords</strong>
+                    <div class="sub-steps">If an account was affected, change your password immediately. Always use a different password for every website so that if one place gets hacked, your other accounts stay safe.</div>
+                </li>
+                <li>
+                    <strong>Hide Your Email on the Public List</strong>
+                    <div class="sub-steps">Go to the <a href="https://haveibeenpwned.com/OptOut" target="_blank">HIBP Opt-Out Page</a>, enter your email, check your inbox for a confirmation message, click the link inside, and choose to hide your email from public searches.</div>
+                </li>
+            </ol>
+            <details class="section-dropdown">
+                <summary>Review Phase 1 Instructions & Mark Complete</summary>
+                <div class="dropdown-content">
+                    <p>Review the steps above and ensure you have checked your email and updated any compromised passwords.</p>
+                    <div class="checkbox-container">
+                        <label><input type="checkbox" class="task-checkbox" data-id="task-1" onchange="saveAndProgress()"> Mark Phase 1 as Complete</label>
                     </div>
                 </div>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- QR Code / Mobile Sharing Modal -->
-    <div id="share-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-200 dark:border-slate-700 text-center relative animate-in fade-in zoom-in duration-200">
-            <button onclick="toggleShareModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-                <i data-lucide="x" class="w-5 h-5"></i>
-            </button>
-            <div class="bg-doea-50 dark:bg-slate-700 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-doea-600 dark:text-amber-400">
-                <i data-lucide="smartphone" class="w-6 h-6"></i>
-            </div>
-            <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1">Open on Your Phone</h3>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Scan this QR code with your mobile camera to test or complete the guide on your smartphone.</p>
-            
-            <div id="qrcode" class="bg-white p-3 rounded-xl border border-slate-200 inline-block mx-auto mb-4 flex justify-center"></div>
-            
-            <div class="bg-slate-50 dark:bg-slate-700/50 p-3 rounded-xl text-xs text-slate-600 dark:text-slate-300 break-all font-mono select-all mb-4" id="current-url-display">
-                <!-- Populated dynamically -->
-            </div>
-
-            <button onclick="toggleShareModal()" class="w-full bg-slate-900 dark:bg-slate-700 hover:bg-slate-800 text-white py-2.5 rounded-xl text-sm font-medium transition">
-                Close
-            </button>
+            </details>
         </div>
+
+        <h2 id="brokers">Phase 2: Remove Yourself From People-Search Websites</h2>
+        <div class="warning-box">
+            <strong>Important Note:</strong> These websites often try to scare you into paying for a monthly subscription service (like Onerep). <strong>Ignore and close those offers!</strong> Removing your information manually using these free guides costs $0.
+        </div>
+
+        <div class="card" id="truepeople">
+            <h3>1. TruePeopleSearch</h3>
+            <div class="risk-note">
+                <strong>What it is & Scam Risk:</strong> A public directory publishing names, ages, phone numbers, and home histories. Scammers search this site to gather personal details to impersonate government agents or utility companies over the phone.
+            </div>
+            <details class="section-dropdown">
+                <summary>View Step-by-Step Removal Guide</summary>
+                <div class="dropdown-content">
+                    <ol type="a">
+                        <li>Go to the <a href="https://www.truepeoplesearch.com/removal" target="_blank">TruePeopleSearch Opt-Out Portal</a>.</li>
+                        <li>Type in your email address, check the box proving you are human, and submit the form.</li>
+                        <li>Open your email inbox, look for the verification message, and click the confirmation link inside.</li>
+                        <li>Fill out your name and address details to match the specific public record you want removed.</li>
+                        <li>Submit the final form. Your listing will automatically disappear within about 3 days.</li>
+                    </ol>
+                    <div class="checkbox-container">
+                        <label><input type="checkbox" class="task-checkbox" data-id="task-2" onchange="saveAndProgress()"> Mark TruePeopleSearch Complete</label>
+                    </div>
+                </div>
+            </details>
+        </div>
+
+        <div class="card" id="fastpeople">
+            <h3>2. FastPeopleSearch</h3>
+            <div class="risk-note">
+                <strong>What it is & Scam Risk:</strong> A directory compiling deep background records and contact data. Scammers use it to look up relatives' names so they can run "grandparent scams" pretending a family member is in an emergency.
+            </div>
+            <details class="section-dropdown">
+                <summary>View Step-by-Step Removal Guide</summary>
+                <div class="dropdown-content">
+                    <ol type="a">
+                        <li>Go to the <a href="https://www.fastpeoplesearch.com/optout" target="_blank">FastPeopleSearch Opt-Out Portal</a>.</li>
+                        <li>Enter your name and email address, then submit the starting form.</li>
+                        <li>Open your email inbox for the verification message and click the link inside.</li>
+                        <li>Fill out the quick identity form matching your personal details and address.</li>
+                        <li>Click submit to lock in your removal request.</li>
+                    </ol>
+                    <div class="checkbox-container">
+                        <label><input type="checkbox" class="task-checkbox" data-id="task-3" onchange="saveAndProgress()"> Mark FastPeopleSearch Complete</label>
+                    </div>
+                </div>
+            </details>
+        </div>
+
+        <div class="card" id="whitepages">
+            <h3>3. Whitepages</h3>
+            <div class="risk-note">
+                <strong>What it is & Scam Risk:</strong> A long-standing phone and address lookup directory. Fraudsters use it to cross-reference addresses and landlines to send targeted physical mail scams or fraudulent sweepstakes offers.
+            </div>
+            <details class="section-dropdown">
+                <summary>View Step-by-Step Removal Guide</summary>
+                <div class="dropdown-content">
+                    <ol type="a">
+                        <li>Search for your name on Whitepages.com, accept welcome pop-ups, and open up your specific profile's <strong>"View Details"</strong> page.</li>
+                        <li>Highlight and copy the website link (URL) from the very top bar of your internet browser.</li>
+                        <li>Go to the <a href="https://www.whitepages.com/suppression-requests" target="_blank">Whitepages Suppression Requests Page</a> and paste your profile link into the box.</li>
+                        <li>Confirm your details and follow their instructions (which may include a quick automated phone call) to finish taking down the listing.</li>
+                    </ol>
+                    <div class="checkbox-container">
+                        <label><input type="checkbox" class="task-checkbox" data-id="task-4" onchange="saveAndProgress()"> Mark Whitepages Complete</label>
+                    </div>
+                </div>
+            </details>
+        </div>
+
+        <div class="card" id="spokeo">
+            <h3>4. Spokeo</h3>
+            <div class="risk-note">
+                <strong>What it is & Scam Risk:</strong> A data aggregator that links public records, social media profiles, and wealth estimates. Scammers use it to target wealthier profiles or seniors living alone for financial fraud.
+            </div>
+            <details class="section-dropdown">
+                <summary>View Step-by-Step Removal Guide</summary>
+                <div class="dropdown-content">
+                    <ol type="a">
+                        <li>Navigate to the <a href="https://www.spokeo.com/optout" target="_blank">Spokeo Opt-Out Page</a>.</li>
+                        <li>Search for your name on Spokeo in a separate tab, click on your profile card, and copy the link from your browser's top address bar.</li>
+                        <li>Go back to the Spokeo Opt-Out page, paste your link, type your email, complete the picture puzzle (CAPTCHA), and click <strong>Opt Out</strong>.</li>
+                        <li>Open your email inbox, find the confirmation message from Spokeo, and click the link inside to complete your removal.</li>
+                    </ol>
+                    <div class="checkbox-container">
+                        <label><input type="checkbox" class="task-checkbox" data-id="task-5" onchange="saveAndProgress()"> Mark Spokeo Complete</label>
+                    </div>
+                </div>
+            </details>
+        </div>
+
+        <h2 id="phase3">Phase 3: Secure Your Web Browser & Passwords</h2>
+        <div class="info-box">
+            <strong>Why do this?</strong> Hackers and advertisers use hidden tracking scripts and weak passwords to access personal accounts. These free tools help block those trackers and lock your accounts behind a secure vault so you don't have to memorize dozens of passwords.
+        </div>
+        
+        <div class="card">
+            <h3>1. uBlock Origin (Block Trackers & Pop-Ups)</h3>
+            <div class="risk-note">
+                <strong>What it is & Scam Risk:</strong> A browser extension that blocks malicious pop-ups and tracking scripts. Without it, fraudulent banner ads can trick users into clicking fake tech-support warning windows.
+            </div>
+            <details class="section-dropdown">
+                <summary>View Step-by-Step Installation Guide</summary>
+                <div class="dropdown-content">
+                    <ol type="a">
+                        <li>Go to the official <a href="https://ublockorigin.com/" target="_blank">uBlock Origin Website</a>.</li>
+                        <li>Click the red <strong>"Get uBlock Origin"</strong> button to add this 100% free helper tool to your web browser.</li>
+                        <li>Confirm the installation prompt when your browser asks if you want to add the extension. It will now quietly block invisible trackers and annoying pop-up ads before they load.</li>
+                    </ol>
+                    <div class="checkbox-container">
+                        <label><input type="checkbox" class="task-checkbox" data-id="task-6" onchange="saveAndProgress()"> Mark uBlock Origin Complete</label>
+                    </div>
+                </div>
+            </details>
+        </div>
+
+        <div class="card">
+            <h3>2. Bitwarden (Secure Password Manager)</h3>
+            <div class="risk-note">
+                <strong>What it is & Scam Risk:</strong> A secure password vault that keeps login credentials encrypted. Leaving passwords written on paper near a computer allows anyone physical access to compromise banking and email accounts.
+            </div>
+            <details class="section-dropdown">
+                <summary>View Step-by-Step Setup Guide</summary>
+                <div class="dropdown-content">
+                    <ol type="a">
+                        <li>Go to the official <a href="https://bitwarden.com/" target="_blank">Bitwarden Website</a> to set up a free password manager account.</li>
+                        <li>Create a strong, secure <strong>"Master Password"</strong> that only you know. This is the only password you will ever need to memorize.</li>
+                        <li>Install the browser extension or app so it can safely store all your complex passwords and fill them out automatically.</li>
+                    </ol>
+                    <div class="checkbox-container">
+                        <label><input type="checkbox" class="task-checkbox" data-id="task-7" onchange="saveAndProgress()"> Mark Bitwarden Complete</label>
+                    </div>
+                </div>
+            </details>
+        </div>
+
+        <div class="card">
+            <h3>3. Two-Step Login (2FA)</h3>
+            <div class="risk-note">
+                <strong>What it is & Scam Risk:</strong> An extra security layer requiring a phone code plus your password. If a scammer steals your password via phishing, 2FA blocks them from breaking into your account without your phone.
+            </div>
+            <details class="section-dropdown">
+                <summary>View Setup Instructions</summary>
+                <div class="dropdown-content">
+                    <p>For important accounts like email and banking, go into your account settings and turn on "Two-Step Verification". This adds a deadbolt lock by texting a quick code to your phone when you log in.</p>
+                    <p>If you use a Google account, manage this via the <a href="https://myaccount.google.com/signinoptions/two-step-verification" target="_blank">Google 2-Step Verification Guide</a>.</p>
+                    <div class="checkbox-container">
+                        <label><input type="checkbox" class="task-checkbox" data-id="task-8" onchange="saveAndProgress()"> Mark 2FA Complete</label>
+                    </div>
+                </div>
+            </details>
+        </div>
+
+        <h2 id="phase4">Phase 4: Mask Your Email Address</h2>
+        <div class="info-box">
+            <strong>Why do this?</strong> Whenever you sign up for store discounts, newsletters, or online accounts, giving out your real email address opens you up to endless spam and risk if that company gets hacked. Email "masking" creates a temporary, private forwarding address so your real inbox stays completely hidden and clean.
+        </div>
+        <div class="card">
+            <h3>DuckDuckGo Email Protection</h3>
+            <details class="section-dropdown">
+                <summary>View Step-by-Step Setup Guide</summary>
+                <div class="dropdown-content">
+                    <ol type="a">
+                        <li>Visit the official <a href="https://duckduckgo.com/email/" target="_blank">DuckDuckGo Email Protection Page</a>. This service is 100% free with no hidden fees or subscriptions.</li>
+                        <li>Click to get started, choose a personal username (which creates your core <code>@duck.com</code> address), and enter your real email address so it knows where to forward your messages.</li>
+                        <li>Whenever a website asks for your email address and you want to keep your real one private, use your custom <code>@duck.com</code> address instead. Important messages will automatically forward safely right to your regular inbox!</li>
+                    </ol>
+                    <div class="checkbox-container">
+                        <label><input type="checkbox" class="task-checkbox" data-id="task-9" onchange="saveAndProgress()"> Mark Email Masking Complete</label>
+                    </div>
+                </div>
+            </details>
+        </div>
+
+        <h2 id="phase5">Phase 5: Clean Hidden Location Data From Photos</h2>
+        <div class="info-box">
+            <strong>Why do this?</strong> When you take a picture with a smartphone, the file often saves invisible hidden details (called EXIF data) like the exact GPS coordinates where the photo was snapped, the date, and what device you used. Cleaning this data prevents strangers online from tracking your physical location or habits from shared pictures.
+        </div>
+        <div class="card">
+            <h3>Photo Metadata Scrubbing by Device</h3>
+            <details class="section-dropdown">
+                <summary>View Device Instructions</summary>
+                <div class="dropdown-content">
+                    <p>Choose your device below to remove location data before sharing files online:</p>
+                    
+                    <!-- Windows PC Dropdown -->
+                    <details class="section-dropdown">
+                        <summary>📁 Windows PC (Windows 10 / 11)</summary>
+                        <div class="dropdown-content">
+                            <ol>
+                                <li>Open your computer's folder and find the photo or document you want to share online.</li>
+                                <li>Right-click on the file icon with your mouse and click on <strong>Properties</strong> at the very bottom of the menu.</li>
+                                <li>Click on the <strong>Details</strong> tab at the top of that window, click the blue link at the bottom that says <strong>"Remove Properties and Personal Information"</strong>, check the box to remove all items from the file, and click OK.</li>
+                            </ol>
+                        </div>
+                    </details>
+
+                    <!-- Apple Mac Dropdown -->
+                    <details class="section-dropdown">
+                        <summary>🍏 Apple Mac (macOS)</summary>
+                        <div class="dropdown-content">
+                            <p>Apple computers generally do not embed visible GPS data in standard shared images the same way Windows does, but you can always open photos in the built-in <strong>Preview</strong> app, click <strong>Tools > Adjust Color</strong> or export as a fresh copy to strip hidden metadata.</p>
+                        </div>
+                    </details>
+
+                    <!-- iPhone / iPad Dropdown -->
+                    <details class="section-dropdown">
+                        <summary>📱 iPhone / iPad (iOS)</summary>
+                        <div class="dropdown-content">
+                            <ol>
+                                <li>Open your <strong>Photos</strong> app and tap the picture you want to share.</li>
+                                <li>Tap the <strong>Share</strong> button (the square box with an arrow pointing up).</li>
+                                <li>At the very top of the sharing screen, tap the small text that says <strong>"Options"</strong> next to the photo file name.</li>
+                                <li>Turn <strong>OFF</strong> the toggle switch for <strong>Location</strong>, then tap Done. Now you can text or email the photo safely without sharing where it was taken!</li>
+                            </ol>
+                        </div>
+                    </details>
+
+                    <!-- Android Phone Dropdown -->
+                    <details class="section-dropdown">
+                        <summary>🤖 Android Phone (Samsung, Google Pixel, etc.)</summary>
+                        <div class="dropdown-content">
+                            <p>Open your <strong>Gallery</strong> or <strong>Google Photos</strong> app and select the picture.</p>
+                            <p><em>Note:</em> Before taking new pictures, you can turn off location saving permanently by opening your Camera app settings, looking for <strong>"Save location"</strong> or <strong>"Location tags"</strong>, and switching it <strong>OFF</strong>.</p>
+                        </div>
+                    </details>
+
+                    <div class="checkbox-container">
+                        <label><input type="checkbox" class="task-checkbox" data-id="task-10" onchange="saveAndProgress()"> Mark Photo Cleaning Complete</label>
+                    </div>
+                </div>
+            </details>
+        </div>
+
+        <!-- Optional 90-Day Reminder Section -->
+        <h2 id="reminder">Optional: Set a 90-Day Maintenance Reminder</h2>
+        <div class="info-box">
+            <strong>Why set a reminder?</strong> Data broker websites frequently re-scrape public records every few months. Setting a quick calendar alert ensures you stay ahead of new listings and keep your personal information secure year-round.
+        </div>
+        <div class="card">
+            <h3>Schedule Your Follow-Up Check</h3>
+            <p>Click one of the buttons below to instantly add a reminder event to your calendar for 90 days from now:</p>
+            <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Digital+Privacy+Maintenance+Check&details=Time+to+re-verify+your+public+search+listings+and+ensure+your+personal+information+remains+removed+using+your+Senior+Digital+SafeGuard+guide.&dates=20261115T100000Z/20261115T103000Z" target="_blank" class="calendar-btn">📅 Add to Google Calendar</a>
+            <a href="data:text/calendar;charset=utf8,BEGIN:VCALENDAR%0AVERSION:2.0%0ABEGIN:VEVENT%0ASUMMARY:Digital Privacy Maintenance Check%0ADESCRIPTION:Time to re-verify your public search listings and ensure your personal information remains removed.%0ADTSTART:20261115T100000Z%0ADTEND:20261115T103000Z%0AEND:VEVENT%0AEND:VCALENDAR" download="digital-privacy-reminder.ics" class="calendar-btn" style="background-color: #0ea5e9;">📱 Download Apple/Outlook Reminder</a>
+        </div>
+
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 mt-12 py-8 text-center text-xs text-slate-500 dark:text-slate-400 no-print">
-        <div class="max-w-5xl mx-auto px-4 space-y-3">
-            <p class="font-medium text-slate-700 dark:text-slate-300">Florida Department of Elder Affairs • Operation Senior Shield Initiative</p>
-            <p class="max-w-2xl mx-auto leading-relaxed">
-                Disclaimer: This tool is provided for free educational self-service purposes only. It operates entirely on your local device and does not collect, transmit, or store personal identifying information on state servers.
-            </p>
-            <p class="text-slate-400 dark:text-slate-500 pt-2">© 2026 State of Florida. All rights reserved.</p>
-        </div>
-    </footer>
+    <!-- Floating Back to Top Button -->
+    <button id="back-to-top" onclick="scrollToTop()" title="Back to Top">↑</button>
 
-    <!-- Application Script -->
+    <!-- JavaScript to Handle Progress Bar, Local Storage, & Back to Top -->
     <script>
-        // Data Structure for the Privacy Guide Phases & Action Items
-        const privacyPhases = [
-            {
-                id: 'phase-1',
-                title: 'Phase 1: Check for Exposed Email & Password Breaches',
-                icon: 'mail-warning',
-                description: 'Find out if your email addresses or phone numbers have appeared in known corporate data breaches so you know which accounts need immediate password updates.',
-                items: [
-                    {
-                        id: 'task-1-1',
-                        title: 'Run a security check on Have I Been Pwned',
-                        desc: 'Visit the trusted security lookup portal to verify if your primary email addresses have been leaked in past online database breaches.',
-                        linkText: 'Open Have I Been Pwned Website',
-                        linkUrl: 'https://haveibeenpwned.com/'
-                    },
-                    {
-                        id: 'task-1-2',
-                        title: 'Check Google Password Breach Alert (if using Chrome)',
-                        desc: 'If you use Google Chrome, check your built-in Password Checkup tool to see if any of your saved passwords have been compromised online.',
-                        linkText: 'Check Google Passwords Manager',
-                        linkUrl: 'https://passwords.google.com/'
-                    }
-                ]
-            },
-            {
-                id: 'phase-2',
-                title: 'Phase 2: Remove Information from Major People-Search Brokers',
-                icon: 'user-x',
-                description: 'Data brokers aggregate public records (past addresses, phone numbers, relative names) into directory profiles used by scammers. Opting out removes your listing.',
-                items: [
-                    {
-                        id: 'task-2-1',
-                        title: 'Opt-Out of TruePeopleSearch',
-                        desc: 'Search for your name and city, locate your listing, and submit an automated removal request using their online opt-out form.',
-                        linkText: 'TruePeopleSearch Opt-Out Page',
-                        linkUrl: 'https://www.truepeoplesearch.com/removal'
-                    },
-                    {
-                        id: 'task-2-2',
-                        title: 'Opt-Out of Whitepages',
-                        desc: 'Locate your personal profile page on Whitepages, copy the profile link, and submit it to their consumer suppression portal.',
-                        linkText: 'Whitepages Opt-Out Portal',
-                        linkUrl: 'https://www.whitepages.com/suppression-requests'
-                    },
-                    {
-                        id: 'task-2-3',
-                        title: 'Opt-Out of Spokeo',
-                        desc: 'Enter your profile details on Spokeo\'s privacy opt-out page to suppress your public records summary from search results.',
-                        linkText: 'Spokeo Opt-Out Center',
-                        linkUrl: 'https://www.spokeo.com/optout'
-                    },
-                    {
-                        id: 'task-2-4',
-                        title: 'Opt-Out of BeenVerified',
-                        desc: 'Access the BeenVerified opt-out mechanism to restrict public display of your historical records and phone numbers.',
-                        linkText: 'BeenVerified Opt-Out Tool',
-                        linkUrl: 'https://www.beenverified.com/app/optout/search'
-                    }
-                ]
-            },
-            {
-                id: 'phase-3',
-                title: 'Phase 3: Secure Your Accounts with Strong Passwords',
-                icon: 'key-round',
-                description: 'Prevent unauthorized account access by replacing weak or reused passwords with long, unique passphrases or using a secure browser password manager.',
-                items: [
-                    {
-                        id: 'task-3-1',
-                        title: 'Update Critical Financial and Email Passwords',
-                        desc: 'Ensure your primary email account (Gmail, Outlook, Yahoo) and banking portals use unique passwords that are at least 12 characters long.',
-                        linkText: 'Google Account Security Settings',
-                        linkUrl: 'https://myaccount.google.com/security'
-                    },
-                    {
-                        id: 'task-3-2',
-                        title: 'Enable Two-Factor Authentication (2FA)',
-                        desc: 'Turn on text-message (SMS) or authenticator app verification for your email, bank accounts, and health portals to add a secure secondary checkpoint.',
-                        linkText: 'Learn About 2FA (AARP Guide)',
-                        linkUrl: 'https://www.aarp.org/money/scams-fraud/info-2021/two-factor-authentication.html'
-                    }
-                ]
-            },
-            {
-                id: 'phase-4',
-                title: 'Phase 4: Mask Your Email Address to Stop Spam',
-                icon: 'at-sign',
-                description: 'Protect your real inbox when signing up for newsletters, online stores, or rewards programs by using anonymous email forwarding aliases.',
-                items: [
-                    {
-                        id: 'task-4-1',
-                        title: 'Use Apple Hide My Email (iPhone/Mac Users)',
-                        desc: 'If you use an Apple device with iCloud+, generate unique random email aliases whenever an app or website asks for your email address.',
-                        linkText: 'Apple Support Guide for Hide My Email',
-                        linkUrl: 'https://support.apple.com/en-us/HT213047'
-                    },
-                    {
-                        id: 'task-4-2',
-                        title: 'Use Firefox Relay or Similar Alias Services',
-                        desc: 'Create secure email masks that forward messages to your real inbox without exposing your actual personal email address to merchants.',
-                        linkText: 'Explore Firefox Relay',
-                        linkUrl: 'https://relay.firefox.com/'
-                    }
-                ]
-            },
-            {
-                id: 'phase-5',
-                title: 'Phase 5: Scrub Hidden Photo Location Data (EXIF)',
-                icon: 'image-off',
-                description: 'Digital photos often store exact GPS coordinates, dates, and device models within the image file. Remove this hidden data before sharing photos online.',
-                items: [
-                    {
-                        id: 'task-5-1',
-                        title: 'Disable Location Access in Phone Camera Settings',
-                        desc: 'Go to your phone\'s privacy settings and turn off geotagging/location permissions for your camera app so future photos do not record your home coordinates.',
-                        linkText: 'View Smartphone Privacy Settings Guide',
-                        linkUrl: 'https://www.consumer.ftc.gov/articles/how-protect-your-privacy-smartphone'
-                    },
-                    {
-                        id: 'task-5-2',
-                        title: 'Remove Metadata Before Sharing Online',
-                        desc: 'Use free built-in photo properties tools (Windows) or preview options (Mac) to strip location metadata before posting pictures publicly.',
-                        linkText: 'Digital Safety Tips from FTC',
-                        linkUrl: 'https://consumer.ftc.gov/'
-                    }
-                ]
-            }
-        ];
-
-        // Load saved state from localStorage
-        let completedTasks = JSON.parse(localStorage.getItem('senior_guard_completed')) || {};
-
-        function renderChecklist() {
-            const container = document.getElementById('checklist-container');
-            container.innerHTML = '';
-
-            let totalTasks = 0;
-            let finishedTasks = 0;
-
-            privacyPhases.forEach((phase, phaseIndex) => {
-                let phaseCompletedCount = 0;
-                let phaseTotalCount = phase.items.length;
-
-                let itemsHtml = phase.items.map(item => {
-                    totalTasks++;
-                    const isChecked = completedTasks[item.id] || false;
-                    if (isChecked) finishedTasks++;
-                    if (isChecked) phaseCompletedCount++;
-
-                    return `
-                        <div class="p-4 sm:p-5 rounded-xl border transition-all duration-200 ${isChecked ? 'completed-task border-emerald-200 dark:border-emerald-900/50 bg-emerald-50/30 dark:bg-emerald-950/10' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 hover:border-doea-600 dark:hover:border-amber-400'}">
-                            <div class="flex items-start space-x-3 sm:space-x-4">
-                                <input type="checkbox" id="${item.id}" ${isChecked ? 'checked' : ''} onchange="toggleTask('${item.id}')" 
-                                    class="mt-1 h-5 w-5 rounded border-slate-300 text-doea-600 focus:ring-doea-600 dark:border-slate-600 dark:bg-slate-700 cursor-pointer shrink-0">
-                                <div class="space-y-1.5 flex-grow">
-                                    <label for="${item.id}" class="font-semibold text-slate-900 dark:text-white text-base cursor-pointer block">
-                                        ${item.title}
-                                    </label>
-                                    <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                                        ${item.desc}
-                                    </p>
-                                    <div class="pt-2">
-                                        <a href="${item.linkUrl}" target="_blank" rel="noopener noreferrer" 
-                                            class="inline-flex items-center space-x-1.5 text-xs font-semibold text-doea-600 dark:text-amber-400 hover:text-doea-700 dark:hover:text-amber-300 bg-doea-50 dark:bg-slate-700/60 px-3 py-1.5 rounded-lg transition">
-                                            <span>${item.linkText}</span>
-                                            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-
-                const isPhaseComplete = phaseCompletedCount === phaseTotalCount;
-
-                const phaseCard = `
-                    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden transition-all">
-                        <div class="p-5 sm:p-6 bg-slate-50/50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-700 flex flex-wrap justify-between items-center gap-4">
-                            <div class="flex items-center space-x-3">
-                                <div class="bg-doea-100 dark:bg-slate-700 text-doea-600 dark:text-amber-400 p-2.5 rounded-xl">
-                                    <i data-lucide="${phase.icon}" class="w-6 h-6"></i>
-                                </div>
-                                <div>
-                                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">${phase.title}</h3>
-                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">${phase.description}</p>
-                                </div>
-                            </div>
-                            <span class="text-xs font-semibold px-3 py-1 rounded-full ${isPhaseComplete ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'}">
-                                ${phaseCompletedCount} of ${phaseTotalCount} Done
-                            </span>
-                        </div>
-                        <div class="p-5 sm:p-6 space-y-4">
-                            ${itemsHtml}
-                        </div>
-                    </div>
-                `;
-                container.innerHTML += phaseCard;
+        // Load saved progress on page load
+        document.addEventListener("DOMContentLoaded", () => {
+            const checkboxes = document.querySelectorAll('.task-checkbox');
+            checkboxes.forEach(box => {
+                const taskId = box.getAttribute('data-id');
+                if (localStorage.getItem(taskId) === 'true') {
+                    box.checked = true;
+                    const summaryTag = box.closest('details').querySelector('summary');
+                    if (summaryTag) summaryTag.classList.add('completed-task');
+                }
             });
-
-            // Update Progress Bar & Text
-            const percentage = Math.round((finishedTasks / totalTasks) * 100) || 0;
-            document.getElementById('progress-bar').style.width = percentage + '%';
-            document.getElementById('progress-text').innerText = `${finishedTasks} of ${totalTasks} Tasks Complete (${percentage}%)`;
-            
-            // Re-initialize Lucide icons for newly rendered elements
-            lucide.createIcons();
-        }
-
-        function toggleTask(taskId) {
-            completedTasks[taskId] = document.getElementById(taskId).checked;
-            localStorage.setItem('senior_guard_completed', JSON.stringify(completedTasks));
-            renderChecklist();
-        }
-
-        function resetProgress() {
-            if (confirm('Are you sure you want to reset all checklist progress?')) {
-                completedTasks = {};
-                localStorage.removeItem('senior_guard_completed');
-                renderChecklist();
-            }
-        }
-
-        function toggleShareModal() {
-            const modal = document.getElementById('share-modal');
-            modal.classList.toggle('hidden');
-            if (!modal.classList.contains('hidden')) {
-                generateQRCode();
-            }
-        }
-
-        function generateQRCode() {
-            const qrContainer = document.getElementById('qrcode');
-            qrContainer.innerHTML = '';
-            const currentUrl = window.location.href;
-            document.getElementById('current-url-display').innerText = currentUrl;
-            
-            new QRCode(qrContainer, {
-                text: currentUrl,
-                width: 160,
-                height: 160,
-                colorDark: "#1b365d",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.M
-            });
-        }
-
-        function downloadCalendarReminder() {
-            const icsContent = `BEGIN:VCALENDAR
-VERSION:2.0
-PRODID:-//Florida Department of Elder Affairs//Senior Digital SafeGuard//EN
-BEGIN:VEVENT
-SUMMARY:Quarterly Digital Privacy & Security Checkup
-DESCRIPTION:Time for your 3-month review of your online privacy, password updates, and data broker opt-out statuses using the Senior Digital SafeGuard toolkit.
-BEGIN:VALARM
-TRIGGER:-PT24H
-ACTION:DISPLAY
-DESCRIPTION:Reminder: Digital Privacy Checkup Tomorrow
-END:VALARM
-END:VEVENT
-END:VCALENDAR`;
-
-            const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'Senior-Digital-Privacy-Checkup.ics';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-        }
-
-        // Theme management
-        function toggleTheme() {
-            const html = document.documentElement;
-            if (html.classList.contains('dark')) {
-                html.classList.remove('dark');
-                localStorage.setItem('theme', 'light');
-            } else {
-                html.classList.add('dark');
-                localStorage.setItem('theme', 'dark');
-            }
-        }
-
-        // Initialize Theme on Load
-        if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        }
-
-        // Initial Render
-        window.addEventListener('DOMContentLoaded', () => {
-            renderChecklist();
-            lucide.createIcons();
+            updateProgress();
         });
+
+        function saveAndProgress() {
+            const checkboxes = document.querySelectorAll('.task-checkbox');
+            checkboxes.forEach(box => {
+                const taskId = box.getAttribute('data-id');
+                localStorage.setItem(taskId, box.checked);
+                const summaryTag = box.closest('details').querySelector('summary');
+                if (box.checked) {
+                    if (summaryTag) summaryTag.classList.add('completed-task');
+                } else {
+                    if (summaryTag) summaryTag.classList.remove('completed-task');
+                }
+            });
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('.task-checkbox');
+            const totalTasks = checkboxes.length;
+            let completedTasks = 0;
+
+            checkboxes.forEach(box => {
+                if (box.checked) {
+                    completedTasks++;
+                }
+            });
+
+            const percentage = Math.round((completedTasks / totalTasks) * 100);
+            document.getElementById('progress-bar-fill').style.width = percentage + '%';
+            document.getElementById('progress-label').innerText = `Progress: ${completedTasks} of ${totalTasks} tasks completed (${percentage}%)`;
+        }
+
+        // Back to top button logic
+        const backToTopBtn = document.getElementById('back-to-top');
+        window.onscroll = function() {
+            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                backToTopBtn.style.display = "block";
+            } else {
+                backToTopBtn.style.display = "none";
+            }
+        };
+
+        function scrollToTop() {
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
     </script>
+
 </body>
 </html>
