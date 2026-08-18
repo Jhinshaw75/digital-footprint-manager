@@ -1,9 +1,13 @@
-<!DOCTYPE html>
+   <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>"Senior Digital SafeGuard"</title>
+    <!-- Link to PWA App Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <!-- Include qrcode.js library for on-page QR code generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         :root {
             --primary: #1e40af;
@@ -150,6 +154,36 @@
         .purpose-banner ul li {
             margin-bottom: 8px;
         }
+        /* QR Code Card Styling */
+        .qr-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%);
+            border: 1px solid #cbd5e1;
+            border-radius: 14px;
+            padding: 25px;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+        }
+        .qr-code-container {
+            background: #ffffff;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            display: inline-block;
+        }
+        .qr-info h3 {
+            color: var(--primary);
+            margin-top: 0;
+            margin-bottom: 8px;
+            font-size: 1.2rem;
+        }
+        .qr-info p {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
         /* Progress Bar Styles */
         .progress-container {
             background: #e2e8f0;
@@ -223,6 +257,20 @@
             border-top: 1px solid #fee2e2;
             border-right: 1px solid #fee2e2;
             border-bottom: 1px solid #fee2e2;
+        }
+        /* Mobile Troubleshooting Callout */
+        .mobile-tip {
+            background-color: #eff6ff;
+            border-left: 4px solid var(--primary-light);
+            padding: 14px 18px;
+            border-radius: 8px;
+            color: #1e40af;
+            font-size: 0.92rem;
+            margin-top: 12px;
+            margin-bottom: 18px;
+            border-top: 1px solid #dbeafe;
+            border-right: 1px solid #dbeafe;
+            border-bottom: 1px solid #dbeafe;
         }
         /* Checkbox Styling */
         .task-checkbox {
@@ -386,11 +434,15 @@
             h1 {
                 font-size: 2rem;
             }
+            .qr-card {
+                flex-direction: column;
+                text-align: center;
+            }
         }
 
         /* --- PRINT / PDF FRIENDLY STYLES --- */
         @media print {
-            nav, #back-to-top, .progress-container, .progress-text {
+            nav, #back-to-top, .progress-container, .progress-text, .qr-card {
                 display: none !important;
             }
             body {
@@ -446,6 +498,15 @@
 
         <h1>"Senior Digital SafeGuard"</h1>
         <div class="subtitle">Simple, easy-to-follow steps to clean up your personal information online and protect your privacy.</div>
+
+        <!-- QR Code Quick-Access Card -->
+        <div class="qr-card">
+            <div class="qr-code-container" id="qrcode"></div>
+            <div class="qr-info">
+                <h3>Scan to Open on Mobile</h3>
+                <p>Point your smartphone's camera at this QR code to instantly load this guide right on your mobile device for testing or sharing!</p>
+            </div>
+        </div>
 
         <!-- Purpose & Protection Banner -->
         <div class="purpose-banner">
@@ -506,6 +567,9 @@
         <div class="warning-box">
             <strong>Important Note:</strong> These websites often try to scare you into paying for a monthly subscription service (like Onerep). <strong>Ignore and close those offers!</strong> Removing your information manually using these free guides costs $0.
         </div>
+        <div class="mobile-tip">
+            <strong>📱 Mobile Device Tip:</strong> If an external opt-out page on your phone freezes or blocks you from tapping a security check (captcha), open this guide on a desktop/laptop computer, or use the direct email fallback listed below.
+        </div>
 
         <div class="card" id="truepeople">
             <h3>1. TruePeopleSearch</h3>
@@ -517,11 +581,14 @@
                 <div class="dropdown-content">
                     <ol type="a">
                         <li>Go to the <a href="https://www.truepeoplesearch.com/removal" target="_blank">TruePeopleSearch Opt-Out Portal</a>.</li>
-                        <li>Type in your email address, check the box proving you are human, and submit the form.</li>
+                        <li>Type in your email address, check the box proving you are human, and submit the form. <em>(Note: If the mobile captcha box is unclickable, open the link on a computer or laptop).</em></li>
                         <li>Open your email inbox, look for the verification message, and click the confirmation link inside.</li>
                         <li>Fill out your name and address details to match the specific public record you want removed.</li>
                         <li>Submit the final form. Your listing will automatically disappear within about 3 days.</li>
                     </ol>
+                    <div class="sub-steps" style="margin-top: 15px; padding-top: 10px; border-top: 1px solid var(--border-color);">
+                        <strong>Alternative Support Contact:</strong> If the web form fails on your mobile device, you can email TruePeopleSearch directly at <a href="mailto:support@truepeoplesearch.com">support@truepeoplesearch.com</a> with your full name, city/state, profile URL, and phone number to request manual removal.
+                    </div>
                     <div class="checkbox-container">
                         <label><input type="checkbox" class="task-checkbox" data-id="task-2" onchange="saveAndProgress()"> Mark TruePeopleSearch Complete</label>
                     </div>
@@ -534,16 +601,22 @@
             <div class="risk-note">
                 <strong>What it is & Scam Risk:</strong> A directory compiling deep background records and contact data. Scammers use it to look up relatives' names so they can run "grandparent scams" pretending a family member is in an emergency.
             </div>
+            <div class="mobile-tip">
+                <strong>📱 Mobile Device Tip:</strong> If an external opt-out page on your phone freezes or blocks you from tapping a security check, open this guide on a desktop/laptop computer, or use the direct email fallback listed below.
+            </div>
             <details class="section-dropdown">
                 <summary>View Step-by-Step Removal Guide</summary>
                 <div class="dropdown-content">
                     <ol type="a">
                         <li>Go to the <a href="https://www.fastpeoplesearch.com/optout" target="_blank">FastPeopleSearch Opt-Out Portal</a>.</li>
-                        <li>Enter your name and email address, then submit the starting form.</li>
+                        <li>Enter your name and email address, then submit the starting form. <em>(Note: If the mobile verification box is unclickable, open the link on a computer or laptop).</em></li>
                         <li>Open your email inbox for the verification message and click the link inside.</li>
                         <li>Fill out the quick identity form matching your personal details and address.</li>
                         <li>Click submit to lock in your removal request.</li>
                     </ol>
+                    <div class="sub-steps" style="margin-top: 15px; padding-top: 10px; border-top: 1px solid var(--border-color);">
+                        <strong>Alternative Support Contact:</strong> If the web form fails on your mobile device, you can email FastPeopleSearch support directly at <a href="mailto:support@fastpeoplesearch.com">support@fastpeoplesearch.com</a> to request manual removal.
+                    </div>
                     <div class="checkbox-container">
                         <label><input type="checkbox" class="task-checkbox" data-id="task-3" onchange="saveAndProgress()"> Mark FastPeopleSearch Complete</label>
                     </div>
@@ -556,13 +629,16 @@
             <div class="risk-note">
                 <strong>What it is & Scam Risk:</strong> A long-standing phone and address lookup directory. Fraudsters use it to cross-reference addresses and landlines to send targeted physical mail scams or fraudulent sweepstakes offers.
             </div>
+            <div class="mobile-tip">
+                <strong>📱 Mobile Device Tip:</strong> If verification forms freeze or fail to register taps on your phone, open this guide on a desktop/laptop computer for smoother navigation.
+            </div>
             <details class="section-dropdown">
                 <summary>View Step-by-Step Removal Guide</summary>
                 <div class="dropdown-content">
                     <ol type="a">
                         <li>Search for your name on Whitepages.com, accept welcome pop-ups, and open up your specific profile's <strong>"View Details"</strong> page.</li>
                         <li>Highlight and copy the website link (URL) from the very top bar of your internet browser.</li>
-                        <li>Go to the <a href="https://www.whitepages.com/suppression-requests" target="_blank">Whitepages Suppression Requests Page</a> and paste your profile link into the box.</li>
+                        <li>Go to the <a href="https://www.whitepages.com/suppression-requests" target="_blank">Whitepages Suppression Requests Page</a> and paste your profile link into the box. <em>(Note: If fields do not register properly on mobile, complete this step on a computer).</em></li>
                         <li>Confirm your details and follow their instructions (which may include a quick automated phone call) to finish taking down the listing.</li>
                     </ol>
                     <div class="checkbox-container">
@@ -577,13 +653,16 @@
             <div class="risk-note">
                 <strong>What it is & Scam Risk:</strong> A data aggregator that links public records, social media profiles, and wealth estimates. Scammers use it to target wealthier profiles or seniors living alone for financial fraud.
             </div>
+            <div class="mobile-tip">
+                <strong>📱 Mobile Device Tip:</strong> Spokeo's picture puzzle (CAPTCHA) can be difficult to tap accurately on mobile screens. If it fails to submit, open this link on a computer or laptop.
+            </div>
             <details class="section-dropdown">
                 <summary>View Step-by-Step Removal Guide</summary>
                 <div class="dropdown-content">
                     <ol type="a">
-                        <li>Navigate to the <a href="https://www.spokeo.com/optout" target="_blank">Spokeo Opt-Out Page</a>.</li>
+                        <li>Navigate to the official <a href="https://www.spokeo.com/optout" target="_blank">Spokeo Opt-Out Page</a>.</li>
                         <li>Search for your name on Spokeo in a separate tab, click on your profile card, and copy the link from your browser's top address bar.</li>
-                        <li>Go back to the Spokeo Opt-Out page, paste your link, type your email, complete the picture puzzle (CAPTCHA), and click <strong>Opt Out</strong>.</li>
+                        <li>Go back to the Spokeo Opt-Out page, paste your link, type your email, complete the picture puzzle (CAPTCHA), and click <strong>Opt Out</strong>. <em>(Note: Complete on a PC if the puzzle refuses to load).</em></li>
                         <li>Open your email inbox, find the confirmation message from Spokeo, and click the link inside to complete your removal.</li>
                     </ol>
                     <div class="checkbox-container">
@@ -753,10 +832,20 @@
     <!-- Floating Back to Top Button -->
     <button id="back-to-top" onclick="scrollToTop()" title="Back to Top">↑</button>
 
-    <!-- JavaScript to Handle Progress Bar, Local Storage, & Back to Top -->
+    <!-- JavaScript to Handle Progress Bar, Local Storage, QR Code, Service Worker, & Back to Top -->
     <script>
-        // Load saved progress on page load
+        // Automatically Generate QR Code for this live page URL
         document.addEventListener("DOMContentLoaded", () => {
+            new QRCode(document.getElementById("qrcode"), {
+                text: window.location.href,
+                width: 128,
+                height: 128,
+                colorDark: "#1e40af",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.M
+            });
+
+            // Load saved progress on page load
             const checkboxes = document.querySelectorAll('.task-checkbox');
             checkboxes.forEach(box => {
                 const taskId = box.getAttribute('data-id');
@@ -798,6 +887,13 @@
             const percentage = Math.round((completedTasks / totalTasks) * 100);
             document.getElementById('progress-bar-fill').style.width = percentage + '%';
             document.getElementById('progress-label').innerText = `Progress: ${completedTasks} of ${totalTasks} tasks completed (${percentage}%)`;
+        }
+
+        // Register Service Worker for PWA App Installation Support
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration failed: ', err));
+            });
         }
 
         // Back to top button logic
