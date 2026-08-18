@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>"Senior Digital SafeGuard"</title>
+    <!-- Link to PWA App Manifest -->
+    <link rel="manifest" href="manifest.json">
     <!-- Include qrcode.js library for on-page QR code generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
@@ -830,11 +832,10 @@
     <!-- Floating Back to Top Button -->
     <button id="back-to-top" onclick="scrollToTop()" title="Back to Top">↑</button>
 
-    <!-- JavaScript to Handle Progress Bar, Local Storage, QR Code Generation, & Back to Top -->
+    <!-- JavaScript to Handle Progress Bar, Local Storage, QR Code, Service Worker, & Back to Top -->
     <script>
         // Automatically Generate QR Code for this live page URL
         document.addEventListener("DOMContentLoaded", () => {
-            // Generate QR code pointing to the current live URL
             new QRCode(document.getElementById("qrcode"), {
                 text: window.location.href,
                 width: 128,
@@ -886,6 +887,13 @@
             const percentage = Math.round((completedTasks / totalTasks) * 100);
             document.getElementById('progress-bar-fill').style.width = percentage + '%';
             document.getElementById('progress-label').innerText = `Progress: ${completedTasks} of ${totalTasks} tasks completed (${percentage}%)`;
+        }
+
+        // Register Service Worker for PWA App Installation Support
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration failed: ', err));
+            });
         }
 
         // Back to top button logic
