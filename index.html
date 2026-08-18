@@ -27,15 +27,17 @@
         <section id="account-security" class="card p-4 mb-4 shadow-sm bg-white rounded">
             <h2 class="h4 mb-3"><i class="fas fa-lock text-primary me-2"></i> Phase 1: Secure Your Accounts</h2>
             <p class="text-muted">Ensure your primary email and important accounts use strong, unique passwords and multi-factor authentication.</p>
+            <!-- Existing account security content placeholder -->
         </section>
 
         <!-- PHASE / SECTION 2: DATA BROKERS & PUBLIC LISTINGS -->
         <section id="data-brokers" class="card p-4 mb-4 shadow-sm bg-white rounded">
             <h2 class="h4 mb-3"><i class="fas fa-search-minus text-primary me-2"></i> Phase 2: Remove Public Listings</h2>
             <p class="text-muted">Opt out of data broker sites that publish your personal contact details online.</p>
+            <!-- Existing data broker content placeholder -->
         </section>
 
-        <!-- PHASE / SECTION 3: PHOTO PRIVACY & METADATA STRIPPING (UPDATED) -->
+        <!-- PHASE / SECTION 3: PHOTO PRIVACY & METADATA STRIPPING (NEWLY INTEGRATED) -->
         <section id="photo-privacy-module" class="card p-4 mb-4 shadow-sm bg-white rounded">
             <div class="d-flex align-items-center mb-3">
                 <div class="icon-wrapper bg-primary text-white rounded-circle p-3 me-3">
@@ -43,7 +45,7 @@
                 </div>
                 <div>
                     <h2 class="h4 mb-1">Phase 3: Photo Privacy & Metadata Stripping</h2>
-                    <p class="text-muted mb-0">Learn how to strip hidden GPS data and metadata from existing and future photos.</p>
+                    <p class="text-muted mb-0">Learn how to strip hidden GPS data and metadata from photos before sharing them online.</p>
                 </div>
             </div>
 
@@ -52,39 +54,22 @@
             </div>
 
             <div class="accordion" id="photoPrivacyAccordion">
-                <!-- EXISTING PHOTOS SECTION -->
-                <div class="accordion-item mb-2 border-primary">
-                    <h3 class="accordion-header" id="headingExisting">
-                        <button class="accordion-button bg-light text-primary fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExisting" aria-expanded="true" aria-controls="collapseExisting">
-                            <i class="fas fa-images me-2"></i> Step 1: Handling Photos You ALREADY Have (Existing Library)
-                        </button>
-                    </h3>
-                    <div id="collapseExisting" class="accordion-collapse collapse show" aria-labelledby="headingExisting" data-bs-parent="#photoPrivacyAccordion">
-                        <div class="accordion-body">
-                            <p>If you already have pictures on your phone that contain location data and you want to share them safely, use these methods:</p>
-                            <ul>
-                                <li class="mb-2"><strong>Checking Existing Photos:</strong> Open your gallery, tap a photo, and swipe up to see if a location tag or map is attached.</li>
-                                <li class="mb-2"><strong>Sharing Without Location (iPhone):</strong> When sharing an existing picture from your Photos app, tap the <strong>Share</strong> button, then tap <strong>Options</strong> at the top of the screen and toggle off <strong>Location</strong> before sending.</li>
-                                <li class="mb-2"><strong>Using Scrubbing Apps:</strong> For Android or general use, you can download trusted free metadata removal apps from your app store, or email the photo to yourself using certain services that automatically strip EXIF data (though sharing via secure messaging or removing location prior to upload is safest).</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Android Section -->
                 <div class="accordion-item mb-2">
                     <h3 class="accordion-header" id="headingAndroid">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAndroid" aria-expanded="false" aria-controls="collapseAndroid">
-                            <i class="fab fa-android text-success me-2 fa-lg"></i> Android Phone: Preventing Future Tracking
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAndroid" aria-expanded="true" aria-controls="collapseAndroid">
+                            <i class="fab fa-android text-success me-2 fa-lg"></i> Android Phone (Samsung, Google Pixel, etc.)
                         </button>
                     </h3>
-                    <div id="collapseAndroid" class="accordion-collapse collapse" aria-labelledby="headingAndroid" data-bs-parent="#photoPrivacyAccordion">
+                    <div id="collapseAndroid" class="accordion-collapse collapse show" aria-labelledby="headingAndroid" data-bs-parent="#photoPrivacyAccordion">
                         <div class="accordion-body">
                             <ol class="mb-3">
-                                <li>Open your <strong>Gallery</strong> or <strong>Google Photos</strong> app and select any picture to review details.</li>
+                                <li>Open your <strong>Gallery</strong> or <strong>Google Photos</strong> app and select the picture you want to share.</li>
+                                <li>Swipe up on the photo or tap the three-dot menu to view details and check if location data is attached.</li>
+                                <li>When sharing directly, look for share options or use a metadata scrubbing tool if necessary.</li>
                             </ol>
                             <div class="card bg-light border-0 p-3">
-                                <p class="mb-0"><strong>Permanent Fix:</strong> Open your phone's <strong>Camera</strong> app settings, look for <strong>Save location</strong> or <strong>Location tags</strong>, and switch it <strong>OFF</strong> so new photos won't capture GPS coordinates.</p>
+                                <p class="mb-0"><strong>Permanent Fix (Stop saving location for future photos):</strong> Open your <strong>Camera</strong> app settings, look for <strong>Save location</strong> or <strong>Location tags</strong>, and switch it <strong>OFF</strong>.</p>
                             </div>
                         </div>
                     </div>
@@ -94,16 +79,18 @@
                 <div class="accordion-item">
                     <h3 class="accordion-header" id="headingIphone">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseIphone" aria-expanded="false" aria-controls="collapseIphone">
-                            <i class="fab fa-apple text-dark me-2 fa-lg"></i> iPhone & iPad (iOS): Preventing Future Tracking
+                            <i class="fab fa-apple text-dark me-2 fa-lg"></i> iPhone & iPad (iOS)
                         </button>
                     </h3>
                     <div id="collapseIphone" class="accordion-collapse collapse" aria-labelledby="headingIphone" data-bs-parent="#photoPrivacyAccordion">
                         <div class="accordion-body">
                             <ol class="mb-3">
-                                <li>Open the <strong>Photos</strong> app and select an image to inspect.</li>
+                                <li>Open the <strong>Photos</strong> app and select the image.</li>
+                                <li>Tap the <strong>Share</strong> button, then tap <strong>Options</strong> at the top of the screen.</li>
+                                <li>Toggle off <strong>Location</strong> before sending or sharing the image file.</li>
                             </ol>
                             <div class="card bg-light border-0 p-3">
-                                <p class="mb-0"><strong>Permanent Fix:</strong> Go to <strong>Settings > Privacy & Security > Location Services > Camera</strong>, and select <strong>Never</strong> to prevent future photos from recording your location.</p>
+                                <p class="mb-0"><strong>Permanent Fix (Stop saving location for future photos):</strong> Go to <strong>Settings > Privacy & Security > Location Services > Camera</strong>, and select <strong>Never</strong>.</p>
                             </div>
                         </div>
                     </div>
@@ -115,6 +102,7 @@
         <section id="email-masking" class="card p-4 mb-4 shadow-sm bg-white rounded">
             <h2 class="h4 mb-3"><i class="fas fa-mask text-primary me-2"></i> Phase 4: Email Masking & Aliases</h2>
             <p class="text-muted">Protect your main inbox by using masked email services when signing up for web services.</p>
+            <!-- Existing email masking content placeholder -->
         </section>
     </main>
 
