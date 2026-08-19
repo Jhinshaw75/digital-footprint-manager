@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Senior Digital SafeGuard</title>
+    <title>Senior Digital Well-Check</title>
     <link rel="manifest" href="manifest.json">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
@@ -542,7 +542,7 @@
     <div id="agreement-modal">
         <div class="agreement-box">
             <h2>Client Agreement & Terms of Use</h2>
-            <p>Welcome to the <strong>Senior Digital SafeGuard</strong> guide. Before proceeding, please review the service terms and legal agreement below:</p>
+            <p>Welcome to the <strong>Senior Digital Well-Check</strong> guide. Before proceeding, please review the service terms and legal agreement below:</p>
             <div class="disclaimer-box">
                 <p style="margin-top: 0; color: #1e293b;"><strong>Good Faith Educational Tool:</strong> Acting in good faith, DOEA Navigators and this digital tool provide free, unbiased resources and educational information. The information provided should not be interpreted as legal or medical advice. This self-service guide offers resources related to support, education, and available programs to help empower self-care and independent living. The Department of Elder Affairs does not provide direct services or payments and assumes no responsibility for decisions made or actions taken by the user.</p>
                 <p style="margin-bottom: 0; color: #1e293b;"><strong>Liability Waiver & Disclosure:</strong> By proceeding, you agree to hold harmless the Department of Elder Affairs, associated programs and services, all Florida governing agents, as well as the individual Navigators from all liability, damage, loss, claims, or demands of action of any nature whatsoever that may arise out of, or are in any way connected with this informational session or any resources provided.</p>
@@ -582,7 +582,7 @@
 
     <div class="main-content">
 
-        <h1>Senior Digital SafeGuard</h1>
+        <h1>Senior Digital Well-Check</h1>
         <div class="subtitle">Simple, easy-to-follow steps to clean up your personal information online and protect your privacy.</div>
 
         <div class="qr-card">
@@ -947,8 +947,8 @@
         <div class="card">
             <h3>Schedule Your Follow-Up Check</h3>
             <p>Click one of the buttons below to instantly add a reminder event to your calendar for 90 days from now:</p>
-            <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Digital+Privacy+Maintenance+Check&details=Time+to+re-verify+your+public+search+listings+and+ensure+your+personal+information+remains+removed+using+your+Senior+Digital+SafeGuard+guide.&dates=20261115T100000Z/20261115T103000Z" target="_blank" class="calendar-btn">📅 Add to Google Calendar</a>
-            <a href="data:text/calendar;charset=utf8,BEGIN:VCALENDAR%0AVERSION:2.0%0ABEGIN:VEVENT%0ASUMMARY:Digital Privacy Maintenance Check%0ADESCRIPTION:Time to re-verify your public search listings and ensure your personal information remains removed.%0ADTSTART:20261115T100000Z%0ADTEND:20261115T103000Z%0AEND:VEVENT%0AEND:VCALENDAR" download="digital-privacy-reminder.ics" class="calendar-btn" style="background-color: #0ea5e9;">📱 Download Apple/Outlook Reminder</a>
+            <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Digital+Well-Check+Maintenance&details=Time+to+re-verify+your+public+search+listings+and+ensure+your+personal+information+remains+removed+using+your+Senior+Digital+Well-Check+guide.&dates=20261115T100000Z/20261115T103000Z" target="_blank" class="calendar-btn">📅 Add to Google Calendar</a>
+            <a href="data:text/calendar;charset=utf8,BEGIN:VCALENDAR%0AVERSION:2.0%0ABEGIN:VEVENT%0ASUMMARY:Digital Well-Check Maintenance%0ADESCRIPTION:Time to re-verify your public search listings and ensure your personal information remains removed.%0ADTSTART:20261115T100000Z%0ADTEND:20261115T103000Z%0AEND:VEVENT%0AEND:VCALENDAR" download="digital-well-check-reminder.ics" class="calendar-btn" style="background-color: #0ea5e9;">📱 Download Apple/Outlook Reminder</a>
         </div>
 
     </div>
@@ -957,7 +957,7 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            if (localStorage.getItem("senior_guard_agreed") === "true") {
+            if (localStorage.getItem("senior_wellcheck_agreed") === "true") {
                 document.getElementById("agreement-modal").style.display = "none";
             }
 
@@ -983,7 +983,7 @@
         });
 
         function acceptAgreement() {
-            localStorage.setItem("senior_guard_agreed", "true");
+            localStorage.setItem("senior_wellcheck_agreed", "true");
             document.getElementById("agreement-modal").style.display = "none";
         }
 
