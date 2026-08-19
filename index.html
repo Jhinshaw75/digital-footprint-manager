@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>"Senior Digital SafeGuard"</title>
-    <!-- Link to PWA App Manifest -->
     <link rel="manifest" href="manifest.json">
-    <!-- Include qrcode.js library for on-page QR code generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         :root {
@@ -34,7 +32,6 @@
             display: flex;
             flex-direction: row;
         }
-        /* Sticky Sidebar Navigation (Desktop) */
         nav {
             width: 280px;
             background: #ffffff;
@@ -104,7 +101,6 @@
             background-color: #eff6ff;
             transform: translateX(3px);
         }
-        /* Main Content Area */
         .main-content {
             margin-left: 280px;
             padding: 50px 70px;
@@ -124,7 +120,6 @@
             margin-bottom: 30px;
             font-size: 1.15rem;
         }
-        /* Purpose / Protection Banner */
         .purpose-banner {
             background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
             border: 1px solid #cbd5e1;
@@ -154,7 +149,6 @@
         .purpose-banner ul li {
             margin-bottom: 8px;
         }
-        /* QR Code Card Styling */
         .qr-card {
             background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%);
             border: 1px solid #cbd5e1;
@@ -184,7 +178,6 @@
             color: var(--text-muted);
             font-size: 0.95rem;
         }
-        /* Progress Bar Styles */
         .progress-container {
             background: #e2e8f0;
             border-radius: 10px;
@@ -244,7 +237,6 @@
             margin-top: 10px; 
             color: var(--text-muted); 
         }
-        /* Scam Risk Warning Callout */
         .risk-note {
             background-color: #fef2f2;
             border-left: 4px solid var(--danger);
@@ -258,7 +250,6 @@
             border-right: 1px solid #fee2e2;
             border-bottom: 1px solid #fee2e2;
         }
-        /* Mobile Troubleshooting Callout */
         .mobile-tip {
             background-color: #eff6ff;
             border-left: 4px solid var(--primary-light);
@@ -272,7 +263,6 @@
             border-right: 1px solid #dbeafe;
             border-bottom: 1px solid #dbeafe;
         }
-        /* Checkbox Styling */
         .task-checkbox {
             transform: scale(1.25);
             margin-right: 10px;
@@ -377,8 +367,6 @@
             font-weight: 700;
             color: var(--success);
         }
-
-        /* Calendar Button Styling */
         .calendar-btn {
             display: inline-block;
             background-color: var(--primary);
@@ -397,8 +385,6 @@
             color: white;
             text-decoration: none;
         }
-
-        /* Floating Back to Top Button */
         #back-to-top {
             position: fixed;
             bottom: 25px;
@@ -419,8 +405,6 @@
         #back-to-top:hover {
             background: var(--primary-light);
         }
-
-        /* Agreement Modal Styles */
         #agreement-modal {
             position: fixed;
             top: 0;
@@ -488,8 +472,6 @@
         .agreement-btn:hover {
             background-color: #059669;
         }
-
-        /* --- MOBILE RESPONSIVE STYLES --- */
         @media screen and (max-width: 900px) {
             body {
                 flex-direction: column;
@@ -530,8 +512,6 @@
                 text-align: center;
             }
         }
-
-        /* --- PRINT / PDF FRIENDLY STYLES --- */
         @media print {
             nav, #back-to-top, .progress-container, .progress-text, .qr-card, #agreement-modal {
                 display: none !important;
@@ -559,20 +539,18 @@
 </head>
 <body>
 
-    <!-- Mandatory Legal Agreement Modal -->
     <div id="agreement-modal">
         <div class="agreement-box">
             <h2>Client Agreement & Terms of Use</h2>
             <p>Welcome to the <strong>Senior Digital SafeGuard</strong> guide. Before proceeding, please review the service terms and legal agreement below:</p>
             <div class="disclaimer-box">
-                <p style="margin-top: 0; color: #1e293b;"><strong>Good Faith Educational Tool:</strong> Acting in good faith, this digital tool provides general educational information and public awareness guidance. It should not be interpreted as official legal, financial, or professional advice[cite: 3]. Operation Senior Shield and the Florida Department of Elder Affairs do not sell, recommend, or endorse commercial tracking services and assume no responsibility for actions taken by the user[cite: 3].</p>
+                <p style="margin-top: 0; color: #1e293b;"><strong>Good Faith Educational Tool:</strong> Acting in good faith, this digital tool provides general educational information and public awareness guidance. It should not be interpreted as official legal, financial, or professional advice. Operation Senior Shield and the Florida Department of Elder Affairs do not sell, recommend, or endorse commercial tracking services and assume no responsibility for actions taken by the user.</p>
                 <p style="margin-bottom: 0; color: #1e293b;"><strong>Liability Waiver:</strong> By proceeding, you acknowledge that you are utilizing this self-service guide independently and hold harmless the Florida Department of Elder Affairs, Operation Senior Shield, and its agents from any liability, damage, loss, claims, or demands arising out of services provided within program guidelines.</p>
             </div>
             <button class="agreement-btn" onclick="acceptAgreement()">Yes, I Agree & Understand</button>
         </div>
     </div>
 
-    <!-- Sticky Sidebar Navigation Menu -->
     <nav>
         <div class="sidebar-branding">
             <a href="https://elderaffairs.org" target="_blank">
@@ -601,46 +579,41 @@
         </div>
     </nav>
 
-    <!-- Main Content Flow -->
     <div class="main-content">
 
         <h1>"Senior Digital SafeGuard"</h1>
-        <div class="subtitle">Simple, easy-to-follow steps to clean up your personal information online and protect your privacy[cite: 1].</div>
+        <div class="subtitle">Simple, easy-to-follow steps to clean up your personal information online and protect your privacy.</div>
 
-        <!-- QR Code Quick-Access Card -->
         <div class="qr-card">
             <div class="qr-code-container" id="qrcode"></div>
             <div class="qr-info">
                 <h3>Scan to Open on Mobile</h3>
-                <p>Point your smartphone's camera at this QR code to instantly load this guide right on your mobile device for testing or sharing[cite: 1]!</p>
+                <p>Point your smartphone's camera at this QR code to instantly load this guide right on your mobile device for testing or sharing!</p>
             </div>
         </div>
 
-        <!-- Mobile App Installation Instructions Card -->
         <div class="card" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-color: #bbf7d0; margin-bottom: 40px;">
             <h3 style="color: #166534; margin-top: 0;">📱 How to Save This Guide to Your Phone's Home Screen</h3>
-            <p style="margin-bottom: 10px; color: #166534;">You can turn this guide into an app icon on your phone so you can open it anytime instantly[cite: 1]:</p>
+            <p style="margin-bottom: 10px; color: #166534;">You can turn this guide into an app icon on your phone so you can open it anytime instantly:</p>
             <ul style="margin: 0; padding-left: 20px; color: #166534;">
-                <li><strong>iPhone / iPad (Safari):</strong> Tap the <strong>Share</strong> button (square with an arrow pointing up), scroll down, and tap <strong>"Add to Home Screen"</strong>[cite: 1].</li>
-                <li><strong>Android (Chrome):</strong> Tap the <strong>three vertical dots</strong> in the top-right corner, and tap <strong>"Add to Home screen"</strong> or <strong>"Install app"</strong>[cite: 1].</li>
+                <li><strong>iPhone / iPad (Safari):</strong> Tap the <strong>Share</strong> button (square with an arrow pointing up), scroll down, and tap <strong>"Add to Home Screen"</strong>.</li>
+                <li><strong>Android (Chrome):</strong> Tap the <strong>three vertical dots</strong> in the top-right corner, and tap <strong>"Add to Home screen"</strong> or <strong>"Install app"</strong>.</li>
             </ul>
         </div>
 
-        <!-- Purpose & Protection Banner -->
         <div class="purpose-banner">
             <h3>About This Guide & Maintenance Schedule</h3>
-            <p><strong>What is the purpose of this guide?</strong> This tool is designed to help you regain control of your personal privacy[cite: 1]. Over time, personal details like your home address, phone number, and email accumulate across public directories and corporate data breaches without your knowledge[cite: 1].</p>
-            <p><strong>How does it protect you?</strong> By following these simple steps, you will[cite: 1]:</p>
+            <p><strong>What is the purpose of this guide?</strong> This tool is designed to help you regain control of your personal privacy. Over time, personal details like your home address, phone number, and email accumulate across public directories and corporate data breaches without your knowledge.</p>
+            <p><strong>How does it protect you?</strong> By following these simple steps, you will:</p>
             <ul>
-                <li><strong>Block Scammers & Fraudsters:</strong> Remove your phone numbers and family histories from public search sites so scammers cannot use them to impersonate government agents or run "grandparent scams"[cite: 1].</li>
-                <li><strong>Secure Your Accounts:</strong> Lock down your passwords with an encrypted manager and stop hidden web trackers from monitoring your browsing habits[cite: 1].</li>
-                <li><strong>Hide Your Real Inbox:</strong> Use free email masking so promotional sign-ups and corporate data leaks never flood your main email account[cite: 1].</li>
-                <li><strong>Scrub Hidden Location Data:</strong> Remove secret GPS coordinates and disable future geotagging on family photos before you text or email them online[cite: 1].</li>
+                <li><strong>Block Scammers & Fraudsters:</strong> Remove your phone numbers and family histories from public search sites so scammers cannot use them to impersonate government agents or run "grandparent scams."</li>
+                <li><strong>Secure Your Accounts:</strong> Lock down your passwords with an encrypted manager and stop hidden web trackers from monitoring your browsing habits.</li>
+                <li><strong>Hide Your Real Inbox:</strong> Use free email masking so promotional sign-ups and corporate data leaks never flood your main email account.</li>
+                <li><strong>Scrub Hidden Location Data:</strong> Remove secret GPS coordinates and disable future geotagging on family photos before you text or email them online.</li>
             </ul>
-            <p style="margin-top: 15px;"><strong>Recommended Maintenance Schedule:</strong> Phases 1 and 2 require periodic 90-day maintenance checks because public records and data brokers continuously re-scrape information[cite: 1]. Phases 3, 4, and 5 are one-time permanent setups that do not need to be repeated[cite: 1].</p>
+            <p style="margin-top: 15px;"><strong>Recommended Maintenance Schedule:</strong> Phases 1 and 2 require periodic 90-day maintenance checks because public records and data brokers continuously re-scrape information. Phases 3, 4, and 5 are one-time permanent setups that do not need to be repeated.</p>
         </div>
 
-        <!-- Progress Tracker Bar -->
         <div class="progress-text" id="progress-label">Progress: 0 of 5 tasks completed (0%)</div>
         <div class="progress-container">
             <div class="progress-bar" id="progress-bar-fill"></div>
@@ -649,32 +622,32 @@
         <h2 id="phase1">Phase 1: Check Where You Show Up</h2>
         <span class="maintenance-tag">🔄 90-Day Maintenance Cycle</span>
         <div class="info-box" style="margin-top: 15px;">
-            <strong>What is Have I Been Pwned?</strong> A trusted, secure public safety directory that tracks major corporate data breaches[cite: 1]. Checking your email here lets you know immediately if an online store, doctor's office, or website you use was hacked so you can change your password before a scammer tries to log in[cite: 1].
+            <strong>What is Have I Been Pwned?</strong> A trusted, secure public safety directory that tracks major corporate data breaches. Checking your email here lets you know immediately if an online store, doctor's office, or website you use was hacked so you can change your password before a scammer tries to log in.
         </div>
         <div class="card">
             <span class="badge">Safety Check</span>
             <ol>
                 <li>
                     <strong>Check Your Email Address</strong>
-                    <div class="sub-steps">Go to <a href="https://haveibeenpwned.com" target="_blank">Have I Been Pwned</a>, type in your email address, and press enter to see if your information appeared in any past company data leaks[cite: 1].</div>
+                    <div class="sub-steps">Go to <a href="https://haveibeenpwned.com" target="_blank">Have I Been Pwned</a>, type in your email address, and press enter to see if your information appeared in any past company data leaks.</div>
                 </li>
                 <li>
                     <strong>See What Was Exposed</strong>
-                    <div class="sub-steps">Look to see if things like old passwords, phone numbers, or home addresses showed up in those leaks[cite: 1].</div>
+                    <div class="sub-steps">Look to see if things like old passwords, phone numbers, or home addresses showed up in those leaks.</div>
                 </li>
                 <li>
                     <strong>Update Your Passwords</strong>
-                    <div class="sub-steps">If an account was affected, change your password immediately[cite: 1]. Always use a different password for every website so that if one place gets hacked, your other accounts stay safe[cite: 1].</div>
+                    <div class="sub-steps">If an account was affected, change your password immediately. Always use a different password for every website so that if one place gets hacked, your other accounts stay safe.</div>
                 </li>
                 <li>
                     <strong>Hide Your Email on the Public List</strong>
-                    <div class="sub-steps">Go to the <a href="https://haveibeenpwned.com/OptOut" target="_blank">HIBP Opt-Out Page</a>, enter your email, check your inbox for a confirmation message, click the link inside, and choose to hide your email from public searches[cite: 1].</div>
+                    <div class="sub-steps">Go to the <a href="https://haveibeenpwned.com/OptOut" target="_blank">HIBP Opt-Out Page</a>, enter your email, check your inbox for a confirmation message, click the link inside, and choose to hide your email from public searches.</div>
                 </li>
             </ol>
             <details class="section-dropdown">
                 <summary>Review Phase 1 Instructions & Mark Complete</summary>
                 <div class="dropdown-content">
-                    <p>Review the steps above and ensure you have checked your email and updated any compromised passwords[cite: 1].</p>
+                    <p>Review the steps above and ensure you have checked your email and updated any compromised passwords.</p>
                     <div class="checkbox-container">
                         <label><input type="checkbox" class="task-checkbox" data-id="task-1" onchange="saveAndProgress()"> Mark Phase 1 as Complete</label>
                     </div>
@@ -685,29 +658,29 @@
         <h2 id="brokers">Phase 2: Remove Yourself From People-Search Websites</h2>
         <span class="maintenance-tag">🔄 90-Day Maintenance Cycle</span>
         <div class="warning-box" style="margin-top: 15px;">
-            <strong>Important Note:</strong> These websites often try to scare you into paying for a monthly subscription service (like Onerep)[cite: 1]. <strong>Ignore and close those offers[cite: 1]!</strong> Removing your information manually using these free guides costs $0[cite: 1].
+            <strong>Important Note:</strong> These websites often try to scare you into paying for a monthly subscription service (like Onerep). <strong>Ignore and close those offers!</strong> Removing your information manually using these free guides costs $0.
         </div>
         <div class="mobile-tip">
-            <strong>📱 Mobile Device Tip:</strong> If an external opt-out page on your phone freezes or blocks you from tapping a security check (captcha), open this guide on a desktop/laptop computer, or use the direct email fallback listed below[cite: 1].
+            <strong>📱 Mobile Device Tip:</strong> If an external opt-out page on your phone freezes or blocks you from tapping a security check (captcha), open this guide on a desktop/laptop computer, or use the direct email fallback listed below.
         </div>
 
         <div class="card" id="truepeople">
             <h3>1. TruePeopleSearch</h3>
             <div class="risk-note">
-                <strong>What it is & Scam Risk:</strong> A public directory publishing names, ages, phone numbers, and home histories[cite: 1]. Scammers search this site to gather personal details to impersonate government agents or utility companies over the phone[cite: 1].
+                <strong>What it is & Scam Risk:</strong> A public directory publishing names, ages, phone numbers, and home histories. Scammers search this site to gather personal details to impersonate government agents or utility companies over the phone.
             </div>
             <details class="section-dropdown">
                 <summary>View Step-by-Step Removal Guide</summary>
                 <div class="dropdown-content">
                     <ol type="a">
-                        <li>Go to the <a href="https://www.truepeoplesearch.com/removal" target="_blank">TruePeopleSearch Opt-Out Portal</a>[cite: 1].</li>
-                        <li>Type in your email address, check the box proving you are human, and submit the form[cite: 1]. <em>(Note: If the mobile captcha box is unclickable, open the link on a computer or laptop[cite: 1]).</em></li>
-                        <li>Open your email inbox, look for the verification message, and click the confirmation link inside[cite: 1].</li>
-                        <li>Fill out your name and address details to match the specific public record you want removed[cite: 1].</li>
-                        <li>Submit the final form[cite: 1]. Your listing will automatically disappear within about 3 days[cite: 1].</li>
+                        <li>Go to the <a href="https://www.truepeoplesearch.com/removal" target="_blank">TruePeopleSearch Opt-Out Portal</a>.</li>
+                        <li>Type in your email address, check the box proving you are human, and submit the form. <em>(Note: If the mobile captcha box is unclickable, open the link on a computer or laptop).</em></li>
+                        <li>Open your email inbox, look for the verification message, and click the confirmation link inside.</li>
+                        <li>Fill out your name and address details to match the specific public record you want removed.</li>
+                        <li>Submit the final form. Your listing will automatically disappear within about 3 days.</li>
                     </ol>
                     <div class="sub-steps" style="margin-top: 15px; padding-top: 10px; border-top: 1px solid var(--border-color);">
-                        <strong>Alternative Support Contact:</strong> If the web form fails on your mobile device, you can email TruePeopleSearch directly at <a href="mailto:support@truepeoplesearch.com">support@truepeoplesearch.com</a> with your full name, city/state, profile URL, and phone number to request manual removal[cite: 1].
+                        <strong>Alternative Support Contact:</strong> If the web form fails on your mobile device, you can email TruePeopleSearch directly at <a href="mailto:support@truepeoplesearch.com">support@truepeoplesearch.com</a> with your full name, city/state, profile URL, and phone number to request manual removal.
                     </div>
                     <div class="checkbox-container">
                         <label><input type="checkbox" class="task-checkbox" data-id="task-2" onchange="saveAndProgress()"> Mark TruePeopleSearch Complete</label>
@@ -719,23 +692,23 @@
         <div class="card" id="fastpeople">
             <h3>2. FastPeopleSearch</h3>
             <div class="risk-note">
-                <strong>What it is & Scam Risk:</strong> A directory compiling deep background records and contact data[cite: 1]. Scammers use it to look up relatives' names so they can run "grandparent scams" pretending a family member is in an emergency[cite: 1].
+                <strong>What it is & Scam Risk:</strong> A directory compiling deep background records and contact data. Scammers use it to look up relatives' names so they can run "grandparent scams" pretending a family member is in an emergency.
             </div>
             <div class="mobile-tip">
-                <strong>📱 Mobile Device Tip:</strong> If an external opt-out page on your phone freezes or blocks you from tapping a security check, open this guide on a desktop/laptop computer, or use the direct email fallback listed below[cite: 1].
+                <strong>📱 Mobile Device Tip:</strong> If an external opt-out page on your phone freezes or blocks you from tapping a security check, open this guide on a desktop/laptop computer, or use the direct email fallback listed below.
             </div>
             <details class="section-dropdown">
                 <summary>View Step-by-Step Removal Guide</summary>
                 <div class="dropdown-content">
                     <ol type="a">
-                        <li>Go to the <a href="https://www.fastpeoplesearch.com/optout" target="_blank">FastPeopleSearch Opt-Out Portal</a>[cite: 1].</li>
-                        <li>Enter your name and email address, then submit the starting form[cite: 1]. <em>(Note: If the mobile verification box is unclickable, open the link on a computer or laptop[cite: 1]).</em></li>
-                        <li>Open your email inbox for the verification message and click the link inside[cite: 1].</li>
-                        <li>Fill out the quick identity form matching your personal details and address[cite: 1].</li>
-                        <li>Click submit to lock in your removal request[cite: 1].</li>
+                        <li>Go to the <a href="https://www.fastpeoplesearch.com/optout" target="_blank">FastPeopleSearch Opt-Out Portal</a>.</li>
+                        <li>Enter your name and email address, then submit the starting form. <em>(Note: If the mobile verification box is unclickable, open the link on a computer or laptop).</em></li>
+                        <li>Open your email inbox for the verification message and click the link inside.</li>
+                        <li>Fill out the quick identity form matching your personal details and address.</li>
+                        <li>Click submit to lock in your removal request.</li>
                     </ol>
                     <div class="sub-steps" style="margin-top: 15px; padding-top: 10px; border-top: 1px solid var(--border-color);">
-                        <strong>Alternative Support Contact:</strong> If the web form fails on your mobile device, you can email FastPeopleSearch support directly at <a href="mailto:support@fastpeoplesearch.com">support@fastpeoplesearch.com</a> to request manual removal[cite: 1].
+                        <strong>Alternative Support Contact:</strong> If the web form fails on your mobile device, you can email FastPeopleSearch support directly at <a href="mailto:support@fastpeoplesearch.com">support@fastpeoplesearch.com</a> to request manual removal.
                     </div>
                     <div class="checkbox-container">
                         <label><input type="checkbox" class="task-checkbox" data-id="task-3" onchange="saveAndProgress()"> Mark FastPeopleSearch Complete</label>
@@ -747,19 +720,19 @@
         <div class="card" id="whitepages">
             <h3>3. Whitepages</h3>
             <div class="risk-note">
-                <strong>What it is & Scam Risk:</strong> A long-standing phone and address lookup directory[cite: 1]. Fraudsters use it to cross-reference addresses and landlines to send targeted physical mail scams or fraudulent sweepstakes offers[cite: 1].
+                <strong>What it is & Scam Risk:</strong> A long-standing phone and address lookup directory. Fraudsters use it to cross-reference addresses and landlines to send targeted physical mail scams or fraudulent sweepstakes offers.
             </div>
             <div class="mobile-tip">
-                <strong>📱 Mobile Device Tip:</strong> If verification forms freeze or fail to register taps on your phone, open this guide on a desktop/laptop computer for smoother navigation[cite: 1].
+                <strong>📱 Mobile Device Tip:</strong> If verification forms freeze or fail to register taps on your phone, open this guide on a desktop/laptop computer for smoother navigation.
             </div>
             <details class="section-dropdown">
                 <summary>View Step-by-Step Removal Guide</summary>
                 <div class="dropdown-content">
                     <ol type="a">
-                        <li>Search for your name on Whitepages.com, accept welcome pop-ups, and open up your specific profile's <strong>"View Details"</strong> page[cite: 1].</li>
-                        <li>Highlight and copy the website link (URL) from the very top bar of your internet browser[cite: 1].</li>
-                        <li>Go to the <a href="https://www.whitepages.com/suppression-requests" target="_blank">Whitepages Suppression Requests Page</a> and paste your profile link into the box[cite: 1]. <em>(Note: If fields do not register properly on mobile, complete this step on a computer[cite: 1]).</em></li>
-                        <li>Confirm your details and follow their instructions (which may include a quick automated phone call) to finish taking down the listing[cite: 1].</li>
+                        <li>Search for your name on Whitepages.com, accept welcome pop-ups, and open up your specific profile's <strong>"View Details"</strong> page.</li>
+                        <li>Highlight and copy the website link (URL) from the very top bar of your internet browser.</li>
+                        <li>Go to the <a href="https://www.whitepages.com/suppression-requests" target="_blank">Whitepages Suppression Requests Page</a> and paste your profile link into the box. <em>(Note: If fields do not register properly on mobile, complete this step on a computer).</em></li>
+                        <li>Confirm your details and follow their instructions (which may include a quick automated phone call) to finish taking down the listing.</li>
                     </ol>
                     <div class="checkbox-container">
                         <label><input type="checkbox" class="task-checkbox" data-id="task-4" onchange="saveAndProgress()"> Mark Whitepages Complete</label>
@@ -771,19 +744,19 @@
         <div class="card" id="spokeo">
             <h3>4. Spokeo</h3>
             <div class="risk-note">
-                <strong>What it is & Scam Risk:</strong> A data aggregator that links public records, social media profiles, and wealth estimates[cite: 1]. Scammers use it to target wealthier profiles or seniors living alone for financial fraud[cite: 1].
+                <strong>What it is & Scam Risk:</strong> A data aggregator that links public records, social media profiles, and wealth estimates. Scammers use it to target wealthier profiles or seniors living alone for financial fraud.
             </div>
             <div class="mobile-tip">
-                <strong>📱 Mobile Device Tip:</strong> Spokeo's picture puzzle (CAPTCHA) can be difficult to tap accurately on mobile screens[cite: 1]. If it fails to submit, open this link on a computer or laptop[cite: 1].
+                <strong>📱 Mobile Device Tip:</strong> Spokeo's picture puzzle (CAPTCHA) can be difficult to tap accurately on mobile screens. If it fails to submit, open this link on a computer or laptop.
             </div>
             <details class="section-dropdown">
                 <summary>View Step-by-Step Removal Guide</summary>
                 <div class="dropdown-content">
                     <ol type="a">
-                        <li>Navigate to the official <a href="https://www.spokeo.com/optout" target="_blank">Spokeo Opt-Out Page</a>[cite: 1].</li>
-                        <li>Search for your name on Spokeo in a separate tab, click on your profile card, and copy the link from your browser's top address bar[cite: 1].</li>
-                        <li>Go back to the Spokeo Opt-Out page, paste your link, type your email, complete the picture puzzle (CAPTCHA), and click <strong>Opt Out</strong>[cite: 1]. <em>(Note: Complete on a PC if the puzzle refuses to load[cite: 1]).</em></li>
-                        <li>Open your email inbox, find the confirmation message from Spokeo, and click the link inside to complete your removal[cite: 1].</li>
+                        <li>Navigate to the official <a href="https://www.spokeo.com/optout" target="_blank">Spokeo Opt-Out Page</a>.</li>
+                        <li>Search for your name on Spokeo in a separate tab, click on your profile card, and copy the link from your browser's top address bar.</li>
+                        <li>Go back to the Spokeo Opt-Out page, paste your link, type your email, complete the picture puzzle (CAPTCHA), and click <strong>Opt Out</strong>. <em>(Note: Complete on a PC if the puzzle refuses to load).</em></li>
+                        <li>Open your email inbox, find the confirmation message from Spokeo, and click the link inside to complete your removal.</li>
                     </ol>
                     <div class="checkbox-container">
                         <label><input type="checkbox" class="task-checkbox" data-id="task-5" onchange="saveAndProgress()"> Mark Spokeo Complete</label>
@@ -795,21 +768,21 @@
         <h2 id="phase3">Phase 3: Secure Your Web Browser & Passwords</h2>
         <span class="setup-tag">🛠️ One-Time Permanent Setup</span>
         <div class="info-box" style="margin-top: 15px;">
-            <strong>Why do this?</strong> Hackers and advertisers use hidden tracking scripts and weak passwords to access personal accounts[cite: 1]. These free tools help block those trackers and lock your accounts behind a secure vault so you don't have to memorize dozens of passwords[cite: 1].
+            <strong>Why do this?</strong> Hackers and advertisers use hidden tracking scripts and weak passwords to access personal accounts. These free tools help block those trackers and lock your accounts behind a secure vault so you don't have to memorize dozens of passwords.
         </div>
         
         <div class="card">
             <h3>1. uBlock Origin <span style="font-weight: normal; color: var(--text-muted); font-size: 0.95rem;">(Ad Blocker)</span></h3>
             <div class="risk-note">
-                <strong>What it is & Scam Risk:</strong> A browser extension that blocks malicious pop-ups and tracking scripts[cite: 1]. Without it, fraudulent banner ads can trick users into clicking fake tech-support warning windows[cite: 1].
+                <strong>What it is & Scam Risk:</strong> A browser extension that blocks malicious pop-ups and tracking scripts. Without it, fraudulent banner ads can trick users into clicking fake tech-support warning windows.
             </div>
             <details class="section-dropdown">
                 <summary>View Step-by-Step Installation Guide</summary>
                 <div class="dropdown-content">
                     <ol type="a">
-                        <li>Go to the official <a href="https://ublockorigin.com/" target="_blank">uBlock Origin Website</a>[cite: 1].</li>
-                        <li>Click the red <strong>"Get uBlock Origin"</strong> button to add this 100% free helper tool to your web browser[cite: 1].</li>
-                        <li>Confirm the installation prompt when your browser asks if you want to add the extension[cite: 1]. It will now quietly block invisible trackers and annoying pop-up ads before they load[cite: 1].</li>
+                        <li>Go to the official <a href="https://ublockorigin.com/" target="_blank">uBlock Origin Website</a>.</li>
+                        <li>Click the red <strong>"Get uBlock Origin"</strong> button to add this 100% free helper tool to your web browser.</li>
+                        <li>Confirm the installation prompt when your browser asks if you want to add the extension. It will now quietly block invisible trackers and annoying pop-up ads before they load.</li>
                     </ol>
                     <div class="checkbox-container">
                         <label><input type="checkbox" class="task-checkbox" data-id="task-6" onchange="saveAndProgress()"> Mark uBlock Origin Complete</label>
@@ -821,15 +794,15 @@
         <div class="card">
             <h3>2. Bitwarden <span style="font-weight: normal; color: var(--text-muted); font-size: 0.95rem;">(Password Vault)</span></h3>
             <div class="risk-note">
-                <strong>What it is & Scam Risk:</strong> A secure password vault that keeps login credentials encrypted[cite: 1]. Leaving passwords written on paper near a computer allows anyone physical access to compromise banking and email accounts[cite: 1].
+                <strong>What it is & Scam Risk:</strong> A secure password vault that keeps login credentials encrypted. Leaving passwords written on paper near a computer allows anyone physical access to compromise banking and email accounts.
             </div>
             <details class="section-dropdown">
                 <summary>View Step-by-Step Setup Guide</summary>
                 <div class="dropdown-content">
                     <ol type="a">
-                        <li>Go to the official <a href="https://bitwarden.com/" target="_blank">Bitwarden Website</a> to set up a free password manager account[cite: 1].</li>
-                        <li>Create a strong, secure <strong>"Master Password"</strong> that only you know[cite: 1]. This is the only password you will ever need to memorize[cite: 1].</li>
-                        <li>Install the browser extension or app so it can safely store all your complex passwords and fill them out automatically[cite: 1].</li>
+                        <li>Go to the official <a href="https://bitwarden.com/" target="_blank">Bitwarden Website</a> to set up a free password manager account.</li>
+                        <li>Create a strong, secure <strong>"Master Password"</strong> that only you know. This is the only password you will ever need to memorize.</li>
+                        <li>Install the browser extension or app so it can safely store all your complex passwords and fill them out automatically.</li>
                     </ol>
                     <div class="checkbox-container">
                         <label><input type="checkbox" class="task-checkbox" data-id="task-7" onchange="saveAndProgress()"> Mark Bitwarden Complete</label>
@@ -841,13 +814,13 @@
         <div class="card">
             <h3>3. Two-Step Login <span style="font-weight: normal; color: var(--text-muted); font-size: 0.95rem;">(Extra Security Lock)</span></h3>
             <div class="risk-note">
-                <strong>What it is & Scam Risk:</strong> An extra security layer requiring a phone code plus your password[cite: 1]. If a scammer steals your password via phishing, 2FA blocks them from breaking into your account without your phone[cite: 1].
+                <strong>What it is & Scam Risk:</strong> An extra security layer requiring a phone code plus your password. If a scammer steals your password via phishing, 2FA blocks them from breaking into your account without your phone.
             </div>
             <details class="section-dropdown">
                 <summary>View Setup Instructions</summary>
                 <div class="dropdown-content">
-                    <p>For important accounts like email and banking, go into your account settings and turn on "Two-Step Verification"[cite: 1]. This adds a deadbolt lock by texting a quick code to your phone when you log in[cite: 1].</p>
-                    <p>If you use a Google account, manage this via the <a href="https://myaccount.google.com/signinoptions/two-step-verification" target="_blank">Google 2-Step Verification Guide</a>[cite: 1].</p>
+                    <p>For important accounts like email and banking, go into your account settings and turn on "Two-Step Verification". This adds a deadbolt lock by texting a quick code to your phone when you log in.</p>
+                    <p>If you use a Google account, manage this via the <a href="https://myaccount.google.com/signinoptions/two-step-verification" target="_blank">Google 2-Step Verification Guide</a>.</p>
                     <div class="checkbox-container">
                         <label><input type="checkbox" class="task-checkbox" data-id="task-8" onchange="saveAndProgress()"> Mark 2FA Complete</label>
                     </div>
@@ -858,7 +831,7 @@
         <h2 id="phase4">Phase 4: Mask Your Email Address</h2>
         <span class="setup-tag">🛠️ One-Time Permanent Setup</span>
         <div class="info-box" style="margin-top: 15px;">
-            <strong>Why do this?</strong> Whenever you sign up for store discounts, newsletters, or online accounts, giving out your real email address opens you up to endless spam and risk if that company gets hacked[cite: 1]. Email "masking" creates a temporary, private forwarding address so your real inbox stays completely hidden and clean[cite: 1].
+            <strong>Why do this?</strong> Whenever you sign up for store discounts, newsletters, or online accounts, giving out your real email address opens you up to endless spam and risk if that company gets hacked. Email "masking" creates a temporary, private forwarding address so your real inbox stays completely hidden and clean.
         </div>
         <div class="card">
             <h3>DuckDuckGo Email Protection <span style="font-weight: normal; color: var(--text-muted); font-size: 0.95rem;">(Private Email Forwarder)</span></h3>
@@ -866,9 +839,9 @@
                 <summary>View Step-by-Step Setup Guide</summary>
                 <div class="dropdown-content">
                     <ol type="a">
-                        <li>Visit the official <a href="https://duckduckgo.com/email/" target="_blank">DuckDuckGo Email Protection Page</a>[cite: 1]. This service is 100% free with no hidden fees or subscriptions[cite: 1].</li>
-                        <li>Click to get started, choose a personal username (which creates your core <code>@duck.com</code> address), and enter your real email address so it knows where to forward your messages[cite: 1].</li>
-                        <li>Whenever a website asks for your email address and you want to keep your real one private, use your custom <code>@duck.com</code> address instead[cite: 1]. Important messages will automatically forward safely right to your regular inbox[cite: 1]!</li>
+                        <li>Visit the official <a href="https://duckduckgo.com/email/" target="_blank">DuckDuckGo Email Protection Page</a>. This service is 100% free with no hidden fees or subscriptions.</li>
+                        <li>Click to get started, choose a personal username (which creates your core <code>@duck.com</code> address), and enter your real email address so it knows where to forward your messages.</li>
+                        <li>Whenever a website asks for your email address and you want to keep your real one private, use your custom <code>@duck.com</code> address instead. Important messages will automatically forward safely right to your regular inbox!</li>
                     </ol>
                     <div class="checkbox-container">
                         <label><input type="checkbox" class="task-checkbox" data-id="task-9" onchange="saveAndProgress()"> Mark Email Masking Complete</label>
@@ -880,53 +853,49 @@
         <h2 id="phase5">Phase 5: Clean Hidden Location Data From Photos</h2>
         <span class="setup-tag">🛠️ One-Time Permanent Setup</span>
         <div class="info-box" style="margin-top: 15px;">
-            <strong>Why do this?</strong> When you take a picture with a smartphone, the file often saves invisible hidden details (called EXIF data) like the exact GPS coordinates where the photo was snapped, the date, and what device you used[cite: 1]. Cleaning this data prevents strangers online from tracking your physical location or habits from shared pictures[cite: 1].
+            <strong>Why do this?</strong> When you take a picture with a smartphone, the file often saves invisible hidden details (called EXIF data) like the exact GPS coordinates where the photo was snapped, the date, and what device you used. Cleaning this data prevents strangers online from tracking your physical location or habits from shared pictures.
         </div>
         <div class="card">
             <h3>Photo Metadata Scrubbing & Future Geotagging Control <span style="font-weight: normal; color: var(--text-muted); font-size: 0.95rem;">(Location Cleaner)</span></h3>
             <details class="section-dropdown">
                 <summary>View Device Instructions</summary>
                 <div class="dropdown-content">
-                    <p>Choose your device below to remove existing location metadata and configure settings to prevent future geotagging[cite: 1]:</p>
+                    <p>Choose your device below to remove existing location metadata and configure settings to prevent future geotagging:</p>
                     
-                    <!-- Windows PC Dropdown -->
                     <details class="section-dropdown">
                         <summary>📁 Windows PC (Windows 10 / 11)</summary>
                         <div class="dropdown-content">
                             <ol>
-                                <li>Open your computer's folder and find the photo or document you want to share online[cite: 1].</li>
-                                <li>Right-click on the file icon with your mouse and click on <strong>Properties</strong> at the very bottom of the menu[cite: 1].</li>
-                                <li>Click on the <strong>Details</strong> tab at the top of that window, click the blue link at the bottom that says <strong>"Remove Properties and Personal Information"</strong>, check the box to remove all items from the file, and click OK[cite: 1].</li>
+                                <li>Open your computer's folder and find the photo or document you want to share online.</li>
+                                <li>Right-click on the file icon with your mouse and click on <strong>Properties</strong> at the very bottom of the menu.</li>
+                                <li>Click on the <strong>Details</strong> tab at the top of that window, click the blue link at the bottom that says <strong>"Remove Properties and Personal Information"</strong>, check the box to remove all items from the file, and click OK.</li>
                             </ol>
                         </div>
                     </details>
 
-                    <!-- Apple Mac Dropdown -->
                     <details class="section-dropdown">
                         <summary>🍏 Apple Mac (macOS)</summary>
                         <div class="dropdown-content">
-                            <p>Apple computers generally do not embed visible GPS data in standard shared images the same way Windows does, but you can always open photos in the built-in <strong>Preview</strong> app, click <strong>Tools > Adjust Color</strong> or export as a fresh copy to strip hidden metadata[cite: 1].</p>
+                            <p>Apple computers generally do not embed visible GPS data in standard shared images the same way Windows does, but you can always open photos in the built-in <strong>Preview</strong> app, click <strong>Tools > Adjust Color</strong> or export as a fresh copy to strip hidden metadata.</p>
                         </div>
                     </details>
 
-                    <!-- iPhone / iPad Dropdown -->
                     <details class="section-dropdown">
                         <summary>📱 iPhone / iPad (iOS)</summary>
                         <div class="dropdown-content">
                             <ol>
-                                <li><strong>To strip location from an existing photo before sharing:</strong> Open your <strong>Photos</strong> app, tap the picture, tap the <strong>Share</strong> button, tap <strong>"Options"</strong> at the top, and toggle <strong>OFF</strong> the switch for <strong>Location</strong>[cite: 1].</li>
-                                <li><strong>To stop future photos from recording GPS coordinates:</strong> Open <strong>Settings > Privacy & Security > Location Services > Camera</strong> and select <strong>"Never"</strong>[cite: 1].</li>
+                                <li><strong>To strip location from an existing photo before sharing:</strong> Open your <strong>Photos</strong> app, tap the picture, tap the <strong>Share</strong> button, tap <strong>"Options"</strong> at the top, and toggle <strong>OFF</strong> the switch for <strong>Location</strong>.</li>
+                                <li><strong>To stop future photos from recording GPS coordinates:</strong> Open <strong>Settings > Privacy & Security > Location Services > Camera</strong> and select <strong>"Never"</strong>.</li>
                             </ol>
                         </div>
                     </details>
 
-                    <!-- Android Phone Dropdown -->
                     <details class="section-dropdown">
                         <summary>🤖 Android Phone (Samsung, Google Pixel, etc.)</summary>
                         <div class="dropdown-content">
                             <ol>
-                                <li><strong>To strip location from an existing photo:</strong> Open your <strong>Gallery</strong> or <strong>Google Photos</strong> app, select the picture, swipe up or tap the three dots for details, and tap <strong>"Edit"</strong> next to location data to remove it[cite: 1].</li>
-                                <li><strong>To stop future photos from saving location:</strong> Open your <strong>Camera</strong> app settings, locate <strong>"Save location"</strong> or <strong>"Location tags"</strong>, and switch it <strong>OFF</strong>[cite: 1].</li>
+                                <li><strong>To strip location from an existing photo:</strong> Open your <strong>Gallery</strong> or <strong>Google Photos</strong> app, select the picture, swipe up or tap the three dots for details, and tap <strong>"Edit"</strong> next to location data to remove it.</li>
+                                <li><strong>To stop future photos from saving location:</strong> Open your <strong>Camera</strong> app settings, locate <strong>"Save location"</strong> or <strong>"Location tags"</strong>, and switch it <strong>OFF</strong>.</li>
                             </ol>
                         </div>
                     </details>
@@ -938,33 +907,28 @@
             </details>
         </div>
 
-        <!-- Optional 90-Day Reminder Section -->
         <h2 id="reminder">Optional: Set a 90-Day Maintenance Reminder</h2>
         <span class="maintenance-tag">🔄 Recurring Reminder</span>
         <div class="info-box" style="margin-top: 15px;">
-            <strong>Why set a reminder?</strong> Data broker websites frequently re-scrape public records every few months[cite: 1]. Setting a quick calendar alert ensures you stay ahead of new listings and keep your personal information secure year-round[cite: 1].
+            <strong>Why set a reminder?</strong> Data broker websites frequently re-scrape public records every few months. Setting a quick calendar alert ensures you stay ahead of new listings and keep your personal information secure year-round.
         </div>
         <div class="card">
             <h3>Schedule Your Follow-Up Check</h3>
-            <p>Click one of the buttons below to instantly add a reminder event to your calendar for 90 days from now[cite: 1]:</p>
+            <p>Click one of the buttons below to instantly add a reminder event to your calendar for 90 days from now:</p>
             <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Digital+Privacy+Maintenance+Check&details=Time+to+re-verify+your+public+search+listings+and+ensure+your+personal+information+remains+removed+using+your+Senior+Digital+SafeGuard+guide.&dates=20261115T100000Z/20261115T103000Z" target="_blank" class="calendar-btn">📅 Add to Google Calendar</a>
             <a href="data:text/calendar;charset=utf8,BEGIN:VCALENDAR%0AVERSION:2.0%0ABEGIN:VEVENT%0ASUMMARY:Digital Privacy Maintenance Check%0ADESCRIPTION:Time to re-verify your public search listings and ensure your personal information remains removed.%0ADTSTART:20261115T100000Z%0ADTEND:20261115T103000Z%0AEND:VEVENT%0AEND:VCALENDAR" download="digital-privacy-reminder.ics" class="calendar-btn" style="background-color: #0ea5e9;">📱 Download Apple/Outlook Reminder</a>
         </div>
 
     </div>
 
-    <!-- Floating Back to Top Button -->
     <button id="back-to-top" onclick="scrollToTop()" title="Back to Top">↑</button>
 
-    <!-- JavaScript to Handle Agreement Modal, Progress Bar, Local Storage, QR Code, Service Worker, & Back to Top -->
     <script>
-        // Check if user has already agreed to the terms
         document.addEventListener("DOMContentLoaded", () => {
             if (localStorage.getItem("senior_guard_agreed") === "true") {
                 document.getElementById("agreement-modal").style.display = "none";
             }
 
-            // Automatically Generate QR Code for this live page URL
             new QRCode(document.getElementById("qrcode"), {
                 text: window.location.href,
                 width: 128,
@@ -974,7 +938,6 @@
                 correctLevel: QRCode.CorrectLevel.M
             });
 
-            // Load saved progress on page load
             const checkboxes = document.querySelectorAll('.task-checkbox');
             checkboxes.forEach(box => {
                 const taskId = box.getAttribute('data-id');
@@ -1023,14 +986,12 @@
             document.getElementById('progress-label').innerText = `Progress: ${completedTasks} of ${totalTasks} tasks completed (${percentage}%)`;
         }
 
-        // Register Service Worker for PWA App Installation Support
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration failed: ', err));
             });
         }
 
-        // Back to top button logic
         const backToTopBtn = document.getElementById('back-to-top');
         window.onscroll = function() {
             if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
